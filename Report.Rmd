@@ -1,0 +1,962 @@
+---
+title: "`r params$opt$project`" 
+# author: '`r params$opt$user`'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+vignette: >
+  %\VignetteIndexEntry{CellBridge report}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+output:
+  html_document:
+    fig_caption: true
+    df_print: kable
+    toc: true
+    toc_float: true
+params:
+    obj_ls: NULL
+    sobj_ls: NULL
+    scrub_ls: NULL
+    fsobj: NULL
+    meta_data: NULL
+    pre.qc.summ: NULL
+    post.qc.summ: NULL
+    opt: NULL
+---
+
+```{r variable, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+    obj_ls <- params$obj_ls
+    sobj_ls <- params$sobj_ls
+    scrub_ls <- params$scrub_ls
+    fsobj <- params$fsobj
+    meta_data <- params$meta_data
+    pre.qc.summ <- params$pre.qc.summ
+    post.qc.summ <- params$post.qc.summ
+    opt <- params$opt
+    n.sample <- length(obj_ls)
+```
+
+```{r, include=FALSE}
+options(width = 60)
+local({
+  hook_output <- knitr::knit_hooks$get('output')
+  knitr::knit_hooks$set(output = function(x, options) {
+    if (!is.null(options$max.height)) options$attr.output <- c(
+      options$attr.output,
+      sprintf('style="max-height: %s;"', options$max.height)
+    )
+    hook_output(x, options)
+  })
+})
+```
+
+- - -
+
+```{r cellbox, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.height=1.5, fig.width=10.0}
+
+summ1 <- sum(pre.qc.summ$cell)
+summ2 <- sum(post.qc.summ$cell)
+# UMI per cell
+exprMat <- fsobj@assays$RNA@counts
+countByCell <- colSums(exprMat)
+summ3 <- round(mean(countByCell))
+# Gene per cell
+exprMat <- fsobj@assays$RNA@counts
+countByCell <- colSums(exprMat > 0)
+summ4 <- round(mean(countByCell))
+
+text <- c(paste(scales::comma(summ1, accuracy = 1), "<br>Number of Cells<br>Input Data"),
+          paste(scales::comma(summ2, accuracy = 1), "<br>Number of Cells<br>After QC"),
+          paste(scales::comma(summ3, accuracy = 1), "<br>Number of UMIs<br>per Cell (mean)"),
+          paste(scales::comma(summ4, accuracy = 1), "<br>Number of Genes<br>per Cell (mean)")
+          )
+cols <- c("grey75", "#4daf4a", "#ff7f00", "#377eb8")
+x <- seq(0.125,0.875,length.out=4)
+y <- rep(0.5, 4)
+g <- richtext_grob(
+  text, x, y, 
+  halign = 0.5, hjust = 0.5,
+  gp = gpar(fontsize = 20),
+  r = unit(1, "pt"),
+  padding = unit(c(10, 10, 10, 10), "pt"),
+  margin = unit(c(0, 0, 0, 0), "pt"),
+  align_widths = TRUE,
+  box_gp = gpar(col = NA, fill = cols)
+)
+grid.newpage()
+grid.draw(g)
+```
+
+- - -
+
+# Parameters used in the pipeline
+
+```{r table-1, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+  rm.mtdata <- c("project", "docker", "input", "help", "only_qc")
+  # if (is.null(opt$scr_th)) {
+  #   rm.mtdata <- c(rm.mtdata, names(opt)[grepl("^scr_", names(opt))])
+  # }
+  data.frame(opt) %>% 
+    dplyr::select(names(opt)[!names(opt) %in% rm.mtdata]) %>%
+    kable() %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = F, fixed_thead = TRUE) %>%
+    scroll_box(width = "100%", height = "110px")
+```
+
+- - -
+
+# Quality control
+
+### Summary of the data after quality control
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+# UMI per cell
+exprMat <- fsobj@assays$RNA@counts
+countByCell <- colSums(exprMat)
+summ1 <- c(min = min(countByCell), 
+         quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
+         max = max(countByCell))
+summ1 <- scales::comma(summ1, accuracy = 1)
+# Gene per cell
+exprMat <- fsobj@assays$RNA@counts
+countByCell <- colSums(exprMat > 0)
+summ2 <- c(min = min(countByCell), 
+         quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
+         max = max(countByCell))
+summ2 <- scales::comma(summ2, accuracy = 1)
+# Mitochondrial (%) per cell
+pctmt <- fsobj$percent_mt
+summ3 <- c(min = min(pctmt), 
+         quantile(pctmt, c(0.0, 0.25, 0.5, 0.75, 1)),
+         max = max(pctmt))
+summ3 <- round(summ3, 2)
+
+data.frame(summ1, summ2, summ3) %>%
+  dplyr::rename(`UMI per cell` = summ1,
+                `Gene per cell` = summ2,
+                `Mitochondrial (%) per cell` = summ3) %>%
+  t() %>%
+  kable() %>%
+   kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = 6)
+```
+
+- - -
+
+### Metadata and demographics
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+meta_data %>%
+  base::merge(., pre.qc.summ, by = c("sample_id")) %>%
+  dplyr::rename(pre_qc_cell = cell,
+                pre_qc_gene = gene) %>%
+  mutate(pre_qc_cell = scales::comma(pre_qc_cell, accuracy = 1),
+         pre_qc_gene = scales::comma(pre_qc_gene, accuracy = 1)) %>%
+  dplyr::select(-type) %>%
+  base::merge(., post.qc.summ, by = c("sample_id")) %>%
+  dplyr::rename(post_qc_cell = cell,
+                post_qc_gene = gene) %>%
+  dplyr::mutate(post_qc_cell = scales::comma(post_qc_cell, accuracy = 1),
+                post_qc_gene = scales::comma(post_qc_gene, accuracy = 1)) %>%
+  dplyr::select(-type) %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = sample_id[mixedorder(sample_id)], ordered = TRUE)) %>%
+  dplyr::arrange(sample_id) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+- - -
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.width=17.5, fig.height=4.5, fig.align = 'center'}
+  # ===================================
+  set.seed(123)  
+  colrs <- color_helper(set.names=sort(unique(meta_data$sample_id)), panel="Set1") 
+  colrs <- setNames(as.vector(colrs)[sample(1:length(colrs), size = length(colrs), replace = FALSE,)], names(colrs)) 
+  # ===================================
+  db_plot <- data.frame()
+  for (i in 1:length(obj_ls)) {
+    obj <- obj_ls[[i]]
+    smpl <-  names(obj_ls)[i]
+    # creat seurat object
+    sobj <- CreateSeuratObject(counts=obj, project=smpl, 
+                               min.cells=0, min.features=0)
+    # mitochondrial genes
+    sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern="^MT-")
+    # head(sobj@meta.data)
+    db_plot <- db_plot %>%
+      dplyr::bind_rows(sobj@meta.data %>%
+                         dplyr::mutate(barcode = rownames(.)) %>%
+                         dplyr::select(barcode, nCount_RNA, nFeature_RNA, percent_mt) %>%
+                         tidyr::gather(., key = type, value = count, -barcode)%>%
+                         dplyr::mutate(sample_id = smpl))
+  }
+  # ===================================
+filters <- data.frame(threshold = c(opt$min_umi_per_cell, 
+                                    ifelse(is.null(opt$max_umi_per_cell), NA, opt$max_umi_per_cell), 
+                                    opt$min_genes_per_cell, 
+                                    ifelse(is.null(opt$max_genes_per_cell), NA, opt$max_genes_per_cell), 
+                                    opt$max_mt_percent),
+                      type = c("nCount_RNA", "nCount_RNA", 
+                               "nFeature_RNA", "nFeature_RNA", 
+                               "percent_mt"))
+  # ===================================
+  Q <- list()
+  for (tp in unique(db_plot$type)) {
+    p <- ggplot(data = filter(db_plot, type == tp)) +
+      getBaseTheme() +
+      theme(strip.text = element_text(size = 20, face = "bold"),
+            axis.title.x = element_blank(),
+            axis.title.y = element_text(size = 14, face = "bold"),
+            axis.text = element_text(size = 12, face = "bold"),
+            legend.title = element_text(size=13),
+            legend.text = element_text(size=11)) +
+      scale_x_continuous(trans = scales::log10_trans(),
+                         breaks = scales::trans_breaks("log10", function(x) 10^x),
+                         labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+      xlab("") + ylab("Density") +
+      geom_density(aes(x = count, group = sample_id, color = sample_id), 
+                   show.legend = FALSE) +
+      geom_vline(data = filter(filters, type == tp), 
+                 aes(xintercept = threshold), linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
+      scale_color_manual(name = "Sample",
+                         values = colrs)
+    Q[[length(Q) + 1]] <- p  
+  }
+  # ===================================
+```
+
+### QC metrics distibution {.tabset}
+
+Dashed lines indicate the thresholds used to filter the data to only include cells with high quality.
+
+#### UMI per cell
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+plot(Q[[1]])
+```
+
+#### Gene per cell
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+plot(Q[[2]])
+```
+
+#### Mitochondrial (%) per cell
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+plot(Q[[3]])
+```
+
+### {-}
+
+- - -
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+ # Check overlap of cell barcodes
+samples <- unique(meta_data$sample_id)
+
+bc.qc.raw <- matrix(nrow = n.sample, ncol = n.sample)
+colnames(bc.qc.raw) <- as.vector(samples)
+rownames(bc.qc.raw) <- as.vector(samples)
+
+bc.qc.ji <- matrix(nrow = n.sample, ncol = length(samples))
+colnames(bc.qc.ji) <- as.vector(samples)
+rownames(bc.qc.ji) <- as.vector(samples)
+
+for(i in samples){
+  for(j in samples){
+    qi <- sobj_ls[[i]]
+    qj <- sobj_ls[[j]]
+    qc <- length(intersect(colnames(qi), colnames(qj)))
+    bc.qc.raw[i,j] <- qc
+    bc.qc.ji[i,j] <- qc/mean(c(dim(qi)[2],dim(qj)[2]))
+  }
+}
+
+bc.qc.raw <- bc.qc.raw[!apply(bc.qc.raw, 1, function(x) sum(x == 0) == (n.sample-1)), 
+                       !apply(bc.qc.raw, 2, function(x) sum(x == 0) == (n.sample-1))]
+
+bc.qc.ji <- round(bc.qc.ji*100, 2)
+bc.qc.ji <- bc.qc.ji[!apply(bc.qc.ji, 1, function(x) sum(x == 0) == (n.sample-1)), 
+                     !apply(bc.qc.ji, 2, function(x) sum(x == 0) == (n.sample-1))]
+```
+
+### Barcodes contamination {.tabset}
+
+#### Raw count
+
+Number of barcodes shared between pairs of samples.
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (length(bc.qc.raw) != 0) {
+  bc.qc.raw %>%
+    kable() %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = F, fixed_thead = TRUE) %>%
+    scroll_box(width = "100%", height = "200px")  
+} else {
+  paste("No overlaps among samples' barcodes.")
+}
+```
+
+#### Jaccard Index
+
+Fraction (%) of barcodes shared between pairs of samples.
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (length(bc.qc.ji) != 0) {
+  bc.qc.ji %>%
+    kable() %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = F, fixed_thead = TRUE) %>%
+    scroll_box(width = "100%", height = "200px")  
+} else {
+  paste("No overlaps among samples' barcodes.")
+}
+```
+
+### {-}
+
+- - -
+
+`r if(!is.null(opt$scr_th)) {"### Doublet scores distribution {.tabset}"}`
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+# plot scrublet scores
+if (!is.null(opt$scr_th)) {
+  Q <- list()
+  
+  dp <- lapply(scrub_ls, function(x){
+    data.frame(x["doublet_scores_obs"])
+    })
+  dp <- map_df(dp, ~as.data.frame(.x), .id="id") %>%
+    dplyr::rename(sample_id = id,
+                  score = doublet_scores_obs) %>%
+    dplyr::mutate(type = "Observed")
+  p <- ggplot() +
+    getBaseTheme() +
+    theme(strip.text = element_text(size = 14, face = "bold"),
+          axis.title = element_text(size = 14, face = "bold"),
+          axis.text = element_text(size = 12, face = "bold"),
+          legend.title = element_text(size=9),
+          legend.text = element_text(size=8)) +
+    xlab("Doublet score") + ylab("Density") +
+    geom_density(data = dp,
+                 aes(x = score, group = sample_id, color = sample_id), show.legend = FALSE) +
+    scale_color_manual(name = "Sample",
+                       values = colrs) +
+    guides(color = guide_legend(nrow = ifelse(n.sample > 4, 2, 1))) + 
+    geom_vline(xintercept=opt$scr_th, linetype=2, color="firebrick", size=0.45)
+  Q[[length(Q) + 1]] <- p
+  
+  dp <- lapply(scrub_ls, function(x){
+    data.frame(x["doublet_scores_sim"])
+  })
+  dp <- map_df(dp, ~as.data.frame(.x), .id="id") %>%
+    dplyr::rename(sample_id = id,
+                  score = doublet_scores_sim) %>%
+    dplyr::mutate(type = "Simulated")
+  p <- ggplot() +
+    getBaseTheme() +
+    theme(strip.text = element_text(size = 14, face = "bold"),
+          axis.title = element_text(size = 14, face = "bold"),
+          axis.text = element_text(size = 12, face = "bold"),
+          legend.title = element_text(size=9),
+          legend.text = element_text(size=8)) +
+    xlab("Doublet score") + ylab("Density") +
+    geom_density(data = dp,
+                 aes(x = score, group = sample_id, color = sample_id), show.legend = FALSE) +
+    scale_color_manual(name = "Sample",
+                       values = colrs) + 
+    geom_vline(xintercept=opt$scr_th, linetype=2, color="firebrick", size=0.45)
+  Q[[length(Q) + 1]] <- p
+}
+```
+
+`r if(!is.null(opt$scr_th)) {"#### Observed scores"}`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+if (!is.null(opt$scr_th)) { plot(Q[[1]]) }
+```
+
+`r if(!is.null(opt$scr_th)) {"#### Simulated scores"}`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+if (!is.null(opt$scr_th)) { plot(Q[[2]]) }
+```
+
+`r if(!is.null(opt$scr_th)) {"### {-}"}`
+
+`r if(!is.null(opt$scr_th)) {"- - -"}`
+
+
+### Cells, genes, and UMIs abundances {.tabset}
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+db_plot <- bind_rows(pre.qc.summ, post.qc.summ) %>%
+  dplyr::group_by(sample_id) %>%
+  dplyr::mutate(group = cur_group_id())
+p1 <- ggplot(db_plot, 
+            aes(x = gene/1e3, y = cell/1e3, 
+                sample_id = sample_id, cell = cell, gene = gene)) +
+  getBaseTheme() +
+  theme(axis.title = element_text(size = 12, face = "bold"),
+        axis.text = element_text(size = 10, face = "bold"),
+        legend.position = 'none') +
+  xlab("Gene [1e3]") + ylab("Cell [1e3]") +
+  # scale_x_continuous(labels = scales::number_format(accuracy = 0.1,
+  #                                                   decimal.mark = '.')) +
+  # scale_y_continuous(labels = scales::number_format(accuracy = 0.1,
+  #                                                   decimal.mark = '.')) +
+  geom_line(aes(group = group),
+            linetype = "dashed", size = 0.25, color = "grey50") +
+  geom_point(aes(fill = type),
+             shape = 23, size = 3.0, color = "white", show.legend = FALSE) +
+  # scale_color_manual(name = "", 
+  #                    values = setNames(c("#2b8cbe", "#a6bddb"),
+  #                                      c("pre-qc", "post-qc")),
+  #                    labels = c("Raw data", "Post QC")) +
+  scale_fill_manual(name = "", 
+                    values = setNames(c("steelblue", "firebrick"),
+                                      c("pre-qc", "post-qc")),
+                    labels = c("Raw data", "Post QC")) +
+  scale_x_reverse() +
+  guides(fill = "none", color = "none")  
+# ===================================
+db_plot <- data.frame()
+for (i in 1:length(sobj_ls)) {
+  sobj <- sobj_ls[[i]]
+  smpl <- names(sobj_ls)[i]
+  db_plot <- db_plot %>%
+    dplyr::bind_rows(data.frame(sample_id = smpl, 
+                                avg_count_g = mean(colSums(sobj@assays$RNA@counts)), # reads/cell
+                                sd_count_g = sd(colSums(sobj@assays$RNA@counts)), 
+                                avg_count_c = mean(colSums(sobj@assays$RNA@counts != 0)), # genes/cell
+                                sd_count_c = sd(colSums(sobj@assays$RNA@counts != 0))))  
+}
+db_plot <- merge(db_plot, post.qc.summ, by = "sample_id", all = TRUE)
+p2 <- ggplot(db_plot, 
+            aes(x = avg_count_g/1000, y = avg_count_c/1000, label = sample_id,
+                cell = cell, gene = gene)) +
+  getBaseTheme() +
+  theme(axis.title = element_text(size = 12, face = "bold"),
+        axis.text = element_text(size = 10, face = "bold")) +
+  xlab("Gene per cell [1e3]") + ylab("UMIs per cell [1e3]") +
+  # scale_x_continuous(labels = scales::number_format(accuracy = 0.1,
+  #                                                   decimal.mark = '.')) +
+  # scale_y_continuous(labels = scales::number_format(accuracy = 0.1,
+  #                                                   decimal.mark = '.')) +
+  geom_point(shape = 23, size = 2, fill = "black") +
+  geom_errorbarh(aes(xmin = (avg_count_g-sd_count_g/2)/1000, 
+                     xmax = (avg_count_g+sd_count_g/2)/1000),
+                 height = 0.1, size = 0.30) +
+  geom_errorbar(aes(ymin = (avg_count_c-sd_count_c/2)/1000, 
+                    ymax = (avg_count_c+sd_count_c/2)/1000),
+                width = 0.1, size = 0.30) 
+```
+
+#### Number of cells and genes per sample
+
+<span style="color:steelblue">diamonds</span> and <span style="color:firebrick">diamonds</span> refer to before and after QC, respectively.
+
+<center>
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.0), fig.align = 'center'}
+ggplotly(p1, tooltip = c("sample_id", "cell", "gene"))
+```
+<center>
+
+#### Average number of UMIs/cell and genes/cell per sample
+
+<center>
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.0), fig.align = 'center'}
+ggplotly(p2, tooltip = c("sample_id", "cell", "gene"))
+```
+<center>
+
+### {-}
+
+- - -
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+if (opt$tsne) {
+  combo_ls <- list(c("sample_id", "umap"),
+                   c("sample_id", "tsne"),
+                   c("sample_id", "spring"))
+} else {
+  combo_ls <- list(c("sample_id", "umap"),
+                   c("sample_id", "spring"))
+}
+Q <- list()
+for (i in 1:length(combo_ls)) {
+  p <- DimPlot(fsobj, 
+               reduction = combo_ls[[i]][2],
+               group.by = combo_ls[[i]][1],
+               label = TRUE, 
+               repel = TRUE,
+               raster = FALSE,
+               pt.size = 0.05,
+               label.size = 3) + 
+    getBaseTheme() +
+    theme(plot.title = element_blank(),
+          axis.title = element_text(size = 12, face = "bold"),
+          axis.text = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.ticks = element_blank(),
+          panel.background = element_blank(),
+          legend.text = element_text(size = 14, face = "bold")) +
+    guides(fill = "none", color = "none")  
+    Q[[length(Q) + 1]] <- p
+    names(Q)[length(Q)] <- paste(combo_ls[[i]][1], combo_ls[[i]][2], sep = "-")
+}
+```
+
+### Samples dimension reduction {.tabset}
+
+Note: some labels may have been removed, if too many labels overlap.
+
+#### Signac SPRING Projection
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+plot(Q[["sample_id-spring"]])
+```
+
+#### Seurat UMAP Projection
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+plot(Q[["sample_id-umap"]])
+```
+
+`r if (opt$tsne) { "#### Seurat TSNE Projection" }`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (opt$tsne) { plot(Q[["sample_id-tsne"]]) }
+```
+
+### {-}
+
+- - -
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+if (opt$tsne) {
+  combo_ls <- list(c("seurat_clusters", "umap"),
+                   c("seurat_clusters", "tsne"),
+                   c("signacx_clusters", "spring"))
+} else {
+  combo_ls <- list(c("seurat_clusters", "umap"),
+                   c("signacx_clusters", "spring"))
+}
+Q <- list()
+for (i in 1:length(combo_ls)) {
+  colrs <- color_helper(set.names=sort(unique(fsobj@meta.data[[combo_ls[[i]][1]]])), 
+                        panel="Set1") 
+  p <- DimPlot(fsobj, 
+               reduction = combo_ls[[i]][2],
+               group.by = combo_ls[[i]][1],
+               cols = colrs, 
+               label = TRUE, 
+               repel = TRUE,
+               raster = FALSE,
+               pt.size = 0.05,
+               label.size = 3) + 
+    getBaseTheme() +
+    theme(plot.title = element_blank(),
+          axis.title = element_text(size = 12, face = "bold"),
+          axis.text = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.ticks = element_blank(),
+          panel.background = element_blank(),
+          legend.text = element_text(size = 14, face = "bold")) +
+    guides(fill = "none", color = "none")  
+    Q[[length(Q) + 1]] <- p
+    names(Q)[length(Q)] <- paste(combo_ls[[i]][1], combo_ls[[i]][2], sep = "-")
+}
+```
+
+# Clustering
+
+Note: some labels may have been removed, if too many labels overlap.
+
+### Dimension reduction {.tabset}
+
+#### Signac SPRING Projection
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+plot(Q[["signacx_clusters-spring"]])
+```
+
+#### Seurat UMAP Projection
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+plot(Q[["seurat_clusters-umap"]])
+```
+
+`r if (opt$tsne) { "#### Seurat TSNE Projection" }`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (opt$tsne) { plot(Q[["seurat_clusters-tsne"]]) }
+```
+
+### {-}
+
+- - -
+
+### Number of cells per cluster {.tabset}
+
+Values at the top of each bar indicate the percentage of cells
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+clusters <- c("seurat_clusters", "signacx_clusters")
+names(clusters) <- c("Seurat Clusters", "Signacx Clusters")
+Q <- list()
+for (cls in as.vector(clusters)) {
+  df <- data.frame(table(fsobj[[cls]]))
+  names(df) <- c("cluster", "count")
+  db_plot <- df %>%
+    dplyr::arrange(desc(count)) %>%
+    dplyr::mutate(pct = count/sum(count),
+                  cluster = factor(cluster, levels = unique(cluster), ordered = T))
+  p <- ggplot() +
+    getBaseTheme() +
+    theme(plot.title = element_blank(),
+          axis.title = element_text(size = 28, face = "bold"),
+          axis.text = element_text(size = 25, face = "bold")) +
+    # ggtitle(names(clusters[clusters == cls])) + 
+    xlab("Cluster") + ylab("Number of cells") + 
+    geom_bar(data = db_plot,
+             aes(x = cluster, y = count),
+             width = 0.65, stat = "identity", fill = "steelblue") +
+    geom_text(data = db_plot,
+              aes(x = cluster, y = count, label = paste0(round(100*count/sum(count), 1))),
+              size = 6, vjust = -0.5, angle = 0, fontface = "bold") + # , nudge_y = 0.25
+    geom_text(data = db_plot,
+              aes(x = cluster, y = count, label = scales::comma(count, accuracy = 1)),
+              size = 10, hjust = 1.2, angle = 90) + # , nudge_y = 0.25
+    scale_y_continuous(trans = scales::log10_trans(),
+                       breaks = scales::trans_breaks("log10", function(x) 10^x),
+                       labels = scales::trans_format("log10", scales::math_format(10^.x)))
+  Q[[length(Q) + 1]] <- p
+}
+```
+
+#### Seurat 
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
+plot(Q[[1]])
+```
+
+#### Signacx 
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
+plot(Q[[2]])
+```
+
+### {-}
+
+- - -
+
+### Batch effect diagnosis {.tabset}
+
+Values adjacent to each point indicate the number of cells
+
+```{r fig-9, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+clusters <- c("seurat_clusters", "signacx_clusters")
+names(clusters) <- c("Seurat Clusters", "Signacx Clusters")
+Q <- list()
+for (cls in as.vector(clusters)) {
+  if (opt$harmony) {
+  vars <- strsplit(opt$harmony_var, split = ",")[[1]]
+  vars <- gsub(" ", "", vars)
+  vars <- c(vars, cls)
+  df <- fsobj@meta.data %>%
+    dplyr::group_by(!!!rlang::syms(vars)) %>%
+    dplyr::summarise(count = n(), .groups = 'drop') %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(!!rlang::sym(cls)) %>% 
+    dplyr::summarise(gini = DescTools::Gini(count), .groups = 'drop') %>%
+    dplyr::rename(cluster = all_of(cls)) 
+  } else {
+    gini <- table(fsobj$sample_id, fsobj@meta.data[[cls]])
+    gini <- apply(gini, 2, DescTools::Gini)
+    df <- data.frame(gini) %>%
+      tibble::rownames_to_column(var = "cluster")
+    }
+  df <- df %>%
+    base::merge(., data.frame(cluster = names(table(fsobj[[cls]])),
+                              count = as.vector(table(fsobj[[cls]]))),
+                by = "cluster", all = TRUE) %>%
+    dplyr::arrange(desc(count)) %>%
+    dplyr::mutate(cluster = factor(cluster, levels = cluster, ordered = T))
+  p <- ggplot(df,
+              aes(x = cluster, y = gini, label = scales::comma(count, accuracy = 1))) +
+    getBaseTheme() +
+    theme(plot.title = element_blank(),
+          axis.title = element_text(size = 28, face = "bold"),
+          axis.text = element_text(size = 25, face = "bold")) +
+    # ggtitle(names(clusters[clusters == cls])) + 
+    xlab("Cluster") + ylab("Gini coefficient") + 
+    coord_cartesian(ylim = c(0,1)) +
+    geom_hline(yintercept = 0.5, linetype = 2, color = "firebrick", size = 0.5) +
+    geom_point(shape = 23, fill = "black", color = "black", size = 3) + 
+    geom_text_repel(size = 6, seed = 12345) +
+    geom_smooth(data = df, aes(x = as.numeric(cluster), y = gini), 
+                formula = 'y ~ x', method = 'loess', se = F,
+                size = 0.5, linetype = 1, color = "steelblue")
+  Q[[length(Q) + 1]] <- p
+}
+```
+
+#### Seurat 
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
+plot(Q[[1]])
+```
+
+#### Signacx 
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
+plot(Q[[2]])
+```
+
+### {-}
+
+- - -
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+mrks <- fsobj@misc$signatures
+mrks <- mrks %>%
+  dplyr::filter(p_val_adj < 0.05) %>%
+  dplyr::group_by(type, cluster) %>%
+  dplyr::top_n(25, wt = avg_log2FC) %>%
+  dplyr::select(type, cluster, gene) %>%
+  dplyr::mutate(cluster = as.character(cluster))
+
+mrks <- mrks %>% 
+  split(.$type)
+
+mrks <- lapply(mrks, function(x){
+  x %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(cluster = as.character(cluster),
+                  cluster = factor(cluster, levels = 0:(length(unique(cluster))-1), ordered = TRUE), 
+                  id = row_number()) %>%
+    dplyr::select(id, cluster, gene) %>%
+    tidyr::spread(key=cluster, value=gene)
+}) 
+
+mrks <- lapply(mrks, function(x){
+  x <- apply(x, 2, function(x){
+    x[!is.na(x)]
+  })
+  x$id <- NULL
+  do.call(cbind, x)
+})
+```
+
+### Signatures per cluster {.tabset}
+
+Top 25 differentially expressed genes (p_val_adj < 0.05 and pct.1 > `r opt$mrk_min_pct`) for each of the clusters 
+
+#### Seurat
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+x <- data.frame(mrks$seurat_clusters)
+names(x) <- substr(names(x), 2, nchar(names(x)))
+x <- cbind(data.frame(Cluster = 1:nrow(x)), x)  
+datatable(head(x, n = nrow(x)), options = list(pageLength = 5, scrollX = T))
+```
+
+
+#### Signacx
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+x <- data.frame(mrks$signacx_clusters)
+names(x) <- substr(names(x), 2, nchar(names(x)))
+x <- cbind(data.frame(Cluster = 1:nrow(x)), x)  
+datatable(head(x, n = nrow(x)), options = list(pageLength = 5, scrollX = T))
+```
+
+### {-}
+
+- - -
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+if (opt$tsne) {
+  combo_ls <- list(c("sargent_cellstates", "umap"),
+                   c("sargent_cellstates" ,"tsne"),
+                   c("sargent_cellstates" ,"spring"),
+                   c("signacx_cellstates", "umap"),
+                   c("signacx_cellstates", "tsne"),
+                   c("signacx_cellstates", "spring"))
+} else {
+  combo_ls <- list(c("sargent_cellstates", "umap"),
+                   c("sargent_cellstates", "spring"),
+                   c("signacx_cellstates", "umpa"),
+                   c("signacx_cellstates", "spring"))
+}
+Q <- list()
+for (i in 1:length(combo_ls)) {
+  colrs <- color_helper(set.names=sort(unique(fsobj@meta.data[[combo_ls[[i]][1]]])), 
+                        panel="Set1") 
+  p <- DimPlot(fsobj, 
+               reduction = combo_ls[[i]][2],
+               group.by = combo_ls[[i]][1],
+               cols = colrs,
+               label = TRUE, 
+               repel = TRUE,
+               raster = FALSE,
+               pt.size = 0.05,
+               label.size = 3) + 
+    getBaseTheme() +
+    theme(plot.title = element_blank(),
+          axis.title = element_text(size = 12, face = "bold"),
+          axis.text = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.ticks = element_blank(),
+          panel.background = element_blank(),
+          legend.text = element_text(size = 7, face = "bold")) 
+  Q[[length(Q) + 1]] <- p
+  names(Q)[length(Q)] <- paste(combo_ls[[i]][1], combo_ls[[i]][2], sep = "-")
+}
+```
+
+# Annotation results
+
+### Celltypes dimension reduction {.tabset}
+
+Note: some labels may have been removed, if too many labels overlap.
+
+#### Signacx SPRING Projection
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
+plot(Q[["signacx_cellstates-spring"]])
+```
+
+#### Signacx UMPA Projection
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
+plot(Q[["signacx_cellstates-umap"]])
+```
+
+`r if (opt$tsne) { "#### Signacx TSNE Projection" }`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
+if (opt$tsne) { plot(Q[["signacx_cellstates-tsne"]]) }
+```
+
+#### Sargent SPRING Projection
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
+plot(Q[["sargent_cellstates-spring"]])
+```
+
+#### Sargent UMAP Projection
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
+plot(Q[["sargent_cellstates-umap"]])
+```
+
+`r if (opt$tsne) { "#### Sargent TSNE Projection" }`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
+if (opt$tsne) { plot(Q[["sargent_cellstates-tsne"]]) }
+```
+
+### {-}
+
+- - -
+
+### Celltype count {.tabset}
+
+Values at the top of each bar indicate the percentage of cells
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+annots <- c("signacx_cellstates", "sargent_cellstates")
+Q <- list()
+for (ant in annots) {
+    df <- data.frame(table(fsobj[[ant]]))
+  names(df) <- c("cellstate", "count")
+  db_plot <- df %>%
+    dplyr::arrange(desc(count)) %>%
+    dplyr::mutate(pct = count/sum(count),
+                  cellstate = factor(cellstate, levels = unique(cellstate), ordered = T))
+  p <- ggplot() +
+    getBaseTheme() +
+    theme(plot.title = element_blank(),
+          axis.title.x = element_blank(),
+          axis.title.y = element_text(size=28, face="bold"),
+          axis.text.x = element_text(size=20, face="bold", angle=45, hjust=1, vjust=1),
+          axis.text.y = element_text(size=25, face="bold")) + 
+    xlab("Cluster") + ylab("Number of cells") + 
+    geom_bar(data = db_plot,
+             aes(x = cellstate, y = count),
+             width = 0.65, stat = "identity", fill = "steelblue") +
+    geom_text(data = db_plot,
+              aes(x = cellstate, y = count, label = paste0(round(100*count/sum(count), 1))),
+              size = 6, vjust = -0.5, angle = 0, fontface = "bold") + # , nudge_y = 0.25
+    geom_text(data = db_plot,
+              aes(x = cellstate, y = count, label = scales::comma(count, accuracy = 1)),
+              size = 10, hjust = 1.2, angle = 90) + # , nudge_y = 0.25
+    scale_y_continuous(trans = scales::log10_trans(),
+                       breaks = scales::trans_breaks("log10", function(x) 10^x),
+                       labels = scales::trans_format("log10", scales::math_format(10^.x)))
+  Q[[length(Q) + 1]] <- p
+}
+```
+
+#### Signacx
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center'}
+plot(Q[[1]])
+```
+
+#### Sargent  
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center'}
+plot(Q[[2]])
+```
+
+### {-}
+
+### Sargent gene-sets hierarchy
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+gset <- fsobj@misc$sargent_genesets_pos
+n <- max(unlist(lapply(strsplit(names(gset), split = "\\."), length)))
+df <- suppressWarnings(data.frame(parent=sub('[.][^.]+$', '', names(gset)), 
+                                  name=names(gset), 
+                                  stringsAsFactors=FALSE) %>%
+                         dplyr::bind_rows(data.frame(parent = "TBD",
+                                                     name = "TBD")) %>%
+                         tidyr::separate(., col = name, into = LETTERS[1:n], sep = "\\."))
+df$pathString <- apply(df[,LETTERS[1:n]], 1, function(x){
+  x <- x[!is.na(x)]
+  x <- paste(x, collapse = "/")  
+  paste("sargent", x, sep = "/")  
+})
+```
+
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, max.height='300px'}
+print(as.Node(df))
+```
+
+- - -
+
+# Session information
+
+This is the output of `sessionInfo()` on the system on which this document was compiled
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, max.height='300px'}
+sessionInfo()
+```

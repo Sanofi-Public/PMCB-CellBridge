@@ -1,0 +1,319 @@
+---
+title: "`r params$opt$project`" 
+# author: '`r params$opt$user`'
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+vignette: >
+  %\VignetteIndexEntry{CellBridge report}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+output:
+  html_document:
+    fig_caption: true
+    df_print: kable
+    toc: true
+    toc_float: true
+params:
+    obj_ls: NULL
+    scrub_ls: NULL
+    meta_data: NULL
+    pre.qc.summ: NULL
+    opt: NULL
+---
+
+```{r variable, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+    obj_ls <- params$obj_ls
+    scrub_ls <- params$scrub_ls
+    meta_data <- params$meta_data
+    pre.qc.summ <- params$pre.qc.summ
+    opt <- params$opt
+    n.sample <- length(obj_ls)
+```
+
+```{r, include=FALSE}
+options(width = 60)
+local({
+  hook_output <- knitr::knit_hooks$get('output')
+  knitr::knit_hooks$set(output = function(x, options) {
+    if (!is.null(options$max.height)) options$attr.output <- c(
+      options$attr.output,
+      sprintf('style="max-height: %s;"', options$max.height)
+    )
+    hook_output(x, options)
+  })
+})
+```
+
+- - -
+
+# Parameters used in the QC overview 
+Note: no filter is applied in this summary.
+
+```{r table-1, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+kp.mtdata <- c("species", "tissue", "metadata", "min_umi_per_cell", "max_umi_per_cell",
+               "min_genes_per_cell", "max_genes_per_cell", "max_mt_percent", "min_cell", "scr_th")
+data.frame(opt) %>% 
+  dplyr::select(names(opt)[names(opt) %in% kp.mtdata]) %>%
+  dplyr::select(all_of(kp.mtdata[kp.mtdata %in% names(.)])) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "110px")
+```
+
+- - -
+
+# Quality control
+
+### Metadata and demographics
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+meta_data %>%
+  base::merge(., pre.qc.summ, by = c("sample_id")) %>%
+  mutate(cell = scales::comma(cell, accuracy = 1),
+         gene = scales::comma(gene, accuracy = 1)) %>%
+  dplyr::select(-type) %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = sample_id[mixedorder(sample_id)], ordered = TRUE)) %>%
+  dplyr::arrange(sample_id) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+- - -
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.width=17.5, fig.height=4.5, fig.align = 'center'}
+  # ===================================
+  set.seed(123)  
+  colrs <- color_helper(set.names=sort(unique(meta_data$sample_id)), panel="Set1") 
+  colrs <- setNames(as.vector(colrs)[sample(1:length(colrs), size = length(colrs), replace = FALSE,)], names(colrs)) 
+  # ===================================
+  db_plot <- data.frame()
+  for (i in 1:length(obj_ls)) {
+    obj <- obj_ls[[i]]
+    smpl <-  names(obj_ls)[i]
+    # creat seurat object
+    sobj <- CreateSeuratObject(counts=obj, project=smpl, 
+                               min.cells=0, min.features=0)
+    # mitochondrial genes
+    sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern="^MT-")
+    # head(sobj@meta.data)
+    db_plot <- db_plot %>%
+      dplyr::bind_rows(sobj@meta.data %>%
+                         dplyr::mutate(barcode = rownames(.)) %>%
+                         dplyr::select(barcode, nCount_RNA, nFeature_RNA, percent_mt) %>%
+                         tidyr::gather(., key = type, value = count, -barcode)%>%
+                         dplyr::mutate(sample_id = smpl))
+  }
+  # ===================================
+filters <- data.frame(threshold = c(opt$min_umi_per_cell, 
+                                    ifelse(is.null(opt$max_umi_per_cell), NA, opt$max_umi_per_cell), 
+                                    opt$min_genes_per_cell, 
+                                    ifelse(is.null(opt$max_genes_per_cell), NA, opt$max_genes_per_cell), 
+                                    opt$max_mt_percent),
+                      type = c("nCount_RNA", "nCount_RNA", 
+                               "nFeature_RNA", "nFeature_RNA", 
+                               "percent_mt"))
+  # ===================================
+  Q <- list()
+  for (tp in unique(db_plot$type)) {
+    p <- ggplot(data = filter(db_plot, type == tp)) +
+      getBaseTheme() +
+      theme(strip.text = element_text(size = 20, face = "bold"),
+            axis.title.x = element_blank(),
+            axis.title.y = element_text(size = 14, face = "bold"),
+            axis.text = element_text(size = 12, face = "bold"),
+            legend.title = element_text(size=13),
+            legend.text = element_text(size=11)) +
+      scale_x_continuous(trans = scales::log10_trans(),
+                         breaks = scales::trans_breaks("log10", function(x) 10^x),
+                         labels = scales::trans_format("log10", scales::math_format(10^.x))) +
+      xlab("") + ylab("Density") +
+      geom_density(aes(x = count, group = sample_id, color = sample_id), 
+                   show.legend = FALSE) +
+      geom_vline(data = filter(filters, type == tp), 
+                 aes(xintercept = threshold), linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
+      scale_color_manual(name = "Sample",
+                         values = colrs)
+    Q[[length(Q) + 1]] <- p  
+  }
+  # ===================================
+```
+
+### QC metrics distibution {.tabset}
+
+Dashed lines indicate the default thresholds of the pipeline.
+
+#### UMI per cell
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+plot(Q[[1]])
+```
+
+#### Gene per cell
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+plot(Q[[2]])
+```
+
+#### Mitochondrial (%) per cell
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+plot(Q[[3]])
+```
+
+### {-}
+
+- - -
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+ # Check overlap of cell barcodes
+samples <- unique(meta_data$sample_id)
+
+bc.qc.raw <- matrix(nrow = n.sample, ncol = n.sample)
+colnames(bc.qc.raw) <- as.vector(samples)
+rownames(bc.qc.raw) <- as.vector(samples)
+
+bc.qc.ji <- matrix(nrow = n.sample, ncol = length(samples))
+colnames(bc.qc.ji) <- as.vector(samples)
+rownames(bc.qc.ji) <- as.vector(samples)
+
+for(i in samples){
+  for(j in samples){
+    qi <- obj_ls[[i]]
+    qj <- obj_ls[[j]]
+    qc <- length(intersect(colnames(qi), colnames(qj)))
+    bc.qc.raw[i,j] <- qc
+    bc.qc.ji[i,j] <- qc/mean(c(dim(qi)[2],dim(qj)[2]))
+  }
+}
+
+bc.qc.raw <- bc.qc.raw[!apply(bc.qc.raw, 1, function(x) sum(x == 0) == (n.sample-1)), 
+                       !apply(bc.qc.raw, 2, function(x) sum(x == 0) == (n.sample-1))]
+
+bc.qc.ji <- round(bc.qc.ji*100, 2)
+bc.qc.ji <- bc.qc.ji[!apply(bc.qc.ji, 1, function(x) sum(x == 0) == (n.sample-1)), 
+                     !apply(bc.qc.ji, 2, function(x) sum(x == 0) == (n.sample-1))]
+```
+
+### Barcodes contamination {.tabset}
+
+#### Raw count
+
+Number of barcodes shared between pairs of samples.
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (length(bc.qc.raw) != 0) {
+  bc.qc.raw %>%
+    kable() %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = F, fixed_thead = TRUE) %>%
+    scroll_box(width = "100%", height = "200px")  
+} else {
+  paste("No overlaps among samples' barcodes.")
+}
+```
+
+#### Jaccard Index
+
+Fraction (%) of barcodes shared between pairs of samples.
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
+if (length(bc.qc.ji) != 0) {
+  bc.qc.ji %>%
+    kable() %>%
+    kable_classic(full_width = F, html_font = "Cambria") %>%
+    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                  full_width = F, fixed_thead = TRUE) %>%
+    scroll_box(width = "100%", height = "200px")  
+} else {
+  paste("No overlaps among samples' barcodes.")
+}
+```
+
+### {-}
+
+- - -
+
+`r if(!is.null(opt$scr_th)) {"### Doublet scores distribution {.tabset}"}`
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+# plot scrublet scores
+if (!is.null(opt$scr_th)) {
+  Q <- list()
+  
+  dp <- lapply(scrub_ls, function(x){
+    data.frame(x["doublet_scores_obs"])
+    })
+  dp <- map_df(dp, ~as.data.frame(.x), .id="id") %>%
+    dplyr::rename(sample_id = id,
+                  score = doublet_scores_obs) %>%
+    dplyr::mutate(type = "Observed")
+  p <- ggplot() +
+    getBaseTheme() +
+    theme(strip.text = element_text(size = 14, face = "bold"),
+          axis.title = element_text(size = 14, face = "bold"),
+          axis.text = element_text(size = 12, face = "bold"),
+          legend.title = element_text(size=9),
+          legend.text = element_text(size=8)) +
+    xlab("Doublet score") + ylab("Density") +
+    geom_density(data = dp,
+                 aes(x = score, group = sample_id, color = sample_id), show.legend = FALSE) +
+    scale_color_manual(name = "Sample",
+                       values = colrs) +
+    guides(color = guide_legend(nrow = ifelse(n.sample > 4, 2, 1))) + 
+    geom_vline(xintercept=opt$scr_th, linetype=2, color="firebrick", size=0.45)
+  Q[[length(Q) + 1]] <- p
+  
+  dp <- lapply(scrub_ls, function(x){
+    data.frame(x["doublet_scores_sim"])
+  })
+  dp <- map_df(dp, ~as.data.frame(.x), .id="id") %>%
+    dplyr::rename(sample_id = id,
+                  score = doublet_scores_sim) %>%
+    dplyr::mutate(type = "Simulated")
+  p <- ggplot() +
+    getBaseTheme() +
+    theme(strip.text = element_text(size = 14, face = "bold"),
+          axis.title = element_text(size = 14, face = "bold"),
+          axis.text = element_text(size = 12, face = "bold"),
+          legend.title = element_text(size=9),
+          legend.text = element_text(size=8)) +
+    xlab("Doublet score") + ylab("Density") +
+    geom_density(data = dp,
+                 aes(x = score, group = sample_id, color = sample_id), show.legend = FALSE) +
+    scale_color_manual(name = "Sample",
+                       values = colrs) + 
+    geom_vline(xintercept=opt$scr_th, linetype=2, color="firebrick", size=0.45)
+  Q[[length(Q) + 1]] <- p
+}
+```
+
+`r if(!is.null(opt$scr_th)) {"#### Observed scores"}`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+if (!is.null(opt$scr_th)) { plot(Q[[1]]) }
+```
+
+`r if(!is.null(opt$scr_th)) {"#### Simulated scores"}`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+if (!is.null(opt$scr_th)) { plot(Q[[2]]) }
+```
+
+`r if(!is.null(opt$scr_th)) {"### {-}"}`
+
+`r if(!is.null(opt$scr_th)) {"- - -"}`
+
+- - -
+
+# Session information
+
+This is the output of `sessionInfo()` on the system on which this document was compiled
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, max.height='300px'}
+sessionInfo()
+```
