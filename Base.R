@@ -193,6 +193,7 @@ if (is.null(opt$input)) {
   project.path <- opt$input
 }
 # ===================================
+start_time <- Sys.time()
 if (!opt$only_qc) {
   controlPipe(package.path=package.path, 
               project.path=project.path, 
@@ -202,4 +203,7 @@ if (!opt$only_qc) {
             project.path=project.path, 
             opt=opt)
 }
+end_time <- Sys.time()
+dt <- round(as.numeric(difftime(end_time, start_time, units = "mins")), 2)
+message(paste("time:", dt, "min"))
 # ===================================

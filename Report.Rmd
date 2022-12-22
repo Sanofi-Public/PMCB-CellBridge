@@ -800,7 +800,7 @@ if (opt$tsne) {
 } else {
   combo_ls <- list(c("sargent_cellstates", "umap"),
                    c("sargent_cellstates", "spring"),
-                   c("signacx_cellstates", "umpa"),
+                   c("signacx_cellstates", "umap"),
                    c("signacx_cellstates", "spring"))
 }
 Q <- list()
@@ -842,7 +842,7 @@ Note: some labels may have been removed, if too many labels overlap.
 plot(Q[["signacx_cellstates-spring"]])
 ```
 
-#### Signacx UMPA Projection
+#### Signacx UMAP Projection
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
 plot(Q[["signacx_cellstates-umap"]])
