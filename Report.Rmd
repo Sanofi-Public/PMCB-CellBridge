@@ -454,7 +454,7 @@ p2 <- ggplot(db_plot,
   #                                                   decimal.mark = '.')) +
   # scale_y_continuous(labels = scales::number_format(accuracy = 0.1,
   #                                                   decimal.mark = '.')) +
-  geom_point(shape = 23, size = 2, fill = "black") +
+  geom_point(shape = 23, size = 2, color = "firebrick", fill = "firebrick") +
   geom_errorbarh(aes(xmin = (avg_count_g-sd_count_g/2)/1000, 
                      xmax = (avg_count_g+sd_count_g/2)/1000),
                  height = 0.1, size = 0.30) +
