@@ -930,7 +930,7 @@ plot(Q[[2]])
 
 ### Sargent gene-sets hierarchy
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, max.height='300px'}
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, max.height='300px', results='asis'}
 gset <- fsobj@misc$sargent_genesets_pos
 n <- max(unlist(lapply(strsplit(names(gset), split = "\\."), length)))
 df <- suppressWarnings(data.frame(parent=sub('[.][^.]+$', '', names(gset)), 
