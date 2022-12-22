@@ -930,22 +930,44 @@ plot(Q[[2]])
 
 ### Sargent gene-sets hierarchy
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, max.height='300px', results='asis'}
+<center>
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
 gset <- fsobj@misc$sargent_genesets_pos
-n <- max(unlist(lapply(strsplit(names(gset), split = "\\."), length)))
-df <- suppressWarnings(data.frame(parent=sub('[.][^.]+$', '', names(gset)), 
-                                  name=names(gset), 
-                                  stringsAsFactors=FALSE) %>%
-                         dplyr::bind_rows(data.frame(parent = "TBD",
-                                                     name = "TBD")) %>%
-                         tidyr::separate(., col = name, into = LETTERS[1:n], sep = "\\."))
-df$pathString <- apply(df[,LETTERS[1:n]], 1, function(x){
-  x <- x[!is.na(x)]
-  x <- paste(x, collapse = "/")  
-  paste("sargent", x, sep = "/")  
-})
-as.Node(df)
+# n <- max(unlist(lapply(strsplit(names(gset), split = "\\."), length)))
+# df <- suppressWarnings(data.frame(parent=sub('[.][^.]+$', '', names(gset)), 
+#                                   name=names(gset), 
+#                                   stringsAsFactors=FALSE) %>%
+#                          dplyr::bind_rows(data.frame(parent = "TBD",
+#                                                      name = "TBD")) %>%
+#                          tidyr::separate(., col = name, into = LETTERS[1:n], sep = "\\."))
+# df$pathString <- apply(df[,LETTERS[1:n]], 1, function(x){
+#   x <- x[!is.na(x)]
+#   x <- paste(x, collapse = "/")  
+#   paste("sargent", x, sep = "/")  
+# })
+# as.Node(df)
+# 
+df <- data.frame(parent=sub('[.][^.]+$', '', names(gset)), 
+                 name=names(gset), 
+                 stringsAsFactors=FALSE)
+g <- graph.data.frame(df)
+g <- igraph::simplify(g, remove.multiple=TRUE, remove.loops=TRUE, 
+                      edge.attr.comb=igraph_opt("edge.attr.comb"))
+nodes <- data.frame(id = V(g)$name, title = V(g)$name)
+edges <- get.data.frame(g, what="edges")[1:2]
+
+#visnet graph
+set.seed(1234)
+visNetwork(nodes, edges) %>%   
+  visNetwork::visIgraphLayout(layout = "layout_with_fr") %>%
+  visNetwork::visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) %>%
+  # visNodes(shape = "circle") %>%  
+  visNetwork::visNodes(size = 20, 
+                       font = list(size = 25), 
+                       color = list(background = "steelblue")) %>%
+  visNetwork::visEdges(arrows = 'to', smooth = TRUE)
 ```
+<center>
 
 - - -
 

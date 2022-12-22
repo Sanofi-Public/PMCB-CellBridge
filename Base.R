@@ -4,7 +4,8 @@
 libs <- list("optparse", "dplyr", "Seurat", "ggplot2", "ggrepel", "pheatmap", 
              "grid", "gridExtra", "cowplot", "RColorBrewer", "reticulate", 
              "purrr", "kableExtra", "harmony", 'SignacX', 'sargent', 'igraph', 
-             'gridtext', 'gplots', 'gtools', 'readxl', 'DT', 'data.tree', 'plotly')
+             'gridtext', 'gplots', 'gtools', 'readxl', 'DT', 'data.tree', 
+             'plotly', 'visNetwork')
 shh <- suppressPackageStartupMessages
 loads <- sapply(libs, function(x){
   shh(require(x, character.only=TRUE))
@@ -205,5 +206,5 @@ if (!opt$only_qc) {
 }
 end_time <- Sys.time()
 dt <- round(as.numeric(difftime(end_time, start_time, units = "mins")), 2)
-message(paste("time:", dt, "min"))
+message(paste("** time:", dt, "min"))
 # ===================================

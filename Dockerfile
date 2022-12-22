@@ -100,7 +100,8 @@ ARG R_DEPS="c('devtools', 'optparse', 'dplyr', 'ggplot2', 'pheatmap', 'grid', \
             'gridExtra', 'cowplot', 'RColorBrewer', 'tidyr', 'versions', \
             'reticulate', 'purrr', 'kableExtra', 'RcppAnnoy', 'uwot', 'ggrepel', \
             'Seurat', 'SignacX', 'igraph', 'gridtext', 'gplots', 'gtools', \
-            'BiocManager', 'hdf5r', 'readxl', 'DT', 'data.tree', 'plotly')"
+            'BiocManager', 'hdf5r', 'readxl', 'DT', 'data.tree', 'plotly', \
+            'visNetwork')"
 RUN Rscript -e "install.packages(${R_DEPS}, clean=TRUE)"
 # RE harmony error : https://github.com/immunogenomics/harmony/issues/166
 # RUN Rscript -e "devtools::install_github('eddelbuettel/harmony', force=TRUE)"
