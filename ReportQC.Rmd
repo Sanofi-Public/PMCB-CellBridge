@@ -144,7 +144,7 @@ filters <- data.frame(threshold = c(opt$min_umi_per_cell,
 
 ### QC metrics distibution {.tabset}
 
-Dashed lines indicate the default thresholds of the pipeline.
+Dashed lines indicate the thresholds provided to the pipeline.
 
 #### UMI per cell
 
