@@ -33,7 +33,7 @@ option_list <- list(
                         metavar="character"),
   optparse::make_option(c("--tissue"), type="character", default=NULL, 
                         help="name of tissue (required arg) currently:
-                        'pbmc', 'cns', 'nasal'", 
+                        'pbmc', 'brain', 'spinal', 'nasal'", 
                         metavar="character"),
   optparse::make_option(c("--metadata"), type="character", default=NULL, 
                         help="metadata type (required arg) currently:
@@ -42,10 +42,15 @@ option_list <- list(
                         NOTE: column with cell id must be named 'cell',
                         NOTE: column name 'sample_id' is reserved.", 
                         metavar="character"),
-  optparse::make_option(c("--genesets"), type="logical", default=FALSE, 
-                        help="curated genesets for celltype annotation with sargent,
-                        (default: 'false')", 
-                        metavar="logical"),
+  optparse::make_option(c("--genesets"), type="character", default="none", 
+                        help="genesets for celltype annotation with SARGENT. 
+                        currently one of the 'none', 'curated', 'pbmc', 'cns', or 'nasal',
+                        NOTE: if 'curated', the gene-sets must be provided in the 
+                        'genesets.xlsx' format.
+                        NOTE: genesets for 'pbmc','cns' (central nervous system), 
+                        and 'nasal' are embedded.
+                        (default: 'none')", 
+                        metavar="character"),
   optparse::make_option(c("--docker"), type="logical", default=TRUE, 
                         help="defines to switch setup from docker to local,
                         (default: 'true')", 
@@ -162,6 +167,8 @@ if (FALSE) {
   # opt$scr_th <- 0.25
   opt$metadata <- "sample_based"
   opt$docker <- FALSE
+  opt$mrk_min_pct <- 0.9
+  opt$genesets <- "pbmc"
 }
 # ===================================
 ### Rscript --vanilla read_in_samples.R /cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/RP/data_for_spring > project.out 2> project.err
@@ -172,20 +179,6 @@ if (!opt$docker) {
   package.path <- "/opt/cellbridge_1.0.0"
 }
 # ===================================
-### source R functions
-source(file.path(package.path, "CallRs.R"))
-callRs(package.path)
-# ===================================
-### Check opts
-checkOpts(opt)
-# ===================================
-### call docker
-callDocker(opt$docker)
-# ===================================
-### source Python functions
-### Note: to use source_python, the scripy has to be sourced directly, and NOT as a function
-source(file.path(package.path, "CallPys.R"))
-# ===================================
 # project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/3gz"
 # project.path <- "/cloud-data/its-cmo-darwin-bgi-virginia/Downloads/Public_Datasets/GSE174332/pipeline_input"
 if (is.null(opt$input)) {
@@ -193,6 +186,21 @@ if (is.null(opt$input)) {
 } else {
   project.path <- opt$input
 }
+# ===================================
+### source R functions
+source(file.path(package.path, "CallRs.R"))
+callRs(package.path)
+# ===================================
+### Check opts
+checkOpts(project.path=project.path, 
+          opt=opt)
+# ===================================
+### call docker
+callDocker(opt$docker)
+# ===================================
+### source Python functions
+### Note: to use source_python, the scripy has to be sourced directly, and NOT as a function
+source(file.path(package.path, "CallPys.R"))
 # ===================================
 start_time <- Sys.time()
 if (!opt$only_qc) {

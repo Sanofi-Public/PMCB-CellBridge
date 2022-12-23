@@ -790,43 +790,38 @@ datatable(head(x, n = nrow(x)), options = list(pageLength = 5, scrollX = T))
 - - -
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
-if (opt$tsne) {
-  combo_ls <- list(c("sargent_cellstates", "umap"),
-                   c("sargent_cellstates" ,"tsne"),
-                   c("sargent_cellstates" ,"spring"),
-                   c("signacx_cellstates", "umap"),
-                   c("signacx_cellstates", "tsne"),
-                   c("signacx_cellstates", "spring"))
-} else {
-  combo_ls <- list(c("sargent_cellstates", "umap"),
-                   c("sargent_cellstates", "spring"),
-                   c("signacx_cellstates", "umap"),
-                   c("signacx_cellstates", "spring"))
-}
+combo_ls <- list(c("signacx_cellstates", "spring", "Signacx SPRING Projection"),
+                 c("sargent_cellstates" ,"spring", "Sargent SPRING Projection"),
+                 c("signacx_cellstates", "umap", "Signacx UMAP Projection"),
+                 c("sargent_cellstates", "umap", "Sargent UMAP Projection"),
+                 c("signacx_cellstates", "tsne", "Signacx TSNE Projection"),
+                 c("sargent_cellstates" ,"tsne", "Sargent TSNE Projection"))
 Q <- list()
 for (i in 1:length(combo_ls)) {
-  colrs <- color_helper(set.names=sort(unique(fsobj@meta.data[[combo_ls[[i]][1]]])), 
-                        panel="Set1") 
-  p <- DimPlot(fsobj, 
-               reduction = combo_ls[[i]][2],
-               group.by = combo_ls[[i]][1],
-               cols = colrs,
-               label = TRUE, 
-               repel = TRUE,
-               raster = FALSE,
-               pt.size = 0.05,
-               label.size = 3) + 
-    getBaseTheme() +
-    theme(plot.title = element_blank(),
-          axis.title = element_text(size = 12, face = "bold"),
-          axis.text = element_blank(),
-          panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          axis.ticks = element_blank(),
-          panel.background = element_blank(),
-          legend.text = element_text(size = 7, face = "bold")) 
-  Q[[length(Q) + 1]] <- p
-  names(Q)[length(Q)] <- paste(combo_ls[[i]][1], combo_ls[[i]][2], sep = "-")
+  if (combo_ls[[i]][1] %in% names(fsobj@meta.data) & combo_ls[[i]][2] %in% Reductions(fsobj)) {
+    colrs <- color_helper(set.names=sort(unique(fsobj@meta.data[[combo_ls[[i]][1]]])), 
+                          panel="Set1") 
+    p <- DimPlot(fsobj, 
+                 reduction = combo_ls[[i]][2],
+                 group.by = combo_ls[[i]][1],
+                 cols = colrs,
+                 label = TRUE, 
+                 repel = TRUE,
+                 raster = FALSE,
+                 pt.size = 0.05,
+                 label.size = 3) + 
+      getBaseTheme() +
+      theme(plot.title = element_blank(),
+            axis.title = element_text(size = 12, face = "bold"),
+            axis.text = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            axis.ticks = element_blank(),
+            panel.background = element_blank(),
+            legend.text = element_text(size = 7, face = "bold")) 
+    Q[[length(Q) + 1]] <- p
+    names(Q)[length(Q)] <- combo_ls[[i]][3]
+  }
 }
 ```
 
@@ -836,140 +831,115 @@ for (i in 1:length(combo_ls)) {
 
 Note: some labels may have been removed, if too many labels overlap.
 
-#### Signacx SPRING Projection
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
-plot(Q[["signacx_cellstates-spring"]])
-```
-
-#### Signacx UMAP Projection
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
-plot(Q[["signacx_cellstates-umap"]])
-```
-
-`r if (opt$tsne) { "#### Signacx TSNE Projection" }`
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
-if (opt$tsne) { plot(Q[["signacx_cellstates-tsne"]]) }
-```
-
-#### Sargent SPRING Projection
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
-plot(Q[["sargent_cellstates-spring"]])
-```
-
-#### Sargent UMAP Projection
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
-plot(Q[["sargent_cellstates-umap"]])
-```
-
-`r if (opt$tsne) { "#### Sargent TSNE Projection" }`
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
-if (opt$tsne) { plot(Q[["sargent_cellstates-tsne"]]) }
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center', results='asis'}
+make_tab <- function(x) {      # function to make the tabs
+  cat("\n")                    # Space
+  cat("####", names(x), "\n")  # Label tab
+  plot(x[[1]])                 # Display plot
+  cat("\n")                    # Space
+}
+for(i in 1:length(Q)){
+  make_tab(Q[i])
+}
 ```
 
 ### {-}
 
 - - -
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+combo_ls <- list(c("signacx_cellstates", "Signacx"), 
+                 c("sargent_cellstates", "Sargent"))
+Q <- list()
+for (i in 1:length(combo_ls)) {
+  if (combo_ls[[i]][1] %in% names(fsobj@meta.data)) {
+    df <- data.frame(table(fsobj@meta.data[[combo_ls[[i]][1]]]))
+    names(df) <- c("cellstate", "count")
+    db_plot <- df %>%
+      dplyr::arrange(desc(count)) %>%
+      dplyr::mutate(pct = count/sum(count),
+                    cellstate = factor(cellstate, levels = unique(cellstate), ordered = T))
+    p <- ggplot() +
+      getBaseTheme() +
+      theme(plot.title = element_blank(),
+            axis.title.x = element_blank(),
+            axis.title.y = element_text(size=28, face="bold"),
+            axis.text.x = element_text(size=20, face="bold", angle=45, hjust=1, vjust=1),
+            axis.text.y = element_text(size=25, face="bold")) + 
+      xlab("Cluster") + ylab("Number of cells") + 
+      geom_bar(data = db_plot,
+               aes(x = cellstate, y = count),
+               width = 0.65, stat = "identity", fill = "steelblue") +
+      geom_text(data = db_plot,
+                aes(x = cellstate, y = count, label = paste0(round(100*count/sum(count), 1))),
+                size = 6, vjust = -0.5, angle = 0, fontface = "bold") + # , nudge_y = 0.25
+      geom_text(data = db_plot,
+                aes(x = cellstate, y = count, label = scales::comma(count, accuracy = 1)),
+                size = 10, hjust = 1.2, angle = 90) + # , nudge_y = 0.25
+      scale_y_continuous(trans = scales::log10_trans(),
+                         breaks = scales::trans_breaks("log10", function(x) 10^x),
+                         labels = scales::trans_format("log10", scales::math_format(10^.x)))
+    Q[[length(Q) + 1]] <- p
+    names(Q)[length(Q)] <- combo_ls[[i]][2] 
+  }
+}
+```
 
 ### Celltype count {.tabset}
 
 Values at the top of each bar indicate the percentage of cells
 
-```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
-annots <- c("signacx_cellstates", "sargent_cellstates")
-Q <- list()
-for (ant in annots) {
-    df <- data.frame(table(fsobj[[ant]]))
-  names(df) <- c("cellstate", "count")
-  db_plot <- df %>%
-    dplyr::arrange(desc(count)) %>%
-    dplyr::mutate(pct = count/sum(count),
-                  cellstate = factor(cellstate, levels = unique(cellstate), ordered = T))
-  p <- ggplot() +
-    getBaseTheme() +
-    theme(plot.title = element_blank(),
-          axis.title.x = element_blank(),
-          axis.title.y = element_text(size=28, face="bold"),
-          axis.text.x = element_text(size=20, face="bold", angle=45, hjust=1, vjust=1),
-          axis.text.y = element_text(size=25, face="bold")) + 
-    xlab("Cluster") + ylab("Number of cells") + 
-    geom_bar(data = db_plot,
-             aes(x = cellstate, y = count),
-             width = 0.65, stat = "identity", fill = "steelblue") +
-    geom_text(data = db_plot,
-              aes(x = cellstate, y = count, label = paste0(round(100*count/sum(count), 1))),
-              size = 6, vjust = -0.5, angle = 0, fontface = "bold") + # , nudge_y = 0.25
-    geom_text(data = db_plot,
-              aes(x = cellstate, y = count, label = scales::comma(count, accuracy = 1)),
-              size = 10, hjust = 1.2, angle = 90) + # , nudge_y = 0.25
-    scale_y_continuous(trans = scales::log10_trans(),
-                       breaks = scales::trans_breaks("log10", function(x) 10^x),
-                       labels = scales::trans_format("log10", scales::math_format(10^.x)))
-  Q[[length(Q) + 1]] <- p
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center', results='asis'}
+make_tab <- function(x) {      # function to make the tabs
+  cat("\n")                    # Space
+  cat("####", names(x), "\n")  # Label tab
+  plot(x[[1]])                 # Display plot
+  cat("\n")                    # Space
 }
-```
-
-#### Signacx
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center'}
-plot(Q[[1]])
-```
-
-#### Sargent  
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center'}
-plot(Q[[2]])
+for(i in 1:length(Q)){
+  make_tab(Q[i])
+}
 ```
 
 ### {-}
 
-### Sargent gene-sets hierarchy
+- - -
+
+`r if (opt$genesets != "none") { "### Sargent gene-sets" }`
 
 <center>
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
-gset <- fsobj@misc$sargent_genesets_pos
-# n <- max(unlist(lapply(strsplit(names(gset), split = "\\."), length)))
-# df <- suppressWarnings(data.frame(parent=sub('[.][^.]+$', '', names(gset)), 
-#                                   name=names(gset), 
-#                                   stringsAsFactors=FALSE) %>%
-#                          dplyr::bind_rows(data.frame(parent = "TBD",
-#                                                      name = "TBD")) %>%
-#                          tidyr::separate(., col = name, into = LETTERS[1:n], sep = "\\."))
-# df$pathString <- apply(df[,LETTERS[1:n]], 1, function(x){
-#   x <- x[!is.na(x)]
-#   x <- paste(x, collapse = "/")  
-#   paste("sargent", x, sep = "/")  
-# })
-# as.Node(df)
-# 
-df <- data.frame(parent=sub('[.][^.]+$', '', names(gset)), 
-                 name=names(gset), 
-                 stringsAsFactors=FALSE)
-g <- graph.data.frame(df)
-g <- igraph::simplify(g, remove.multiple=TRUE, remove.loops=TRUE, 
-                      edge.attr.comb=igraph_opt("edge.attr.comb"))
-nodes <- data.frame(id = V(g)$name, title = V(g)$name)
-edges <- get.data.frame(g, what="edges")[1:2]
-
-#visnet graph
-set.seed(1234)
-visNetwork(nodes, edges) %>%   
-  visNetwork::visIgraphLayout(layout = "layout_with_fr") %>%
-  visNetwork::visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) %>%
-  # visNodes(shape = "circle") %>%  
-  visNetwork::visNodes(size = 20, 
-                       font = list(size = 25), 
-                       color = list(background = "steelblue")) %>%
-  visNetwork::visEdges(arrows = 'to', smooth = TRUE)
+if (opt$genesets != "none") {
+  gset <- fsobj@misc$sargent_genesets_pos
+  df <- data.frame(parent=sub('[.][^.]+$', '', names(gset)), 
+                   name=names(gset), 
+                   stringsAsFactors=FALSE)
+  g <- graph.data.frame(df)
+  g <- igraph::simplify(g, remove.multiple=TRUE, remove.loops=TRUE, 
+                        edge.attr.comb=igraph_opt("edge.attr.comb"))
+  edges <- get.data.frame(g, what="edges")[1:2]
+  nodes <- data.frame(id = V(g)$name, title = V(g)$name)
+  newt <- sapply(nodes$title, function (x) {
+    paste("celltype:", x, 
+          "<br>genes:",
+          paste(gset[[which(names(gset) == x)]], collapse = ","))
+    })
+  nodes$title <- newt
+  #visnet graph
+  set.seed(1234)
+  visNetwork(nodes, edges) %>%   
+    visNetwork::visIgraphLayout(layout = "layout_with_fr") %>%
+    visNetwork::visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE) %>%
+    visNetwork::visNodes(size = 20, 
+                         font = list(size = 25), 
+                         color = list(background = "steelblue")) %>%
+    visNetwork::visEdges(arrows = 'to', smooth = TRUE)
+}
 ```
 <center>
 
-- - -
+`r if (opt$genesets != "none") { "---" }`
 
 # Session information
 
