@@ -1,6 +1,6 @@
 
 <p align="center" width="100%">
-<img width="50%" src="cellbridge_logo.png"> 
+<img width="50%" src="./cellbridge_logo.png"> 
 </p>
 
 # CellBridge
