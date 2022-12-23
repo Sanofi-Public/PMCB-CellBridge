@@ -1,4 +1,8 @@
 
+<p align="center" width="100%">
+<img width="50%" src="cellbridge_logo.pdf"> 
+</p>
+
 # CellBridge
 
 A pipeline for processing scRNA-seq data
