@@ -92,9 +92,6 @@ grid.draw(g)
 
 ```{r table-1, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
   rm.mtdata <- c("project", "docker", "input", "help", "only_qc")
-  # if (is.null(opt$scr_th)) {
-  #   rm.mtdata <- c(rm.mtdata, names(opt)[grepl("^scr_", names(opt))])
-  # }
   data.frame(opt) %>% 
     dplyr::select(names(opt)[!names(opt) %in% rm.mtdata]) %>%
     kable() %>%
@@ -523,7 +520,7 @@ for (i in 1:length(combo_ls)) {
 
 Note: some labels may have been removed, if too many labels overlap.
 
-#### Signac SPRING Projection
+#### Signacx SPRING Projection
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
 plot(Q[["sample_id-spring"]])
@@ -588,7 +585,7 @@ Note: some labels may have been removed, if too many labels overlap.
 
 ### Dimension reduction {.tabset}
 
-#### Signac SPRING Projection
+#### Signacx SPRING Projection
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
 plot(Q[["signacx_clusters-spring"]])
@@ -664,7 +661,7 @@ plot(Q[[2]])
 
 - - -
 
-### Batch effect diagnosis {.tabset}
+### Cluster distribution (batch effect diagnosis) {.tabset}
 
 Values adjacent to each point indicate the number of cells
 
@@ -673,17 +670,17 @@ clusters <- c("seurat_clusters", "signacx_clusters")
 names(clusters) <- c("Seurat Clusters", "Signacx Clusters")
 Q <- list()
 for (cls in as.vector(clusters)) {
-  if (opt$harmony) {
-  vars <- strsplit(opt$harmony_var, split = ",")[[1]]
-  vars <- gsub(" ", "", vars)
-  vars <- c(vars, cls)
-  df <- fsobj@meta.data %>%
-    dplyr::group_by(!!!rlang::syms(vars)) %>%
-    dplyr::summarise(count = n(), .groups = 'drop') %>%
-    dplyr::ungroup() %>%
-    dplyr::group_by(!!rlang::sym(cls)) %>% 
-    dplyr::summarise(gini = DescTools::Gini(count), .groups = 'drop') %>%
-    dplyr::rename(cluster = all_of(cls)) 
+  if (!is.null(opt$harmony)) {
+    vars <- strsplit(opt$harmony, split = ",")[[1]]
+    vars <- gsub(" ", "", vars)
+    vars <- c(vars, cls)
+    df <- fsobj@meta.data %>%
+      dplyr::group_by(!!!rlang::syms(vars)) %>%
+      dplyr::summarise(count = n(), .groups = 'drop') %>%
+      dplyr::ungroup() %>%
+      dplyr::group_by(!!rlang::sym(cls)) %>% 
+      dplyr::summarise(gini = DescTools::Gini(count), .groups = 'drop') %>%
+      dplyr::rename(cluster = all_of(cls)) 
   } else {
     gini <- table(fsobj$sample_id, fsobj@meta.data[[cls]])
     gini <- apply(gini, 2, DescTools::Gini)

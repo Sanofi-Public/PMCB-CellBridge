@@ -115,14 +115,10 @@ option_list <- list(
                         help="Value of the resolution parameter,
                         (default: 0.7)", 
                         metavar="double"),
-  optparse::make_option(c("--harmony"), type="logical", default=FALSE, 
-                        help="Run harmony,
-                        (default: 'false')", 
-                        metavar="logical"),
-  optparse::make_option(c("--harmony_var"), type="character", default="sample", 
-                        help="Which variable(s) to remove. It can be multiple
+  optparse::make_option(c("--harmony"), type="character", default=NULL, 
+                        help="which variable(s) to remove. It can be multiple
                         characters separated by 'comma'),
-                        (default: 'sample')", 
+                        (default: 'null'). If 'null' no harmonization", 
                         metavar="character"),
   optparse::make_option(c("--tsne"), type="logical", default=FALSE, 
                         help="Run TSNE. Time consuming for large datasets.
@@ -162,7 +158,7 @@ if (FALSE) {
   opt$project <- "project"
   opt$species <- "hs"
   opt$tissue <- "pbmc"
-  opt$harmony <- TRUE
+  opt$harmony <- "sample"
   opt$tsne <- TRUE
   # opt$scr_th <- 0.25
   opt$metadata <- "sample_based"

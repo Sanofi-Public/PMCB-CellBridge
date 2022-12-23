@@ -12,8 +12,8 @@ seuratPipe <- function(sobj, opt) {
   sobj <- RunPCA(sobj, features=VariableFeatures(object=sobj), verbose=FALSE)
   # ===================================
   rdction <- "pca"
-  if (opt$harmony) {
-    vars <- strsplit(opt$harmony_var, split = ",")[[1]]
+  if (!is.null(opt$harmony)) {
+    vars <- strsplit(opt$harmony, split = ",")[[1]]
     vars <- gsub(" ", "", vars)
     # run harmony
     sobj <- RunHarmony(sobj, reduction=rdction, group.by.vars=vars)
