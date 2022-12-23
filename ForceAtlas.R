@@ -7,7 +7,7 @@ forceAtlas <- function(sobj, opt) {
   E <- as(Matrix::t(E), "TsparseMatrix")
   gene_list <- rownames(sobj)
   # ===================================
-  if (opt$harmony){
+  if (!is.null(opt$harmony)){
     rdction <- Embeddings(sobj, reduction="harmony")
     res <- make_spring_plot(E=E, 
                             gene_list=gene_list, 
