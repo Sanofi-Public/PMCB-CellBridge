@@ -4,7 +4,6 @@
 controlPipe <- function(package.path, project.path, opt) {
   # ===================================
   message("** pipeline started")
-  start_time <- Sys.time()
   # ===================================
   dir.create(file.path(project.path, "outputs"), showWarnings=FALSE)
   outputs.path <- file.path(project.path, "outputs")
@@ -76,9 +75,6 @@ controlPipe <- function(package.path, project.path, opt) {
   saveRDS(signatures.res@sobj, 
           file=file.path(outputs.path, paste(opt$project, "final-object.rds", sep="_")))
   # ===================================
-  end_time <- Sys.time()
-  dt <- round(as.numeric(difftime(end_time, start_time, units = "mins")), 2)
-  message(paste("** time:", dt, "min"))
   message("** pipeline completed")
   # ===================================  
 }
