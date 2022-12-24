@@ -1,8 +1,6 @@
 [![Project Status](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![Lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 
----
-
 <p align="center" width="100%">
 <img width="40%" src="./cellbridge_logo.png"> 
 </p>
