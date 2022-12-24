@@ -905,7 +905,10 @@ for(i in 1:length(Q)){
 
 - - -
 
-`r if (opt$genesets != "none") { "### Sargent gene-sets" }`
+`r if (opt$genesets != "none") { "### Sargent gene-sets {.tabset}" }`
+
+
+`r if (opt$genesets != "none") { "#### hierarchy" }`
 
 <center>
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
@@ -937,6 +940,20 @@ if (opt$genesets != "none") {
 }
 ```
 <center>
+
+`r if (opt$genesets != "none") { "#### intersections" }`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(15.5, 6.5), fig.align = 'center'}
+if (opt$genesets != "none") {
+  gset <- fsobj@misc$sargent_genesets_pos
+  m <- make_comb_mat(gset, mode=c("intersect"))
+  UpSet(m, 
+        comb_order=order(comb_size(m)), 
+        # top_annotation = upset_top_annotation(axis_param = list(gp = gpar(fontsize = 12))),
+        row_names_gp = gpar(fontsize = 12))
+}
+```
+
 
 `r if (opt$genesets != "none") { "---" }`
 

@@ -5,7 +5,7 @@ libs <- list("optparse", "dplyr", "Seurat", "ggplot2", "ggrepel", "pheatmap",
              "grid", "gridExtra", "cowplot", "RColorBrewer", "reticulate", 
              "purrr", "kableExtra", "harmony", 'SignacX', 'sargent', 'igraph', 
              'gridtext', 'gplots', 'gtools', 'readxl', 'DT', 'data.tree', 
-             'plotly', 'visNetwork')
+             'plotly', 'visNetwork', 'ComplexHeatmap')
 shh <- suppressPackageStartupMessages
 loads <- sapply(libs, function(x){
   shh(require(x, character.only=TRUE))
