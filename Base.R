@@ -198,7 +198,6 @@ callDocker(opt$docker)
 ### Note: to use source_python, the scripy has to be sourced directly, and NOT as a function
 source(file.path(package.path, "CallPys.R"))
 # ===================================
-start_time <- Sys.time()
 if (!opt$only_qc) {
   controlPipe(package.path=package.path, 
               project.path=project.path, 
@@ -208,7 +207,4 @@ if (!opt$only_qc) {
             project.path=project.path, 
             opt=opt)
 }
-end_time <- Sys.time()
-dt <- round(as.numeric(difftime(end_time, start_time, units = "mins")), 2)
-message(paste("** time:", dt, "min"))
 # ===================================

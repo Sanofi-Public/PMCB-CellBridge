@@ -299,7 +299,7 @@ if (length(bc.qc.raw) != 0) {
                   full_width = F, fixed_thead = TRUE) %>%
     scroll_box(width = "100%", height = "200px")  
 } else {
-  paste("No overlaps among samples' barcodes.")
+  message("No overlaps among samples' barcodes.")
 }
 ```
 
@@ -316,7 +316,7 @@ if (length(bc.qc.ji) != 0) {
                   full_width = F, fixed_thead = TRUE) %>%
     scroll_box(width = "100%", height = "200px")  
 } else {
-  paste("No overlaps among samples' barcodes.")
+  message("No overlaps among samples' barcodes.")
 }
 ```
 
@@ -324,7 +324,9 @@ if (length(bc.qc.ji) != 0) {
 
 - - -
 
-`r if(!is.null(opt$scr_th)) {"### Doublet scores distribution {.tabset}"}`
+`r if (!is.null(opt$scr_th)) {"### Doublet scores distribution {.tabset}"}`
+
+`r if (!is.null(opt$scr_th)) {"Observed scores are used for doublet classification. Dashed line indicates the threshold used to identify doublets."}`
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
 # plot scrublet scores
@@ -454,10 +456,10 @@ p2 <- ggplot(db_plot,
   geom_point(shape = 23, size = 2, color = "firebrick", fill = "firebrick") +
   geom_errorbarh(aes(xmin = (avg_count_g-sd_count_g/2)/1000, 
                      xmax = (avg_count_g+sd_count_g/2)/1000),
-                 height = 0.1, size = 0.30) +
+                 height = 0.1, size = 0.2) +
   geom_errorbar(aes(ymin = (avg_count_c-sd_count_c/2)/1000, 
                     ymax = (avg_count_c+sd_count_c/2)/1000),
-                width = 0.1, size = 0.30) 
+                width = 0.1, size = 0.2) 
 ```
 
 #### Number of cells and genes per sample

@@ -32,7 +32,7 @@ qcFilter <- function(obj_ls, scrub_ls, opt) {
     } else {
       max.genes.per.cell <- opt$max_genes_per_cell
     }
-    
+    # ===================================
     checks <- FALSE
     while (!checks) {
       # cat(paste(smpl, itr <- itr + 1), sep = "\n")
