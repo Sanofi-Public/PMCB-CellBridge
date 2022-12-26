@@ -1,7 +1,7 @@
 ---
 title: "`r params$opt$project`" 
-# author: '`r params$opt$user`'
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+author: "`r paste('Identifier:', params$ui)`" 
+date: "`r paste('Date:', format(Sys.time(), '%d %B, %Y'))`"
 vignette: >
   %\VignetteIndexEntry{CellBridge report}
   %\VignetteEncoding{UTF-8}
@@ -21,7 +21,28 @@ params:
     pre.qc.summ: NULL
     post.qc.summ: NULL
     opt: NULL
+    ui: NULL
 ---
+
+<style> 
+  #header { 
+    background: -moz-linear-gradient(left, rgba(111,19,221,1) 0%, rgba(125,185,232,0) 75%); /* FF3.6-15 */
+    ackground: -webkit-linear-gradient(left, rgba(111,19,221,1) 0%,rgba(125,185,232,0) 75%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(111,19,221,1) 0%,rgba(125,185,232,0) 75%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6f13dd', endColorstr='#007db9e8',GradientType=1 ); /* IE6-9 */
+    color: white;
+    height: 110px;
+  }
+</style>
+
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri("cellbridge_logo.png"), 
+               alt = 'logo', 
+               style = 'position:absolute; top:22px; right:40px; width: 2.0in'
+               )
+```
+
 
 ```{r variable, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
     obj_ls <- params$obj_ls
@@ -32,8 +53,10 @@ params:
     pre.qc.summ <- params$pre.qc.summ
     post.qc.summ <- params$post.qc.summ
     opt <- params$opt
+    ui <- params$ui
     n.sample <- length(obj_ls)
 ```
+
 
 ```{r, include=FALSE}
 options(width = 60)
@@ -52,7 +75,6 @@ local({
 - - -
 
 ```{r cellbox, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.height=1.5, fig.width=10.0}
-
 summ1 <- sum(pre.qc.summ$cell)
 summ2 <- sum(post.qc.summ$cell)
 # UMI per cell
@@ -105,52 +127,63 @@ grid.draw(g)
 
 # Quality control
 
-### Summary of the data after quality control
-
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
-# UMI per cell
-exprMat <- fsobj@assays$RNA@counts
-countByCell <- colSums(exprMat)
-summ1 <- c(min = min(countByCell), 
-         quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
-         max = max(countByCell))
-summ1 <- scales::comma(summ1, accuracy = 1)
-# Gene per cell
-exprMat <- fsobj@assays$RNA@counts
-countByCell <- colSums(exprMat > 0)
-summ2 <- c(min = min(countByCell), 
-         quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
-         max = max(countByCell))
-summ2 <- scales::comma(summ2, accuracy = 1)
-# Mitochondrial (%) per cell
-pctmt <- fsobj$percent_mt
-summ3 <- c(min = min(pctmt), 
-         quantile(pctmt, c(0.0, 0.25, 0.5, 0.75, 1)),
-         max = max(pctmt))
-summ3 <- round(summ3, 2)
-
-data.frame(summ1, summ2, summ3) %>%
-  dplyr::rename(`UMI per cell` = summ1,
-                `Gene per cell` = summ2,
-                `Mitochondrial (%) per cell` = summ3) %>%
-  t() %>%
-  kable() %>%
-   kable_classic(full_width = F, html_font = "Cambria") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
-                full_width = F, fixed_thead = TRUE) %>%
-  scroll_box(width = "100%", height = 6)
+umi_per_cell <- data.frame()
+gene_per_cell <- data.frame()
+mt_per_cell <- data.frame()
+for (i in 1:length(sobj_ls)) {
+  sobj <- sobj_ls[[i]]
+  # UMI per cell
+  exprMat <- sobj@assays$RNA@counts
+  countByCell <- colSums(exprMat)
+  summ1 <- c(min = min(countByCell), 
+             quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
+             max = max(countByCell))
+  umi_per_cell <- umi_per_cell %>%
+    dplyr::bind_rows(scales::comma(summ1, accuracy = 1))
+  # Gene per cell
+  exprMat <- sobj@assays$RNA@counts
+  countByCell <- colSums(exprMat > 0)
+  summ2 <- c(min = min(countByCell), 
+             quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
+             max = max(countByCell))
+  gene_per_cell <- gene_per_cell %>%
+    dplyr::bind_rows(scales::comma(summ2, accuracy = 1))
+  # Mitochondrial (%) per cell
+  pctmt <- sobj$percent_mt
+  summ3 <- c(min = min(pctmt), 
+             quantile(pctmt, c(0.0, 0.25, 0.5, 0.75, 1)),
+             max = max(pctmt))
+  mt_per_cell <- mt_per_cell %>%
+    dplyr::bind_rows(round(summ3, 2))
+}
+rownames(umi_per_cell) <- names(sobj_ls)
+rownames(gene_per_cell) <- names(sobj_ls)
+rownames(mt_per_cell) <- names(sobj_ls)
 ```
 
-- - -
+### Each sample characteristics, demographics, and QC metrics {.tabset}
 
-### Metadata and demographics
+#### Metadata
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
 meta_data %>%
-  base::merge(., pre.qc.summ, by = c("sample_id")) %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = sample_id[mixedorder(sample_id)], ordered = TRUE)) %>%
+  dplyr::arrange(sample_id) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+#### Cells & Genes
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+pre.qc.summ %>%
   dplyr::rename(pre_qc_cell = cell,
                 pre_qc_gene = gene) %>%
-  mutate(pre_qc_cell = scales::comma(pre_qc_cell, accuracy = 1),
+  dplyr::mutate(pre_qc_cell = scales::comma(pre_qc_cell, accuracy = 1),
          pre_qc_gene = scales::comma(pre_qc_gene, accuracy = 1)) %>%
   dplyr::select(-type) %>%
   base::merge(., post.qc.summ, by = c("sample_id")) %>%
@@ -167,6 +200,50 @@ meta_data %>%
                 full_width = F, fixed_thead = TRUE) %>%
   scroll_box(width = "100%", height = "200px")
 ```
+
+#### UMI per cell
+
+Vales are post-QC.
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+umi_per_cell %>%
+  tibble::rownames_to_column(var="sample_id") %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+#### Gene per cell
+
+Vales are post-QC.
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+gene_per_cell %>%
+  tibble::rownames_to_column(var="sample_id") %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+#### Mitochondrial (%) per cell
+
+Vales are post-QC.
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+mt_per_cell %>%
+  tibble::rownames_to_column(var="sample_id") %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+### {-}
 
 - - -
 
@@ -190,18 +267,18 @@ meta_data %>%
       dplyr::bind_rows(sobj@meta.data %>%
                          dplyr::mutate(barcode = rownames(.)) %>%
                          dplyr::select(barcode, nCount_RNA, nFeature_RNA, percent_mt) %>%
-                         tidyr::gather(., key = type, value = count, -barcode)%>%
+                         tidyr::gather(., key = type, value = feature, -barcode)%>%
                          dplyr::mutate(sample_id = smpl))
   }
   # ===================================
-filters <- data.frame(threshold = c(opt$min_umi_per_cell, 
-                                    ifelse(is.null(opt$max_umi_per_cell), NA, opt$max_umi_per_cell), 
-                                    opt$min_genes_per_cell, 
-                                    ifelse(is.null(opt$max_genes_per_cell), NA, opt$max_genes_per_cell), 
-                                    opt$max_mt_percent),
-                      type = c("nCount_RNA", "nCount_RNA", 
-                               "nFeature_RNA", "nFeature_RNA", 
-                               "percent_mt"))
+  filters <- data.frame(threshold = c(opt$min_umi_per_cell, 
+                                      ifelse(is.null(opt$max_umi_per_cell), NA, opt$max_umi_per_cell), 
+                                      opt$min_genes_per_cell, 
+                                      ifelse(is.null(opt$max_genes_per_cell), NA, opt$max_genes_per_cell), 
+                                      opt$max_mt_percent),
+                        type = c("nCount_RNA", "nCount_RNA", 
+                                 "nFeature_RNA", "nFeature_RNA", 
+                                 "percent_mt"))
   # ===================================
   Q <- list()
   for (tp in unique(db_plot$type)) {
@@ -217,8 +294,8 @@ filters <- data.frame(threshold = c(opt$min_umi_per_cell,
                          breaks = scales::trans_breaks("log10", function(x) 10^x),
                          labels = scales::trans_format("log10", scales::math_format(10^.x))) +
       xlab("") + ylab("Density") +
-      geom_density(aes(x = count, group = sample_id, color = sample_id), 
-                   show.legend = FALSE) +
+      geom_density(aes(x = feature, group = sample_id, color = sample_id), 
+                   show.legend = FALSE, na.rm = TRUE) +
       geom_vline(data = filter(filters, type == tp), 
                  aes(xintercept = threshold), linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
       scale_color_manual(name = "Sample",
@@ -288,7 +365,7 @@ bc.qc.ji <- bc.qc.ji[!apply(bc.qc.ji, 1, function(x) sum(x == 0) == (n.sample-1)
 
 #### Raw count
 
-Number of barcodes shared between pairs of samples.
+Number of barcodes shared between pairs of samples post-QC.
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
 if (length(bc.qc.raw) != 0) {
@@ -305,7 +382,7 @@ if (length(bc.qc.raw) != 0) {
 
 #### Jaccard Index
 
-Fraction (%) of barcodes shared between pairs of samples.
+Fraction (%) of barcodes shared between pairs of samples post-QC.
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
 if (length(bc.qc.ji) != 0) {
@@ -481,6 +558,44 @@ ggplotly(p2, tooltip = c("sample_id", "cell", "gene"))
 <center>
 
 ### {-}
+
+- - -
+
+### Summary of the data after quality filters
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+# UMI per cell
+exprMat <- fsobj@assays$RNA@counts
+countByCell <- colSums(exprMat)
+summ1 <- c(min = min(countByCell), 
+         quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
+         max = max(countByCell))
+summ1 <- scales::comma(summ1, accuracy = 1)
+# Gene per cell
+exprMat <- fsobj@assays$RNA@counts
+countByCell <- colSums(exprMat > 0)
+summ2 <- c(min = min(countByCell), 
+         quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
+         max = max(countByCell))
+summ2 <- scales::comma(summ2, accuracy = 1)
+# Mitochondrial (%) per cell
+pctmt <- fsobj$percent_mt
+summ3 <- c(min = min(pctmt), 
+         quantile(pctmt, c(0.0, 0.25, 0.5, 0.75, 1)),
+         max = max(pctmt))
+summ3 <- round(summ3, 2)
+
+data.frame(summ1, summ2, summ3) %>%
+  dplyr::rename(`UMI per cell` = summ1,
+                `Gene per cell` = summ2,
+                `Mitochondrial (%) per cell` = summ3) %>%
+  t() %>%
+  kable() %>%
+   kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = 6)
+```
 
 - - -
 
@@ -663,11 +778,7 @@ plot(Q[[2]])
 
 - - -
 
-### Cluster distribution (batch effect diagnosis) {.tabset}
-
-Values adjacent to each point indicate the number of cells
-
-```{r fig-9, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
 clusters <- c("seurat_clusters", "signacx_clusters")
 names(clusters) <- c("Seurat Clusters", "Signacx Clusters")
 Q <- list()
@@ -688,7 +799,7 @@ for (cls in as.vector(clusters)) {
     gini <- apply(gini, 2, DescTools::Gini)
     df <- data.frame(gini) %>%
       tibble::rownames_to_column(var = "cluster")
-    }
+  }
   df <- df %>%
     base::merge(., data.frame(cluster = names(table(fsobj[[cls]])),
                               count = as.vector(table(fsobj[[cls]]))),
@@ -714,6 +825,19 @@ for (cls in as.vector(clusters)) {
 }
 ```
 
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+if (is.null(opt$harmony)) {
+  vars <- 'sample'
+} else {
+ vars <- strsplit(opt$harmony, split = ",")[[1]]
+ vars <- gsub(" ", "", vars) 
+}
+```
+
+### Clusters distribution per `r paste(vars, collapse=' and ')` {.tabset}
+
+This measurement is a proxy to batch effect artifacts. Values adjacent to each point indicate the number of cells.
+
 #### Seurat 
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
@@ -730,12 +854,14 @@ plot(Q[[2]])
 
 - - -
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+`r eval_mrks <- ifelse(opt$mrk_top_n != 0, TRUE, FALSE)`
+
+```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE}
 mrks <- fsobj@misc$signatures
 mrks <- mrks %>%
   dplyr::filter(p_val_adj < 0.05) %>%
   dplyr::group_by(type, cluster) %>%
-  dplyr::top_n(25, wt = avg_log2FC) %>%
+  dplyr::top_n(opt$mrk_top_n, wt = avg_log2FC) %>%
   dplyr::select(type, cluster, gene) %>%
   dplyr::mutate(cluster = as.character(cluster))
 
@@ -757,36 +883,41 @@ mrks <- lapply(mrks, function(x){
     x[!is.na(x)]
   })
   x$id <- NULL
-  do.call(cbind, x)
+  x <- lapply(x, function(x){
+    if (length(x) == opt$mrk_top_n) return(x)
+    x <- c(x, rep("", opt$mrk_top_n-length(x)))
+  })
+  x <- do.call(cbind, x)
 })
 ```
 
-### Signatures per cluster {.tabset}
+`r if (opt$mrk_top_n != 0) { "### Markers per cluster {.tabset}" }`
 
-Top 25 differentially expressed genes (p_val_adj < 0.05 and pct.1 > `r opt$mrk_min_pct`) for each of the clusters 
+`r if (opt$mrk_top_n != 0) { paste("Top", opt$mrk_top_n, "differentially expressed genes ( p_val_adj < 0.05 and pct.1 >", opt$mrk_min_pct, ") for each of the clusters") }`
 
-#### Seurat
+`r if (opt$mrk_top_n != 0) { "#### Seurat" }`
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE}
 x <- data.frame(mrks$seurat_clusters)
 names(x) <- substr(names(x), 2, nchar(names(x)))
 x <- cbind(data.frame(Cluster = 1:nrow(x)), x)  
-datatable(head(x, n = nrow(x)), options = list(pageLength = 5, scrollX = T))
+datatable(head(x, n = nrow(x)), rownames = FALSE,
+          options = list(pageLength = 5, scrollX = T))
 ```
 
+`r if (opt$mrk_top_n != 0) { "#### Signacx" }`
 
-#### Signacx
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE}
 x <- data.frame(mrks$signacx_clusters)
 names(x) <- substr(names(x), 2, nchar(names(x)))
 x <- cbind(data.frame(Cluster = 1:nrow(x)), x)  
-datatable(head(x, n = nrow(x)), options = list(pageLength = 5, scrollX = T))
+datatable(head(x, n = nrow(x)), rownames = FALSE,
+          options = list(pageLength = 5, scrollX = T))
 ```
 
-### {-}
+`r if (opt$mrk_top_n != 0) { "### {-}" }`
 
-- - -
+`r if (opt$mrk_top_n != 0) { "- - -" }`
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
 combo_ls <- list(c("signacx_cellstates", "spring", "Signacx SPRING Projection"),
@@ -905,10 +1036,7 @@ for(i in 1:length(Q)){
 
 - - -
 
-`r if (opt$genesets != "none") { "### Sargent gene-sets {.tabset}" }`
-
-
-`r if (opt$genesets != "none") { "#### hierarchy" }`
+`r if (opt$genesets != "none") { "### Sargent gene-sets" }`
 
 <center>
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
@@ -940,20 +1068,6 @@ if (opt$genesets != "none") {
 }
 ```
 <center>
-
-`r if (opt$genesets != "none") { "#### intersections" }`
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(15.5, 6.5), fig.align = 'center'}
-if (opt$genesets != "none") {
-  gset <- fsobj@misc$sargent_genesets_pos
-  m <- make_comb_mat(gset, mode=c("intersect"))
-  UpSet(m, 
-        comb_order=order(comb_size(m)), 
-        # top_annotation = upset_top_annotation(axis_param = list(gp = gpar(fontsize = 12))),
-        row_names_gp = gpar(fontsize = 12))
-}
-```
-
 
 `r if (opt$genesets != "none") { "---" }`
 

@@ -1,7 +1,6 @@
 ---
 title: "`r params$opt$project`" 
-# author: '`r params$opt$user`'
-date: "`r format(Sys.time(), '%d %B, %Y')`"
+date: "`r paste('Date:', format(Sys.time(), '%d %B, %Y'))`"
 vignette: >
   %\VignetteIndexEntry{CellBridge report}
   %\VignetteEncoding{UTF-8}
@@ -18,7 +17,28 @@ params:
     meta_data: NULL
     pre.qc.summ: NULL
     opt: NULL
+    ui: NULL
 ---
+
+<style> 
+  #header { 
+    background: -moz-linear-gradient(left, rgba(111,19,221,1) 0%, rgba(125,185,232,0) 75%); /* FF3.6-15 */
+    ackground: -webkit-linear-gradient(left, rgba(111,19,221,1) 0%,rgba(125,185,232,0) 75%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to right, rgba(111,19,221,1) 0%,rgba(125,185,232,0) 75%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#6f13dd', endColorstr='#007db9e8',GradientType=1 ); /* IE6-9 */
+    color: white;
+    height: 110px;
+  }
+</style>
+
+
+```{r, echo=FALSE}
+htmltools::img(src = knitr::image_uri("cellbridge_logo.png"), 
+               alt = 'logo', 
+               style = 'position:absolute; top:22px; right:40px; width: 2.0in'
+               )
+```
+
 
 ```{r variable, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
     obj_ls <- params$obj_ls
@@ -26,6 +46,7 @@ params:
     meta_data <- params$meta_data
     pre.qc.summ <- params$pre.qc.summ
     opt <- params$opt
+    ui <- params$ui
     n.sample <- length(obj_ls)
 ```
 

@@ -1,10 +1,18 @@
 # ===================================
-# Run Louvian clustering and annotation 
-# based on the signacX package
+# Find markers
 # ===================================
 
 # find markers
 findSignatures <- function(sobj, opt) {
+  # ===================================
+  if (opt$mrk_top_n == 0) {
+    sobj@misc$signatures <- "none"
+    # ===================================
+    # returns
+    signatures.res <- new("signaturesRes",
+                          sobj=sobj)
+    return(signatures.res)  
+  }
   # ===================================
   clusters <- c("seurat_clusters", "signacx_clusters")
   names(clusters) <- c("Seurat clusters", "Signacx clusters")

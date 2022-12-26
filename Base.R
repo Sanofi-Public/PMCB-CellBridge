@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 # ===================================
+pipe_version <- "1.0.0"
+# ===================================
 ### Call libraries
 libs <- list("optparse", "dplyr", "Seurat", "ggplot2", "ggrepel", "pheatmap", 
              "grid", "gridExtra", "cowplot", "RColorBrewer", "reticulate", 
@@ -148,7 +150,11 @@ option_list <- list(
   optparse::make_option(c("--mrk_test"), type="character", default="wilcox", 
                         help="test to use  
                         (default: wilcox)", 
-                        metavar="character")
+                        metavar="character"),
+  optparse::make_option(c("--mrk_top_n"), type="integer", default=25, 
+                        help="return top n differentially expressed genes  
+                        (default: 25). If zero, skip the marker identification.", 
+                        metavar="integer")
 ) 
 opt_parser <- optparse::OptionParser(option_list=option_list)
 opt <- optparse::parse_args(opt_parser)
@@ -202,7 +208,8 @@ start_time <- Sys.time()
 if (!opt$only_qc) {
   controlPipe(package.path=package.path, 
               project.path=project.path, 
-              opt=opt)  
+              opt=opt,
+              pipe_version=pipe_version)  
 } else {
   controlQC(package.path=package.path, 
             project.path=project.path, 

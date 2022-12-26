@@ -1,9 +1,15 @@
 # ===================================
 # script to call pipeline functions
 # ===================================
-controlPipe <- function(package.path, project.path, opt) {
+controlPipe <- function(package.path, project.path, opt, pipe_version) {
   # ===================================
   message("** pipeline started")
+  # ===================================
+  ui <- paste("cellbridge", 
+              paste0("v", pipe_version), 
+              create_unique_ids(1, char_len = 15), 
+              sep = "_")
+  message(paste0("** created unique id '", ui, "'"))
   # ===================================
   dir.create(file.path(project.path, "outputs"), showWarnings=FALSE)
   outputs.path <- file.path(project.path, "outputs")
@@ -50,7 +56,7 @@ controlPipe <- function(package.path, project.path, opt) {
   # ===================================
   message("** running Report function")
   rmarkdown::render(input=file.path(package.path, "Report.Rmd"),
-                    output_file=paste(opt$project, "cellbridge.html", sep = "_"),
+                    output_file=paste(opt$project, ui, "summary.html", sep = "_"),
                     output_dir=outputs.path, 
                     params=list(obj_ls=readin.res@obj_ls,
                                 sobj_ls=qcfilter.res@sobj_flt_ls, 
@@ -59,21 +65,23 @@ controlPipe <- function(package.path, project.path, opt) {
                                 meta_data=readin.res@meta_data,
                                 pre.qc.summ=readin.res@obj_summ,
                                 post.qc.summ=qcfilter.res@flt_summ,
-                                opt=opt),
+                                opt=opt,
+                                ui=ui),
                     quiet=TRUE)
   # ===================================
   signatures.res@sobj@misc$args <- opt
+  signatures.res@sobj@misc$identifier <- ui
   signatures.res@sobj@misc$date <- format(Sys.time(), '%d %B, %Y')
   # ===================================
-  message("** saving intermediate objects")
+  message("** saving middle files")
   res <- list(readin.res, qcfilter.res, scrublet.res, opt)
   names(res) <- c("readin.res", "qcfilter.res", "scrublet.res", "opt")
   saveRDS(res, 
-          file=file.path(outputs.path, paste(opt$project, "intermediate-object.rds", sep="_")))
+          file=file.path(outputs.path, paste(opt$project, ui, "middle-object.rds", sep="_")))
   # ===================================
   message("** saving final object")
   saveRDS(signatures.res@sobj, 
-          file=file.path(outputs.path, paste(opt$project, "final-object.rds", sep="_")))
+          file=file.path(outputs.path, paste(opt$project, ui, "final-object.rds", sep="_")))
   # ===================================
   message("** pipeline completed")
   # ===================================  

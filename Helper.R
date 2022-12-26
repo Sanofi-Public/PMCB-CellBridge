@@ -162,3 +162,20 @@ RenameGenesSeurat <- function(obj, newnames) {
 }
 # ===================================
 # =================================== 
+create_unique_ids <- function(n, char_len = 5, seed_no = NULL){
+  if (!is.null(seed_no)) {
+    set.seed(seed_no)  
+  }
+  pool <- c(letters, LETTERS, 0:9)
+  res <- character(n) # pre-allocating vector is much faster than growing it
+  for(i in seq(n)){
+    this_res <- paste0(sample(pool, char_len, replace = TRUE), collapse = "")
+    while(this_res %in% res){ # if there was a duplicate, redo
+      this_res <- paste0(sample(pool, char_len, replace = TRUE), collapse = "")
+    }
+    res[i] <- this_res
+  }
+  return(res)
+}
+# ===================================
+# =================================== 
