@@ -12,9 +12,13 @@ seuratPipe <- function(sobj, opt) {
   sobj <- RunPCA(sobj, features=VariableFeatures(object=sobj), verbose=FALSE)
   # ===================================
   rdction <- "pca"
-  if (!is.null(opt$harmony)) {
+  if (opt$harmony != "none") {
     vars <- strsplit(opt$harmony, split = ",")[[1]]
     vars <- gsub(" ", "", vars)
+    if (!all(vars %in% names(sobj@meta.data))) {
+      msg <- paste("variable column name(s) not exist. (RE: harmony)")
+      stop(msg)
+    }
     # run harmony
     sobj <- RunHarmony(sobj, reduction=rdction, group.by.vars=vars)
     rdction <- "harmony"

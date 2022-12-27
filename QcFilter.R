@@ -13,7 +13,7 @@ qcFilter <- function(obj_ls, scrub_ls, opt) {
     message(paste("***", smpl, "QC"))
     message(paste("***", "ngene:", dim(obj)[1], " ncell:", dim(obj)[2]))
     # ===================================
-    if (!is.null(opt$scr_th)){
+    if (opt$scr_th != 0){
       dblts <- scrub_ls[[smpl]][["doublet_scores_obs"]]
       dblts <- names(dblts[dblts > opt$scr_th])
       obj <- obj[ , !(colnames(obj) %in% dblts)] 
@@ -88,7 +88,7 @@ qcFilter <- function(obj_ls, scrub_ls, opt) {
     # ===================================
     message(paste("***","ngene:", dim(obj)[1], " ncell:", dim(obj)[2]))
     # ===================================
-    if (!is.null(opt$scr_th)){
+    if (opt$scr_th != 0){
       y <- scrub_ls[[smpl]][["doublet_scores_obs"]]
       sobj <- AddMetaData(
         object = sobj,

@@ -73,7 +73,7 @@ option_list <- list(
                         metavar="integer"),
   optparse::make_option(c("--max_mt_percent"), type="double", default=10, 
                         help="Maximum percent of mitochondrial genes 
-                        (default=15%)", 
+                        (default=10%)", 
                         metavar="double"),
   optparse::make_option(c("--min_genes_per_cell"), type="integer", default=250, 
                         help="Minimum genes per cell 
@@ -88,9 +88,9 @@ option_list <- list(
                         (default=3)", 
                         metavar="integer"),
   # Scrublet args
-  optparse::make_option(c("--scr_th"), type="double", default=NULL, 
+  optparse::make_option(c("--scr_th"), type="double", default=0, 
                         help="Score threshold for calling a transcriptome a doublet 
-                        (default: null). If 'null', no doublt score calculation", 
+                        (default: 0). If '0', no doublt score calculation", 
                         metavar="double"),
   # Seurat args
   optparse::make_option(c("--seu_nrmlz_method"), type="character", default="LogNormalize", 
@@ -117,10 +117,10 @@ option_list <- list(
                         help="Value of the resolution parameter,
                         (default: 0.7)", 
                         metavar="double"),
-  optparse::make_option(c("--harmony"), type="character", default=NULL, 
+  optparse::make_option(c("--harmony"), type="character", default="none", 
                         help="which variable(s) to remove. It can be multiple
                         characters separated by 'comma'),
-                        (default: 'null'). If 'null' no harmonization", 
+                        (default: 'none'). If 'none' no harmonization", 
                         metavar="character"),
   optparse::make_option(c("--tsne"), type="logical", default=FALSE, 
                         help="Run TSNE. Time consuming for large datasets.
@@ -141,7 +141,7 @@ option_list <- list(
   optparse::make_option(c("--mrk_min_pct"), type="double", default=0.50, 
                         help="Only test genes that are detected in a minimum 
                         fraction of min.pct cells in either of the two populations  
-                        (default: 0.25)", 
+                        (default: 0.5)", 
                         metavar="double"),
   optparse::make_option(c("--mrk_only_pos"), type="logical", default=TRUE, 
                         help="Only return positive markers  

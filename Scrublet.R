@@ -3,7 +3,7 @@
 # ===================================
 scrubletR <- function(obj_ls, opt) {
   # ===================================
-  if (is.null(opt$scr_th)) {
+  if (opt$scr_th == 0) {
     scrub.res <- new("scrubletRes",
                      obj_scrub_ls=NULL)
     return(scrub.res)

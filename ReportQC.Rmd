@@ -259,75 +259,75 @@ if (length(bc.qc.ji) != 0) {
 
 - - -
 
-`r if(!is.null(opt$scr_th)) {"### Doublet scores distribution {.tabset}"}`
+`r keyval <- opt$scr_th != 0`
 
-```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+`r if (keyval) {"### Doublet scores distribution {.tabset}"}`
+
+```{r, eval=keyval, warning=FALSE, message=FALSE, echo=FALSE}
 # plot scrublet scores
-if (!is.null(opt$scr_th)) {
-  Q <- list()
-  
-  dp <- lapply(scrub_ls, function(x){
-    data.frame(x["doublet_scores_obs"])
-    })
-  dp <- map_df(dp, ~as.data.frame(.x), .id="id") %>%
-    dplyr::rename(sample_id = id,
-                  score = doublet_scores_obs) %>%
-    dplyr::mutate(type = "Observed")
-  p <- ggplot() +
-    getBaseTheme() +
-    theme(strip.text = element_text(size = 14, face = "bold"),
-          axis.title = element_text(size = 14, face = "bold"),
-          axis.text = element_text(size = 12, face = "bold"),
-          legend.title = element_text(size=9),
-          legend.text = element_text(size=8)) +
-    xlab("Doublet score") + ylab("Density") +
-    geom_density(data = dp,
-                 aes(x = score, group = sample_id, color = sample_id), show.legend = FALSE) +
-    scale_color_manual(name = "Sample",
-                       values = colrs) +
-    guides(color = guide_legend(nrow = ifelse(n.sample > 4, 2, 1))) + 
-    geom_vline(xintercept=opt$scr_th, linetype=2, color="firebrick", size=0.45)
-  Q[[length(Q) + 1]] <- p
-  
-  dp <- lapply(scrub_ls, function(x){
-    data.frame(x["doublet_scores_sim"])
+Q <- list()
+
+dp <- lapply(scrub_ls, function(x){
+  data.frame(x["doublet_scores_obs"])
   })
-  dp <- map_df(dp, ~as.data.frame(.x), .id="id") %>%
-    dplyr::rename(sample_id = id,
-                  score = doublet_scores_sim) %>%
-    dplyr::mutate(type = "Simulated")
-  p <- ggplot() +
-    getBaseTheme() +
-    theme(strip.text = element_text(size = 14, face = "bold"),
-          axis.title = element_text(size = 14, face = "bold"),
-          axis.text = element_text(size = 12, face = "bold"),
-          legend.title = element_text(size=9),
-          legend.text = element_text(size=8)) +
-    xlab("Doublet score") + ylab("Density") +
-    geom_density(data = dp,
-                 aes(x = score, group = sample_id, color = sample_id), show.legend = FALSE) +
-    scale_color_manual(name = "Sample",
-                       values = colrs) + 
-    geom_vline(xintercept=opt$scr_th, linetype=2, color="firebrick", size=0.45)
-  Q[[length(Q) + 1]] <- p
-}
+dp <- map_df(dp, ~as.data.frame(.x), .id="id") %>%
+  dplyr::rename(sample_id = id,
+                score = doublet_scores_obs) %>%
+  dplyr::mutate(type = "Observed")
+p <- ggplot() +
+  getBaseTheme() +
+  theme(strip.text = element_text(size = 14, face = "bold"),
+        axis.title = element_text(size = 14, face = "bold"),
+        axis.text = element_text(size = 12, face = "bold"),
+        legend.title = element_text(size=9),
+        legend.text = element_text(size=8)) +
+  xlab("Doublet score") + ylab("Density") +
+  geom_density(data = dp,
+               aes(x = score, group = sample_id, color = sample_id), show.legend = FALSE) +
+  scale_color_manual(name = "Sample",
+                     values = colrs) +
+  guides(color = guide_legend(nrow = ifelse(n.sample > 4, 2, 1))) + 
+  geom_vline(xintercept=opt$scr_th, linetype=2, color="firebrick", size=0.45)
+Q[[length(Q) + 1]] <- p
+  
+dp <- lapply(scrub_ls, function(x){
+  data.frame(x["doublet_scores_sim"])
+  })
+dp <- map_df(dp, ~as.data.frame(.x), .id="id") %>%
+  dplyr::rename(sample_id = id,
+                score = doublet_scores_sim) %>%
+  dplyr::mutate(type = "Simulated")
+p <- ggplot() +
+  getBaseTheme() +
+  theme(strip.text = element_text(size = 14, face = "bold"),
+        axis.title = element_text(size = 14, face = "bold"),
+        axis.text = element_text(size = 12, face = "bold"),
+        legend.title = element_text(size=9),
+        legend.text = element_text(size=8)) +
+  xlab("Doublet score") + ylab("Density") +
+  geom_density(data = dp,
+               aes(x = score, group = sample_id, color = sample_id), show.legend = FALSE) +
+  scale_color_manual(name = "Sample",
+                     values = colrs) + 
+  geom_vline(xintercept=opt$scr_th, linetype=2, color="firebrick", size=0.45)
+Q[[length(Q) + 1]] <- p
 ```
 
-`r if(!is.null(opt$scr_th)) {"#### Observed scores"}`
+`r if (keyval) {"#### Observed scores"}`
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
-if (!is.null(opt$scr_th)) { plot(Q[[1]]) }
+```{r eval=keyval, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+plot(Q[[1]])
 ```
 
-`r if(!is.null(opt$scr_th)) {"#### Simulated scores"}`
+`r if (keyval) {"#### Simulated scores"}`
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
-if (!is.null(opt$scr_th)) { plot(Q[[2]]) }
+```{r eval=keyval, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
+plot(Q[[2]])
 ```
 
-`r if(!is.null(opt$scr_th)) {"### {-}"}`
+`r if (keyval) {"### {-}"}`
 
-`r if(!is.null(opt$scr_th)) {"- - -"}`
+`r if (keyval) {"- - -"}`
 
 - - -
 
