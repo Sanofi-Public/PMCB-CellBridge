@@ -3,46 +3,18 @@
 # ===================================
 readIn <- function(project.path, opt) {
   # ===================================
-  if (opt$meta == "sample_based") {
-    # check sample column
+  if (opt$metadata == "sample_based") {
+    # readin sample based metadata
     meta_data_ext <- NULL
-    meta_data <- read.csv(file=file.path(project.path, "metadata.csv"), 
-                          header=TRUE) %>%
-      dplyr::rename_all(tolower)
-    if ("sample_id" %in% names(meta_data)) {
-      msg <- paste("'sample_id' column name is reserved.", 
-                   "Please remove or rename.", sep = "\n")
-      stop(msg)
-    }
-    if ("sample" %nin% names(meta_data)) {
-      msg <- paste("'sample' column must be included.", 
-                   "Please add to metadata.", sep = "\n")
-      stop(msg)
-    }
-    meta_data <- meta_data %>%
+    meta_data <- read.csv(file=file.path(project.path, "metadata.csv"), header=TRUE) %>%
+      dplyr::rename_all(tolower) %>%
       dplyr::mutate(sample_id = paste0("S", 1:n()))  
   }
   # ===================================
-  if (opt$meta == "cell_based") {
-    meta_data_ext <- read.csv(file=file.path(project.path, "metadata.csv"), 
-                              header=TRUE) %>%
-      dplyr::rename_all(tolower)
-    if ("sample_id" %in% names(meta_data_ext)) {
-      msg <- paste("'sample_id' column name is reserved.", 
-                   "Please remove or rename.", sep = "\n")
-      stop(msg)
-    }
-    if ("sample" %nin% names(meta_data_ext)) {
-      msg <- paste("'sample' column must be included.", 
-                   "Please add to metadata.", sep = "\n")
-      stop(msg)
-    }
-    if ("cell" %nin% names(meta_data_ext)) {
-      msg <- paste("'cell' column must be included.", 
-                   "Please add to metadata.", sep = "\n")
-      stop(msg)
-    }
-    meta_data_ext <- meta_data_ext %>%
+  if (opt$metadata == "cell_based") {
+    # readin cell based metadata
+    meta_data_ext <- read.csv(file=file.path(project.path, "metadata.csv"), header=TRUE) %>%
+      dplyr::rename_all(tolower) %>%
       dplyr::group_by(sample) %>%
       dplyr::mutate(sample_id = paste0("S", cur_group_id())) %>%
       dplyr::ungroup() %>%

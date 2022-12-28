@@ -30,7 +30,7 @@ mergeSamples <- function(sobj_ls, meta_data, meta_data_ext, opt) {
     stop()
   }
   # ===================================
-  if (opt$meta == "sample_based") {
+  if (opt$metadata == "sample_based") {
     metas <- colnames(meta_data)
     for (meta in metas) {
       y <- setNames(meta_data[[meta]], as.character(meta_data$sample_id))
@@ -45,7 +45,7 @@ mergeSamples <- function(sobj_ls, meta_data, meta_data_ext, opt) {
       # print(dim(sobj@meta.data))
     } 
   } 
-  if (opt$meta == "cell_based") {
+  if (opt$metadata == "cell_based") {
     # meta_data_ext shoule be trimed since some cells have been removed in QC
     stopifnot(all(colnames(sobj) %in% meta_data_ext$cell))
     meta_data_ext <- meta_data_ext %>%
