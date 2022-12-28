@@ -86,13 +86,73 @@ data.frame(opt) %>%
 
 # Quality control
 
-### Metadata and demographics
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+umi_per_cell <- data.frame()
+gene_per_cell <- data.frame()
+mt_per_cell <- data.frame()
+for (i in 1:length(obj_ls)) {
+  exprMat <- obj_ls[[i]]
+  smpl <-  names(obj_ls)[i]
+  # UMI per cell
+  countByCell <- colSums(exprMat)
+  summ1 <- c(min = min(countByCell), 
+             quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
+             max = max(countByCell))
+  umi_per_cell <- umi_per_cell %>%
+    dplyr::bind_rows(scales::comma(summ1, accuracy = 1))
+  # Gene per cell
+  countByCell <- colSums(exprMat > 0)
+  summ2 <- c(min = min(countByCell), 
+             quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
+             max = max(countByCell))
+  gene_per_cell <- gene_per_cell %>%
+    dplyr::bind_rows(scales::comma(summ2, accuracy = 1))
+  # Mitochondrial (%) per cell
+  # creat seurat object
+  sobj <- CreateSeuratObject(counts=obj_ls[[i]], project=smpl, 
+                             min.cells=0, min.features=0)
+  # mitochondrial genes
+  if (opt$species == "hs") {
+    sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern = "^MT-")  
+    }
+  if (opt$species == "mm") {
+    sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern = "^mt-")  
+  }
+  pctmt <- sobj$percent_mt
+  summ3 <- c(min = min(pctmt), 
+             quantile(pctmt, c(0.0, 0.25, 0.5, 0.75, 1)),
+             max = max(pctmt))
+  mt_per_cell <- mt_per_cell %>%
+    dplyr::bind_rows(round(summ3, 2))
+}
+rownames(umi_per_cell) <- names(obj_ls)
+rownames(gene_per_cell) <- names(obj_ls)
+rownames(mt_per_cell) <- names(obj_ls)
+```
+
+### Each sample characteristics, demographics, and QC metrics {.tabset}
+
+#### Metadata
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
 meta_data %>%
-  base::merge(., pre.qc.summ, by = c("sample_id")) %>%
-  mutate(cell = scales::comma(cell, accuracy = 1),
-         gene = scales::comma(gene, accuracy = 1)) %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = sample_id[mixedorder(sample_id)], ordered = TRUE)) %>%
+  dplyr::arrange(sample_id) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+#### Cells & Genes
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+pre.qc.summ %>%
+  dplyr::rename(pre_qc_cell = cell,
+                pre_qc_gene = gene) %>%
+  dplyr::mutate(pre_qc_cell = scales::comma(pre_qc_cell, accuracy = 1),
+         pre_qc_gene = scales::comma(pre_qc_gene, accuracy = 1)) %>%
   dplyr::select(-type) %>%
   dplyr::mutate(sample_id = factor(sample_id, levels = sample_id[mixedorder(sample_id)], ordered = TRUE)) %>%
   dplyr::arrange(sample_id) %>%
@@ -102,6 +162,44 @@ meta_data %>%
                 full_width = F, fixed_thead = TRUE) %>%
   scroll_box(width = "100%", height = "200px")
 ```
+
+#### UMI per cell
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+umi_per_cell %>%
+  tibble::rownames_to_column(var="sample_id") %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+#### Gene per cell
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+gene_per_cell %>%
+  tibble::rownames_to_column(var="sample_id") %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+#### Mitochondrial (%) per cell
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+mt_per_cell %>%
+  tibble::rownames_to_column(var="sample_id") %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+### {-}
 
 - - -
 
@@ -119,7 +217,12 @@ meta_data %>%
     sobj <- CreateSeuratObject(counts=obj, project=smpl, 
                                min.cells=0, min.features=0)
     # mitochondrial genes
-    sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern="^MT-")
+    if (opt$species == "hs") {
+      sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern="^MT-")  
+      }
+    if (opt$species == "mm") {
+      sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern="^mt-")  
+    }
     # head(sobj@meta.data)
     db_plot <- db_plot %>%
       dplyr::bind_rows(sobj@meta.data %>%
@@ -153,7 +256,7 @@ filters <- data.frame(threshold = c(opt$min_umi_per_cell,
                          labels = scales::trans_format("log10", scales::math_format(10^.x))) +
       xlab("") + ylab("Density") +
       geom_density(aes(x = count, group = sample_id, color = sample_id), 
-                   show.legend = FALSE) +
+                   show.legend = FALSE, na.rm = TRUE) +
       geom_vline(data = filter(filters, type == tp), 
                  aes(xintercept = threshold), linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
       scale_color_manual(name = "Sample",
