@@ -26,9 +26,12 @@ seuratPipe <- function(sobj, opt) {
   # ===================================
   set.seed(12345)
   sobj <- FindNeighbors(sobj, reduction=rdction, 
-                        dims=1:opt$seu_n_dim, k.param=opt$seu_k_param, verbose=TRUE)
+                        dims=1:opt$seu_n_dim, 
+                        k.param=opt$seu_k_param, 
+                        verbose=TRUE)
   message(paste("*** Find clusters"))
-  sobj <- FindClusters(sobj, resolution=opt$seu_cluster_res, verbose=TRUE)
+  sobj <- FindClusters(sobj, resolution=opt$seu_cluster_res, 
+                       verbose=TRUE)
   if (opt$tsne) {
     message(paste("*** Run TSNE"))
     sobj <- RunTSNE(sobj, reduction=rdction, dims=1:opt$seu_n_dim)  
