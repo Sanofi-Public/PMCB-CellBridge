@@ -166,7 +166,7 @@ if (FALSE) {
   opt$tissue <- "pbmc"
   opt$harmony <- "sample"
   opt$tsne <- TRUE
-  # opt$scr_th <- 0.25
+  opt$scr_th <- 0.25
   opt$metadata <- "sample_based"
   opt$docker <- FALSE
   opt$mrk_min_pct <- 0.9
