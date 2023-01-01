@@ -7,7 +7,7 @@
 
 # CellBridge
 
-PMCB scRNA-seq pipeline. The pipeline reads-in multiple scRNA-seq samples, performs QC, merges samples, clusters cells into groups, annotates cells, and identifies gene markers.
+PMCB SCB scRNA-seq pipeline. The pipeline reads-in multiple scRNA-seq samples, performs QC per sample, merges samples, clusters cells into groups, dimension reduction, annotates cells, and identifies gene markers.
 
 ---
 
