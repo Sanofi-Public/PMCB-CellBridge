@@ -9,11 +9,14 @@
 
 PMCB scRNA-seq pipeline. The pipeline reads-in multiple scRNA-seq samples, performs QC, merges samples, clusters cells into groups, annotates cells, and identifies gene markers.
 
+---
+
 The pipeline inputs (required) is one folder containing:
 
 1) A metadata file (a comma separated file in CSV format) containing demographic and experimental information. The metadata file can be either 'sample_based' or 'cell_based'. NOTEs: one column containing the name of samples is required in both metadata types and must be named 'sample'; for 'sample_based' metadata, each row should be associated with one sample; for 'cell_based' metadata, each row should be associated with one cell; the column with cell id information must be named 'cell'; the column name 'sample_id' is reserved for the pipeline.
 2) Sample data: the standard 10X 'cellranger count' outputs; three barcodes, features, and gene-cell count TAR.GZ files or H5 files per each sample. The data corresponding to each sample must be provided in separate folders. The name of each folder must be the same as the sample names provided in the 'sample' column of the metadata file.
 
+---
 
 To run the docker locally follow the instructions:
 * Before you can run the pipeline, you need to get the source code onto your machine. Clone the cellbridge repository using the following command: 
@@ -27,6 +30,7 @@ To run the docker locally follow the instructions:
 + sharing files between the host operating system and the container requires you to bind a directory on the host to one of the container's mount points using the `-v` argument for docker. There is one available mount points defined in the container named `data`.
 + to execute the `cellbridge` command directly inside the container use: `docker run -it --rm -v <local-path-to-data>:/data:z <image_name> cellbridge [options ...]`.
 
+---
 
 Single Cell Biology (SCB)
 
