@@ -42,7 +42,7 @@ In most of the cases, it is hard to tell the optimal parameter values for best Q
 
 ---
 
-As a result, the pipeline produces one `outputs` folder containing three files and one folder, each of which taged by a 20-characters unique identifier (UI):
+As a result, the pipeline produces one `outputs` folder containing three files and one folder, each of which taged by a 15-characters unique identifier (UI):
 
 1) A HTML report (`<project_name>_cellbridge_v<x.y.z>_<UI>_summary.html`), containing quality metric plots, tables, and several other plots providing an overal view of the scRNA-seq data analysis outcomes.
 2) An RDS object (`<project_name>_cellbridge_v<x.y.z>_<UI>_final-object.rds`) containing the final seurat object with all accosiated metadata and miscellaneous information.
