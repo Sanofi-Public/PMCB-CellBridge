@@ -7,13 +7,13 @@
 
 # CellBridge
 
-PMCB SCB scRNA-seq pipeline. The pipeline reads-in multiple scRNA-seq samples, performs QC per sample, merges samples, clusters cells into groups, dimension reduction, annotates cells, and identifies gene markers.
+PMCB SCB scRNA-seq pipeline. The pipeline reads-in multiple scRNA-seq samples, performs QC per sample, merges samples, clusters cells into groups, performs dimension reduction, annotates cells, and identifies gene markers.
 
 ---
 
 The pipeline inputs (required) is one folder containing:
 
-1) A metadata file (a comma separated file in `CSV` format) containing demographic and experimental information. The metadata file can be either `sample_based` or `cell_based`. NOTE: 
+1) Metadata file (a comma separated file in `CSV` format) containing demographic and experimental information. The metadata file can be either `sample_based` or `cell_based`. NOTE: 
   * one column containing the name of samples is required in both metadata types and must be named `sample`; 
   * for `sample_based` metadata, each row should be associated with one sample; 
   * for `cell_based` metadata, each row should be associated with one cell; 
