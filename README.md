@@ -13,8 +13,8 @@ PMCB scRNA-seq pipeline. The pipeline reads-in multiple scRNA-seq samples, perfo
 
 The pipeline inputs (required) is one folder containing:
 
-1) A metadata file (a comma separated file in CSV format) containing demographic and experimental information. The metadata file can be either 'sample_based' or 'cell_based'. NOTEs: one column containing the name of samples is required in both metadata types and must be named 'sample'; for 'sample_based' metadata, each row should be associated with one sample; for 'cell_based' metadata, each row should be associated with one cell; the column with cell id information must be named 'cell'; the column name 'sample_id' is reserved for the pipeline.
-2) Sample data: the standard 10X 'cellranger count' outputs; three barcodes, features, and gene-cell count TAR.GZ files or H5 files per each sample. The data corresponding to each sample must be provided in separate folders. The name of each folder must be the same as the sample names provided in the 'sample' column of the metadata file.
+1) A metadata file (a comma separated file in `CSV` format) containing demographic and experimental information. The metadata file can be either `sample_based` or `cell_based`. NOTEs: one column containing the name of samples is required in both metadata types and must be named `sample`; for `sample_based` metadata, each row should be associated with one sample; for `cell_based` metadata, each row should be associated with one cell; the column with cell id information must be named `cell`; the column name `sample_id` is reserved for the pipeline.
+2) Sample data: the standard 10X `cellranger count` outputs; three barcodes, features, and gene-cell count TAR.GZ files or H5 files per each sample. The data corresponding to each sample must be provided in separate folders. The name of each folder must be the same as the sample names provided in the `sample` column of the metadata file.
 
 ---
 
@@ -31,13 +31,15 @@ To run the docker locally follow the instructions:
   + sharing files between the host operating system and the container requires you to bind a directory on the host to one of the container's mount points using the `-v` argument. There is one available mount points defined in the container named `data`.
   + to execute the `cellbridge` command directly inside the container use: `docker run -it --rm -v <local-path-to-data>:/data:z <image_name> cellbridge [options ...]`.
 
+In most of the cases, it is hard to tell the optimal parameter values for best QC in advance. The `only_qc` argument will help users to take a look at the overall metrics of the data in advance. After examination of all the QC metrics, user can run the pipeline with the optimal parameter values.
+
 ---
 
 As a result, the pipeline produces one `outputs` folder containing three files and one folder, each of which taged by a 20-characters unique identifier (UI):
 
-* 1) A HTML report (`<project_name>_cellbridge_v<x.y.z>_<UI>_summary.html`), containing quality metric plots, tables, and several other plots providing an overal view of the analyze outcomes.
+* 1) A HTML report (`<project_name>_cellbridge_v<x.y.z>_<UI>_summary.html`), containing quality metric plots, tables, and several other plots providing an overal view of the scRNA-seq data analysis outcomes.
 * 2) An RDS object (`<project_name>_cellbridge_v<x.y.z>_<UI>_final-object.rds`) containing the final seurat object with all accosiated metadata and miscellaneous information.
-* 2) An RDS object (`<project_name>_cellbridge_v<x.y.z>_<UI>_middle-object.rds`) containing all intermediate files required to repreduce the html summary.
+* 3) An RDS object (`<project_name>_cellbridge_v<x.y.z>_<UI>_middle-object.rds`) containing all intermediate files required to repreduce the html summary.
 * 4) A folder (`<project_name>_cellbridge_v<x.y.z>_<UI>_spring`) containing required files for SPRING portal visualization.
 
 ---
