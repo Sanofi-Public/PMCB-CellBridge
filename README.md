@@ -33,6 +33,15 @@ To run the docker locally follow the instructions:
 
 ---
 
+As a result, the pipeline produces one `outputs` folder containing three files. Each file is taged by 20 characters unique identifier (UI):
+
+* 1) HTML report (<project_name>_cellbridge_v<x.y.z>_<UI>_summary.html), containing quality metric plots, tables, and several other plots providing an overal view of the analyze outcomes.
+* 2) An RDS object (<project_name>_cellbridge_v<x.y.z>_<UI>_final-object.rds) containing the final seurat object with all accosiated metadata and miscellaneous information.
+* 2) An RDS object (<project_name>_cellbridge_v<x.y.z>_<UI>_middle-object.rds) containing all intermediate files required to repreduce the html summary.
+* 4) required files compatible with SPRING portal visualization.
+
+---
+
 ## Contact
 
 For help and questions please contact the [cellbridge's maintenance team](mailto:nima.nouri@sanofi.com).
