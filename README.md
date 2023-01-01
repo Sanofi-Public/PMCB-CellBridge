@@ -23,10 +23,11 @@ To run the docker locally follow the instructions:
   + `git clone https://<token>@github.com/Sanofi-GitHub/PMCB-CellBridge.git`
   + ask from sargent's maintenance team to get the token.
 * In order to build the container image, you’ll need to use the Dockerfile. A Dockerfile is simply a text-based file with no file extension. A Dockerfile contains a script of instructions that Docker uses to create a container image.
-  + change directory to the cellbridge directory
-  + build the app’s container image: `docker build -t <image_name> .`. This step may take 30-45 minutes.
-* Now that you have an image, you can run the cellbridge pipeline in a container. To do so, you will use the `docker run` command
-  + to see the pipeline help: `docker run --rm -it cellbridge --help`
+  + change directory to the cellbridge directory you just cloned.
+  + build the pipeline container image: `docker build -t <image_name> .`. 
+  + This step may take 30-45 minutes.
+* Now that you have an image, you can run the cellbridge pipeline in a container. To do so, you will use the `docker run` command.
+  + to see the pipeline help options use: `docker run --rm -it <image_name> cellbridge --help`
   + sharing files between the host operating system and the container requires you to bind a directory on the host to one of the container's mount points using the `-v` argument for docker. There is one available mount points defined in the container named `data`.
   + to execute the `cellbridge` command directly inside the container use: `docker run -it --rm -v <local-path-to-data>:/data:z <image_name> cellbridge [options ...]`.
 
