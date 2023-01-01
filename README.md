@@ -13,14 +13,13 @@ PMCB SCB scRNA-seq pipeline. The pipeline reads-in multiple scRNA-seq samples, p
 
 The pipeline inputs (required) is one folder containing:
 
-1) A metadata file (a comma separated file in `CSV` format) containing demographic and experimental information. The metadata file can be either `sample_based` or `cell_based`. NOTEs: 
+1) A metadata file (a comma separated file in `CSV` format) containing demographic and experimental information. The metadata file can be either `sample_based` or `cell_based`. NOTE: 
   * one column containing the name of samples is required in both metadata types and must be named `sample`; 
   * for `sample_based` metadata, each row should be associated with one sample; 
   * for `cell_based` metadata, each row should be associated with one cell; 
   * the column with cell-id information must be named `cell`; 
   * the column name `sample_id` is reserved for the pipeline.
-2) Sample data: the standard 10X `cellranger count` outputs; 
-  * three barcodes, features, and gene-cell count TAR.GZ files or H5 files per each sample. 
+2) Sample data including the standard 10X `cellranger count` outputs: three barcodes, features, and gene-cell count `TAR.GZ` files or `H5` files per each sample. NOTE: 
   * data corresponding to each sample must be provided in separate folders. 
   * the name of each folder must be the same as the sample names provided in the `sample` column of the metadata file.
 
