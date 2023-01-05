@@ -171,6 +171,7 @@ if (FALSE) {
   opt$docker <- FALSE
   opt$mrk_min_pct <- 0.9
   opt$genesets <- "pbmc"
+  opt$mrk_top_n <- 25
 }
 # ===================================
 ### Rscript --vanilla read_in_samples.R /cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/RP/data_for_spring > project.out 2> project.err
