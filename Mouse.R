@@ -11,14 +11,16 @@ message("** Building mouse genome convertor")
 `%nin%` = Negate(`%in%`)
 # ===================================
 message("*** Fetching ensembls...")
-human <- useMart(host = "https://jan2020.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
-mouse <- useMart(host = "https://jan2020.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl")
+human <- useMart(host = "https://dec2021.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", 
+                 verbose = TRUE)
+mouse <- useMart(host = "https://dec2021.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl",
+                 verbose = TRUE)
 message("*** Ensembls fetched.")
 # ===================================
 # this will only convert gene names; it will NOT convert ENSEMBL symbols
 # if there is no mouse name, i doubt there is a human name.
-orthologs_mouse <- getLDS(attributes = c("mgi_symbol"),
-                          mart = mouse, attributesL = c("hgnc_symbol"), martL = human)
+orthologs_mouse <- getLDS(attributes = c("mgi_symbol"), mart = mouse, 
+                          attributesL = c("hgnc_symbol"), martL = human)
 
 colnames(orthologs_mouse) <- c("MouseSymbol", "HumanSymbol")
 
