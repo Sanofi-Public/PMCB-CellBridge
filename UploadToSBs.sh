@@ -29,8 +29,7 @@ advance_access = true
 EOF
 
 mkdir -p $HOME/.sevenbridges
-cp credentials $HOME/.sevenbridges
+mv credentials $HOME/.sevenbridges
 ./sb whoami
 ./sb upload start $input --destination "sanofi-research/$dest"
-rm credentials
 rm sb
