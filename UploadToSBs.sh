@@ -16,10 +16,10 @@ then
 fi
 chmod +x sb
 
-echo "Seven Bridges API endpoint: $api"
-echo "Seven Bridges authorization token: $token"
-echo "input: $input"
-echo "destination: $dest"
+# echo "Seven Bridges API endpoint: $api"
+# echo "Seven Bridges authorization token: $token"
+# echo "input: $input"
+# echo "destination: $dest"
 
 cat <<EOF > credentials
 [default]
