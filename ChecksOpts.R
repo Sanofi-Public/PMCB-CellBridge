@@ -25,6 +25,12 @@ checkOpts <- function(project.path, opt) {
     stop(msg)
   }
   # ===================================
+  keylog <- opt$species %in% c("hs", "mm")
+  if (!keylog) {
+    msg <- paste("'species' must be one of 'hs' or 'mm'.")
+    stop(msg)
+  }
+  # ===================================
   keylog <- file.exists(file.path(project.path, "metadata.csv"))
   if (!keylog) {
     msg <- paste("'metadata.csv' not found.")
