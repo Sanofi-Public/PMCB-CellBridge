@@ -49,7 +49,7 @@ def sparse_multiply(E, a):
     nrow = E.shape[0]
     w = scipy.sparse.lil_matrix((nrow, nrow))
     w.setdiag(a)
-    return w * E
+    return np.asarray(w * E)
 
 
 def runningquantile(x, y, p, nBins):
