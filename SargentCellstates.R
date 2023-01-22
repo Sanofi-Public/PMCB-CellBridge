@@ -24,12 +24,14 @@ sargentCellstates <- function(sobj, opt) {
     gpos <- lapply(as.list(gpos), function(x){
       x <- x[!is.na(x)]
     })
+    gpos[lengths(gpos) == 0] <- NULL
     if ("negative" %in% exls) {
       gneg <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
                          sheet="negative", col_names=TRUE, col_types="text")
       gneg <- lapply(as.list(gneg), function(x){
         x <- x[!is.na(x)]
       })
+      gneg[lengths(gneg) == 0] <- NULL
     } else { gneg <- NULL }
   }
   # ===================================
