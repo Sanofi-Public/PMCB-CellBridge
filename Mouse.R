@@ -4,17 +4,14 @@ shh(library('biomaRt'))
 shh(library("Orthology.eg.db"))
 shh(library("org.Hs.eg.db"))
 shh(library("org.Mm.eg.db"))
-shh(library('AnnotationDbi'))
 # ===================================
 message("** Building mouse genome convertor")
 # ===================================
 `%nin%` = Negate(`%in%`)
 # ===================================
 message("*** Fetching ensembls...")
-human <- useMart(host = "https://dec2021.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl", 
-                 verbose = TRUE)
-mouse <- useMart(host = "https://dec2021.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl",
-                 verbose = TRUE)
+human <- useMart(host = "https://dec2021.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
+mouse <- useMart(host = "https://dec2021.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl")
 message("*** Ensembls fetched.")
 # ===================================
 # this will only convert gene names; it will NOT convert ENSEMBL symbols
@@ -50,10 +47,10 @@ additional_human <- setdiff(orthologs_ncbi$HumanSymbol, orthologs_biomart$HumanS
 additional_ortho <- subset(final_df, HumanSymbol %in% additional_human & MouseSymbol %in% additional_mouse)
 # ===================================
 # combine the two
-hsTOmm <- rbind(orthologs_biomart, additional_ortho)
-row.names(hsTOmm) <- hsTOmm$MouseSymbol
-hsTOmm$MouseSymbol <- NULL
+mmTOhs <- rbind(orthologs_biomart, additional_ortho)
+row.names(mmTOhs) <- mmTOhs$MouseSymbol
+mmTOhs$MouseSymbol <- NULL
 # ===================================
-message(paste("** saving Mus_musculus.txt ->", getwd())) # -> /src/spring
-write.table(hsTOmm, file.path(getwd(), "Mus_musculus.txt"), quote=F)
+message(paste("** saving Mus_musculus.txt ->", getwd())) # -> /src/cellbridge
+write.table(mmTOhs, file.path(getwd(), "Mus_musculus.txt"), quote=F)
 # ===================================

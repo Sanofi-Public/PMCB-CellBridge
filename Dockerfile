@@ -109,7 +109,7 @@ RUN Rscript -e "devtools::install_github('immunogenomics/harmony')"
 RUN Rscript -e "devtools::install_github('Sanofi-GitHub/PMCB-Sargent', auth_token='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')"
 # ===================================
 ARG R_BIOC="c('biomaRt', 'Orthology.eg.db', 'org.Hs.eg.db', 'org.Mm.eg.db', \
-              'AnnotationDbi', 'limma', 'ComplexHeatmap')"
+              'limma', 'ComplexHeatmap')"
 RUN Rscript -e "BiocManager::install(ask=FALSE)"
 RUN Rscript -e "BiocManager::install(${R_BIOC})"
 # ===================================
@@ -120,6 +120,7 @@ RUN chmod +x Base.R
 RUN ln Base.R /usr/local/bin/cellbridge
 # ===================================
 RUN Rscript ./Mouse.R
+RUN Rscript ./MacacaFascicularis.R
 # ===================================
 # The VOLUME instruction and the -v option to docker run tell docker to store 
 # files in a directory on the host instead of in the container’s file system.
