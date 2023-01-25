@@ -104,7 +104,7 @@ newlbls <- c("BPC.MEM" = "B.memory",
              "TNK.T.CD4.Treg" = "T.regs",
              "TNK.T.CD8.MEM" = "T.CD8.memory",   
              "TNK.T.CD8.NAIVE" = "T.CD8.naive",
-             "TBD" = "Unclassified")
+             "unclassified" = "unclassified")
 # ===================================
 GENESETS[[length(GENESETS) + 1]] <- gpos
 names(GENESETS)[length(GENESETS)] <- "pbmc"
@@ -176,7 +176,7 @@ newlbls <- c("Astrocyte" = "Astrocyte",
              "Immune.TNK.T.CD4.Treg" = "T.regs",
              "Immune.TNK.T.CD8.MEM" = "T.CD8.memory",   
              "Immune.TNK.T.CD8.NAIVE" = "T.CD8.naive",
-             "TBD" = "Unclassified")
+             "unclassified" = "unclassified")
 # ===================================
 GENESETS[[length(GENESETS) + 1]] <- gpos
 names(GENESETS)[length(GENESETS)] <- "cns"
@@ -253,7 +253,7 @@ newlbls <- c("Endothelial" = "Endothelial",
              "Immune.TNK.T.CD4.Treg" = "T.regs",
              "Immune.TNK.T.CD8.MEM" = "T.CD8.memory",   
              "Immune.TNK.T.CD8.NAIVE" =  "T.CD8.naive",
-             "TBD" = "Unclassified")
+             "unclassified" = "unclassified")
 # ===================================
 GENESETS[[length(GENESETS) + 1]] <- gpos
 names(GENESETS)[length(GENESETS)] <- "nasal"
