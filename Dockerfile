@@ -21,7 +21,7 @@ RUN apt-get update && \
         curl \
         cmake \
         git \
-        python3.7 \ 
+        python3.9 \ 
         python3-pip \
         bzip2 \
         vim \
@@ -49,7 +49,7 @@ RUN apt-get update && \
         apt-get clean && \
         rm -rf /var/lib/apt/lists/*
 # ===================================
-RUN pip3 install --upgrade pip
+# RUN pip3 install --upgrade pip
 # ===================================
 # Installing required PYTHON packages
 # RUN pip3 install -r requirements.txt
