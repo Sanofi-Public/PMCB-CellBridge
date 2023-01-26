@@ -63,6 +63,10 @@ qcFilter <- function(obj_ls, scrub_ls, opt) {
       if (opt$species == "mm") {
         sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern = "^mt-")  
       }
+      if (opt$species == "mf") {
+        mito_genes <- c('ND5','COX3','ATP8','COX1','ND6','ND3','ND4L','COX2','ND1','CYTB','ATP6','ND4','ND2')
+        sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern = mito_genes)  
+      }
       # filter high percentage mitochondrial
       sobj <- subset(sobj, subset = percent_mt <= opt$max_mt_percent)
       # print(paste(dim(sobj)))

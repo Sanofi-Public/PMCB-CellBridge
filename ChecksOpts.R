@@ -25,9 +25,9 @@ checkOpts <- function(project.path, opt) {
     stop(msg)
   }
   # ===================================
-  keylog <- opt$species %in% c("hs", "mm")
+  keylog <- opt$species %in% c("hs", "mm", "mf")
   if (!keylog) {
-    msg <- paste("'species' must be one of 'hs' or 'mm'.")
+    msg <- paste("'species' must be one of 'hs', 'mm', or 'mf'.")
     stop(msg)
   }
   # ===================================

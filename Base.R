@@ -31,7 +31,7 @@ option_list <- list(
                         metavar="character"),
   optparse::make_option(c("--species"), type="character", default=NULL, 
                         help="name of species (required arg) currently:
-                        'hs' for humman and 'mm' for mouse", 
+                        'hs' for humman, 'mm' for mouse, or 'mf' for macaca-fascicularis", 
                         metavar="character"),
   optparse::make_option(c("--tissue"), type="character", default=NULL, 
                         help="name of tissue (required arg) currently:

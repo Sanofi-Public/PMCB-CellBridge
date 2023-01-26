@@ -261,7 +261,16 @@ mt_per_cell %>%
     sobj <- CreateSeuratObject(counts=obj, project=smpl, 
                                min.cells=0, min.features=0)
     # mitochondrial genes
-    sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern="^MT-")
+    if (opt$species == "hs") {
+      sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern = "^MT-")  
+    }
+    if (opt$species == "mm") {
+      sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern = "^mt-")  
+    }
+    if (opt$species == "mf") {
+      mito_genes <- c('ND5','COX3','ATP8','COX1','ND6','ND3','ND4L','COX2','ND1','CYTB','ATP6','ND4','ND2')
+      sobj[["percent_mt"]] <- PercentageFeatureSet(sobj, pattern = mito_genes)  
+    }
     # head(sobj@meta.data)
     db_plot <- db_plot %>%
       dplyr::bind_rows(sobj@meta.data %>%

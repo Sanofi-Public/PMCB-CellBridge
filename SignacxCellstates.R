@@ -3,18 +3,25 @@
 # based on the signacX package
 # ===================================
 signacxCellstates <- function(sobj, package.path, opt) {
+  # generate cell type labels
   if (opt$species == "hs") {
-    # generate cell type labels
     set.seed(42)
     cr <- Signac(E=sobj, set.seed=TRUE, seed="42", graph.used="nn")
     set.seed(42)
     crx <- GenerateLabels(cr, E=sobj, graph.used="nn")
-  } else if (opt$species == "mm") {
+  } 
+  if (opt$species %in% c("mm", "mf")) {
     # if mouse, convert gene names to human
+    if (opt$species == "mm") {
+      xxTOhs <- read.table(file.path(package.path, "Mus_musculus.txt"))      
+    } 
+    # if macaca-fascicularis, convert gene names to human
+    if (opt$species == "mf") {
+      xxTOhs <- read.table(file.path(package.path, "Macaca_fascicularis.txt"))      
+    } 
     sobj_tmp <- sobj
-    mmTOhs <- read.table(file.path(package.path, "Mus_musculus.txt"))
     conv_gene <- sapply(rownames(sobj_tmp), function(x){
-      converta2(gene=x, conv=mmTOhs)
+      converta2(gene=x, conv=xxTOhs)
     })
     sobj_tmp <- RenameGenesSeurat(obj=sobj_tmp, newnames=conv_gene)
     # generate cell type labels
@@ -22,10 +29,7 @@ signacxCellstates <- function(sobj, package.path, opt) {
     cr <- Signac(E=sobj_tmp, set.seed=TRUE, seed="42", graph.used="nn")
     set.seed(42)
     crx <- GenerateLabels(cr, E=sobj_tmp, graph.used="nn")
-  } else {
-    msg <- paste("species should be one of 'hs' or 'mm'")
-    stop(msg)
-  }
+  } 
   # print(table(crx$CellStates))
   # ===================================
   # sort from largest to smallest cluster
