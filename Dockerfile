@@ -97,8 +97,8 @@ RUN apt-get update && \
 # R packages
 # install 'Rcpp' 1.0.9. The lastest 1.0.10 version (2023-01-22) is incompatible with 'reticulate'.
 # see https://github.com/rstudio/reticulate/issues/1328
-RUN Rscript -e "install.packages('https://cran.r-project.org/src/contrib/Archive/Rcpp/Rcpp_1.0.9.tar.gz', \
-                repos=NULL, type='source')"
+# RUN Rscript -e "install.packages('https://cran.r-project.org/src/contrib/Archive/Rcpp/Rcpp_1.0.9.tar.gz', \
+#               repos=NULL, type='source')"
 # Define R package installation parameters
 ARG R_DEPS="c('devtools', 'optparse', 'dplyr', 'ggplot2', 'pheatmap', 'grid', \
             'gridExtra', 'cowplot', 'RColorBrewer', 'tidyr', 'versions', \
