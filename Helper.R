@@ -115,6 +115,8 @@ sargentAnnotation_helper <- function(sobj, gene.sets, gene.sets.neg,
                                       adjacent.mtx=adj.mtx)
     # print(sargent_anot)
     # ===================================
+    names(sargent_anot@cells_type)[names(sargent_anot@cells_type) == "unclassified"] <- paste(cltype, "unspecified", sep = ".")
+    # ===================================
     sargent_ls[[length(sargent_ls) + 1]] <- sargent_anot
     names(sargent_ls)[length(sargent_ls)] <- cltype
     # ===================================

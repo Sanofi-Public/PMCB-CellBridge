@@ -40,13 +40,15 @@ sargentCellstates <- function(sobj, opt) {
                                   gene.sets.neg=gneg)
   # ===================================
   # label cells
-  if (opt$genesets %in% c('pbmc', 'cns', 'nasal')) {  
-    cellstates <- LABEL.trans[[opt$genesets]][as.character(res$cellstates)]
-    names(cellstates) <- names(res$cellstates)
-  } else {
-    cellstates <- res$cellstates
-    names(cellstates) <- names(res$cellstates)
-  }
+  # if (opt$genesets %in% c('pbmc', 'cns', 'nasal')) {  
+  #   cellstates <- LABEL.trans[[opt$genesets]][as.character(res$cellstates)]
+  #   names(cellstates) <- names(res$cellstates)
+  # } else {
+  #   cellstates <- res$cellstates
+  #   names(cellstates) <- names(res$cellstates)
+  # }
+  cellstates <- res$cellstates
+  names(cellstates) <- names(res$cellstates)
   # ===================================
   # add new metadata
   sobj <- AddMetaData(
