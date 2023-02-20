@@ -26,6 +26,9 @@ mergeSamples <- function(sobj_ls, meta_data, meta_data_ext, opt) {
   } else if (length(sobj_ls) == 1) {
     sobj <- sobj_ls[[1]]
     sobj@project.name <- opt$project
+    # ===================================
+    message(paste("***", "single object with:"))
+    message(paste("***","ngene:", dim(sobj)[1], " ncell:", dim(sobj)[2]))
   } else {
     stop()
   }

@@ -65,10 +65,47 @@ checkOpts <- function(project.path, opt) {
       msg <- paste("'genesets.xlsx' file not found.")
       stop(msg)
     }
+    # ===================================
     exls <- excel_sheets(file.path(project.path, "genesets.xlsx"))
     if ("positive" %nin% exls) {
       msg <- paste("'genesets.xlsx' must contain a sheet named 'positive'.")
       stop(msg)
+    }
+    # ===================================
+    gpos <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
+                       sheet="positive", col_names=TRUE, col_types="text")
+    gpos <- lapply(as.list(gpos), function(x){
+      x <- x[!is.na(x)]
+    })
+    gpos[lengths(gpos) == 0] <- NULL
+    names(gpos) <- toupper(names(gpos))
+    df <- data.frame(parent=sub('[.][^.]+$', '', names(gpos)), 
+                     name=names(gpos), 
+                     stringsAsFactors=FALSE)
+    g <- graph.data.frame(df)
+    g <- igraph::simplify(g, remove.multiple=TRUE, remove.loops=TRUE, 
+                          edge.attr.comb=igraph_opt("edge.attr.comb"))
+    edges <- get.data.frame(g, what="edges")[1:2]
+    nodes <- data.frame(id = V(g)$name, title = V(g)$name)
+    for (x in nodes$title) {
+      if (length(which(names(gpos) == x)) == 0) {
+        msg <- paste0(x, ": parent/child incompatible. Please check the celltypes in 'genesets.xlsx'.")
+        stop(msg) 
+      }
+    }
+    # ===================================
+    if ("negative" %in% exls) {
+      gneg <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
+                         sheet="negative", col_names=TRUE, col_types="text")
+      gneg <- lapply(as.list(gneg), function(x){
+        x <- x[!is.na(x)]
+      })
+      gneg[lengths(gneg) == 0] <- NULL
+      names(gneg) <- toupper(names(gneg))
+      if (!all(names(gneg) %in% names(gpos))) {
+        msg <- paste0(names(gneg)[names(gneg) %nin% names(gpos)], ": all negative celltypes must exist in positive celltypes.")
+        stop(msg) 
+      }
     }
   }
   # ===================================

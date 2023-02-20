@@ -181,3 +181,9 @@ create_unique_ids <- function(n, char_len = 5, seed_no = NULL){
 }
 # ===================================
 # =================================== 
+replacegrepl <- function(vec, from, to) {
+  vec[grepl(paste0("^", from, "."), vec)] <- to
+  return(vec)
+}
+# ===================================
+# =================================== 

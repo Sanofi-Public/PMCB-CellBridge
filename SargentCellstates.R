@@ -25,6 +25,7 @@ sargentCellstates <- function(sobj, opt) {
       x <- x[!is.na(x)]
     })
     gpos[lengths(gpos) == 0] <- NULL
+    names(gpos) <- toupper(names(gpos))
     if ("negative" %in% exls) {
       gneg <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
                          sheet="negative", col_names=TRUE, col_types="text")
@@ -32,6 +33,7 @@ sargentCellstates <- function(sobj, opt) {
         x <- x[!is.na(x)]
       })
       gneg[lengths(gneg) == 0] <- NULL
+      names(gneg) <- toupper(names(gneg))
     } else { gneg <- NULL }
   }
   # ===================================
@@ -47,8 +49,7 @@ sargentCellstates <- function(sobj, opt) {
   #   cellstates <- res$cellstates
   #   names(cellstates) <- names(res$cellstates)
   # }
-  cellstates <- res$cellstates
-  names(cellstates) <- names(res$cellstates)
+  cellstates <- toupper(res$cellstates)
   # ===================================
   # add new metadata
   sobj <- AddMetaData(

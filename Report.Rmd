@@ -966,10 +966,9 @@ for (i in 1:length(combo_ls)) {
 
 # Annotation results
 
-### Celltypes dimension reduction {.tabset}
+### Celltypes dimension reduction {.tabset .tabset-fade .tabset-dropdown}
 
 Note: some labels may have been removed, if too many labels overlap.
-
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center', results='asis'}
 make_tab <- function(x) {      # function to make the tabs
@@ -1079,6 +1078,96 @@ if (opt$genesets != "none") {
 <center>
 
 `r if (opt$genesets != "none") { "---" }`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+if (opt$genesets != "none") {
+  # ===================================
+  layers <- list()
+  gene.sets <- fsobj@misc$sargent_genesets_pos
+  # ===================================
+  df <- data.frame(parent=sub('[.][^.]+$', '', names(gene.sets)), 
+                   name=names(gene.sets), 
+                   stringsAsFactors=FALSE)
+  g <- graph.data.frame(df)
+  g <- igraph::simplify(g, remove.multiple=TRUE, remove.loops=TRUE, 
+                        edge.attr.comb=igraph_opt("edge.attr.comb"))
+  # plot(g, vertex.size=0)
+  # ===================================
+  # find the root nodes
+  root_cltypes <- names(which(sapply(sapply(V(g), 
+                                            function(x) { 
+                                              neighbors(g, x, mode="in") 
+                                              }), 
+                                     length) == 0))
+  # ===================================
+  xsobj <- fsobj
+  xsobj$temp <- xsobj$sargent_cellstates
+  # print(table(xsobj$temp))
+  for (x in root_cltypes) {
+    xsobj$temp <- replacegrepl(xsobj$temp, x, x)  
+  }
+  # print(table(xsobj$temp))
+  # ===================================
+  gns <- gene.sets[names(gene.sets) %in% root_cltypes]
+  gns <- unique(unlist(gns))
+  p <- DotPlot(xsobj, group.by = "temp", features = gns,
+               cluster.idents = TRUE, dot.min = 0.1) + 
+    theme(axis.title = element_blank(),
+          axis.text.y = element_text(size = ifelse(length(gns) < 30, 10, 8)),
+          axis.text.x = element_text(size = 10, angle = 25, hjust = 1, vjust = 1),
+          legend.position = "none") +
+      coord_flip()
+  if (length(gns) > 30) { p <- p + scale_x_discrete(guide = guide_axis(n.dodge=2))}
+  layers[[length(layers) + 1]] <- p
+  names(layers)[length(layers)] <- "Master"
+  # ===================================
+  for (cltype in sort(names(gene.sets))) {
+    # ===================================
+    childs <- setdiff(names(neighborhood(g, nodes=cltype, mode="out")[[1]]), cltype)
+    if (length(childs) == 0) { next }
+    cells <- Cells(fsobj)[grepl(paste0("^", childs, collapse="|"), fsobj$sargent_cellstates)]
+    xsobj <- subset(fsobj, cells = cells)
+    xsobj$temp <- xsobj$sargent_cellstates
+    # print(table(xsobj$temp))
+    for (x in childs) {
+      xsobj$temp <- replacegrepl(xsobj$temp, x, x)  
+    }
+    # print(table(xsobj$temp))
+    gns <- gene.sets[names(gene.sets) %in% childs]
+    gns <- unique(unlist(gns))
+    p <- DotPlot(xsobj, group.by = "temp", features = gns,
+                 cluster.idents = TRUE, dot.min = 0.1) + 
+    theme(axis.title = element_blank(),
+          axis.text.y = element_text(size = ifelse(length(gns) < 30, 10, 8)),
+          axis.text.x = element_text(size = 10, angle = 25, hjust = 1, vjust = 1),
+          legend.position = "none") +
+      coord_flip()
+    if (length(gns) > 30) { p <- p + scale_x_discrete(guide = guide_axis(n.dodge=2))}
+    layers[[length(layers) + 1]] <- p
+    names(layers)[length(layers)] <- cltype
+  }
+}
+```
+
+`r if (opt$genesets != "none") { "### Sargent marker expression {.tabset .tabset-fade .tabset-dropdown}" }`
+`r if (opt$genesets != "none") { "Expression level of selected genes for each group. Color indicates the average expression and size indicates the percent expressed." }`
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 7.5), fig.align = 'center', results='asis'}
+if (opt$genesets != "none") {
+  make_tab <- function(x) {      # function to make the tabs
+    cat("\n")                    # Space
+    cat("####", names(x), "\n")  # Label tab
+    plot(x[[1]])                 # Display plot
+    cat("\n")                    # Space
+  }
+  for(i in 1:length(layers)){
+    make_tab(layers[i])
+  }
+}
+```
+
+`r if (opt$genesets != "none") { "---" }`
+
 
 # Session information
 
