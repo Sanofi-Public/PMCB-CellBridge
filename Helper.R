@@ -72,7 +72,7 @@ sargentAnnotation_helper <- function(sobj, gene.sets, gene.sets.neg,
                                     gene.sets=gsets, 
                                     gene.sets.neg=gsets.ng,
                                     adjacent.mtx=adj.mtx)
-  # print(sargent_anot)
+  print(sargent_anot)
   # ===================================
   sargent_ls <- list()
   sargent_ls[[length(sargent_ls) + 1]] <- sargent_anot
@@ -109,11 +109,11 @@ sargentAnnotation_helper <- function(sobj, gene.sets, gene.sets.neg,
     gsets.ng <- gene.sets.neg[names(gene.sets.neg) %in% childs]
     if (length(gsets.ng) == 0) { gsets.ng <- NULL }
     # ===================================
-    sargent_anot <- sargentAnnotation(gex=gex, cells=cells, 
+    sargent_anot <- sargentAnnotation_new(gex=gex, cells=cells, 
                                       gene.sets=gsets, 
                                       gene.sets.neg=gsets.ng,
                                       adjacent.mtx=adj.mtx)
-    # print(sargent_anot)
+    print(sargent_anot)
     # ===================================
     names(sargent_anot@cells_type)[names(sargent_anot@cells_type) == "unclassified"] <- paste(cltype, "unspecified", sep = ".")
     # ===================================
