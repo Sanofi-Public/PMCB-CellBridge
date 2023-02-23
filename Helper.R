@@ -187,3 +187,17 @@ replacegrepl <- function(vec, from, to) {
 }
 # ===================================
 # =================================== 
+DotPlot_helper <- function(sobj, ftrs) {
+  p <- DotPlot(sobj, group.by = "temp", features = ftrs,
+               cluster.idents = TRUE, dot.min = 0.1) + 
+    theme(axis.title = element_blank(),
+          axis.text.y = element_text(size = ifelse(length(ftrs) < 30, 10, 8)),
+          axis.text.x = element_text(size = 8, angle = 25, hjust = 1, vjust = 1),
+          legend.position = "none") +
+    coord_flip()
+  if (length(ftrs) > 30) { p <- p + scale_x_discrete(guide = guide_axis(n.dodge=2))}
+  if (length(unique(sobj@meta.data[["temp"]])) > 10) { p <- p + scale_y_discrete(guide = guide_axis(n.dodge=2))}
+  return(p)
+}
+# ===================================
+# =================================== 

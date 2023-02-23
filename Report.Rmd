@@ -957,6 +957,10 @@ for (i in 1:length(combo_ls)) {
             panel.grid.minor = element_blank(),
             axis.ticks = element_blank(),
             panel.background = element_blank(),
+            legend.position = "right",
+            legend.key.height=grid::unit(20, "points"), 
+            legend.key.width=grid::unit(15, "points"),
+            legend.spacing=grid::unit(2, "points"),
             legend.text = element_text(size = 7, face = "bold")) 
     Q[[length(Q) + 1]] <- p
     names(Q)[length(Q)] <- combo_ls[[i]][3]
@@ -970,7 +974,7 @@ for (i in 1:length(combo_ls)) {
 
 Note: some labels may have been removed, if too many labels overlap.
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center', results='asis'}
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.5, 5.5), fig.align = 'center', results='asis'}
 make_tab <- function(x) {      # function to make the tabs
   cat("\n")                    # Space
   cat("####", names(x), "\n")  # Label tab
@@ -1097,7 +1101,7 @@ if (opt$genesets != "none") {
   root_cltypes <- names(which(sapply(sapply(V(g), 
                                             function(x) { 
                                               neighbors(g, x, mode="in") 
-                                              }), 
+                                            }), 
                                      length) == 0))
   # ===================================
   xsobj <- fsobj
@@ -1110,16 +1114,19 @@ if (opt$genesets != "none") {
   # ===================================
   gns <- gene.sets[names(gene.sets) %in% root_cltypes]
   gns <- unique(unlist(gns))
-  p <- DotPlot(xsobj, group.by = "temp", features = gns,
-               cluster.idents = TRUE, dot.min = 0.1) + 
-    theme(axis.title = element_blank(),
-          axis.text.y = element_text(size = ifelse(length(gns) < 30, 10, 8)),
-          axis.text.x = element_text(size = 10, angle = 25, hjust = 1, vjust = 1),
-          legend.position = "none") +
-      coord_flip()
-  if (length(gns) > 30) { p <- p + scale_x_discrete(guide = guide_axis(n.dodge=2))}
-  layers[[length(layers) + 1]] <- p
-  names(layers)[length(layers)] <- "Master"
+  if (length(gns) > 60) {
+    gns_ls <- split(gns, ceiling(seq_along(gns)/60))
+    for (i in 1:length(gns_ls)) {
+      ftrs <- gns_ls[[i]]
+      p <- DotPlot_helper(sobj=xsobj, ftrs=ftrs)  
+      layers[[length(layers) + 1]] <- p
+      names(layers)[length(layers)] <- paste("Master", i, sep = "-")
+    }
+  } else {
+    p <- DotPlot_helper(sobj=xsobj, ftrs=gns)
+    layers[[length(layers) + 1]] <- p
+    names(layers)[length(layers)] <- "Master"
+  }
   # ===================================
   for (cltype in sort(names(gene.sets))) {
     # ===================================
@@ -1135,16 +1142,19 @@ if (opt$genesets != "none") {
     # print(table(xsobj$temp))
     gns <- gene.sets[names(gene.sets) %in% childs]
     gns <- unique(unlist(gns))
-    p <- DotPlot(xsobj, group.by = "temp", features = gns,
-                 cluster.idents = TRUE, dot.min = 0.1) + 
-    theme(axis.title = element_blank(),
-          axis.text.y = element_text(size = ifelse(length(gns) < 30, 10, 8)),
-          axis.text.x = element_text(size = 10, angle = 25, hjust = 1, vjust = 1),
-          legend.position = "none") +
-      coord_flip()
-    if (length(gns) > 30) { p <- p + scale_x_discrete(guide = guide_axis(n.dodge=2))}
-    layers[[length(layers) + 1]] <- p
-    names(layers)[length(layers)] <- cltype
+    if (length(gns) > 60) {
+      gns_ls <- split(gns, ceiling(seq_along(gns)/60))
+      for (i in 1:length(gns_ls)) {
+        ftrs <- gns_ls[[i]]
+        p <- DotPlot_helper(sobj=xsobj, ftrs=ftrs)  
+        layers[[length(layers) + 1]] <- p
+        names(layers)[length(layers)] <- paste(cltype, i, sep = "-")
+      }
+    } else {
+      p <- DotPlot_helper(sobj=xsobj, ftrs=gns)
+      layers[[length(layers) + 1]] <- p
+      names(layers)[length(layers)] <- cltype 
+    }
   }
 }
 ```
@@ -1152,7 +1162,7 @@ if (opt$genesets != "none") {
 `r if (opt$genesets != "none") { "### Sargent marker expression {.tabset .tabset-fade .tabset-dropdown}" }`
 `r if (opt$genesets != "none") { "Expression level of selected genes for each group. Color indicates the average expression and size indicates the percent expressed." }`
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 7.5), fig.align = 'center', results='asis'}
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.0, 8.5), fig.align = 'center', results='asis'}
 if (opt$genesets != "none") {
   make_tab <- function(x) {      # function to make the tabs
     cat("\n")                    # Space
