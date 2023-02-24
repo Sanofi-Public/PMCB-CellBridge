@@ -958,10 +958,11 @@ for (i in 1:length(combo_ls)) {
             axis.ticks = element_blank(),
             panel.background = element_blank(),
             legend.position = "right",
-            legend.key.height=grid::unit(20, "points"), 
+            legend.key.height=grid::unit(25, "points"), 
             legend.key.width=grid::unit(15, "points"),
             legend.spacing=grid::unit(2, "points"),
-            legend.text = element_text(size = 7, face = "bold")) 
+            legend.text = element_text(size = 7, face = "bold"))  +
+      guides(color=guide_legend(ncol=1))
     Q[[length(Q) + 1]] <- p
     names(Q)[length(Q)] <- combo_ls[[i]][3]
   }
@@ -1007,7 +1008,7 @@ for (i in 1:length(combo_ls)) {
       theme(plot.title = element_blank(),
             axis.title.x = element_blank(),
             axis.title.y = element_text(size=28, face="bold"),
-            axis.text.x = element_text(size=18, face="bold", angle=45, hjust=1, vjust=1),
+            axis.text.x = element_text(size=18, face="bold", angle=25, hjust=1, vjust=1),
             axis.text.y = element_text(size=25, face="bold")) + 
       xlab("Cluster") + ylab("Number of cells") + 
       geom_bar(data = db_plot,
