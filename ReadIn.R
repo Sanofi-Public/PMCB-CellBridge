@@ -1,7 +1,7 @@
 # ===================================
 # script to read in count matrices
 # ===================================
-readIn <- function(project.path, opt) {
+readIn <- function(project.path, package.path, opt) {
   # ===================================
   if (opt$metadata == "sample_based") {
     # readin sample based metadata
@@ -31,6 +31,10 @@ readIn <- function(project.path, opt) {
     meta_data[, apply(meta_data, 2, function(x) all(x == "n_char > 50"))] <- NULL
   }
   # ===================================
+  if (opt$genetype == "hgnc_symbol" & opt$species == "hs") {
+    xxTOhs <- read.table(file.path(package.path, "Hs_ensembl.txt"))
+  }
+  # ===================================
   samples <- unique(meta_data$sample)
   obj_ls <- list()
   obj_summ <- data.frame()
@@ -38,7 +42,9 @@ readIn <- function(project.path, opt) {
     id <- meta_data$sample_id[meta_data$sample == smpl]
     message(paste("***", smpl, "->", id))
     filein <- list.files(file.path(project.path, smpl), recursive=FALSE, full.names=FALSE)
-    sfx <- tools::file_ext(filein)
+    # sfx <- tools::file_ext(filein)
+    nm <- tools::file_path_sans_ext(filein, compression = TRUE)
+    sfx <- gsub(paste0(nm, "."), "", filein)
     if (unique(sfx) == "gz") {
       # Should show barcodes.tsv.gz, features.tsv.gz, and matrix.mtx.gz
       if (length(sfx) != 3) {
@@ -56,6 +62,21 @@ readIn <- function(project.path, opt) {
       }
       ind.data <- Read10X_h5(filename=file.path(project.path, smpl, filein), 
                              use.names=TRUE, unique.features=TRUE)
+    }
+    # ===================================
+    if (unique(sfx) == "txt.gz") {
+      # Should show filtered_feature_bc_matrix.h5
+      if (length(sfx) > 1) {
+        msg <- paste("Directory should contain one *.txt.gz file")
+        stop(msg)
+      }
+      ind.data <- data.table::fread(file = file.path(project.path, smpl, filein)) %>%
+        tibble::column_to_rownames("V1")
+    }
+    # ===================================
+    if (opt$genetype == "hgnc_symbol" & opt$species == "hs") {
+      message(paste("***", "converting ensembl gene ids"))
+      ind.data <- EnsemblToGnHs(ind.data, convr = xxTOhs)  
     }
     # ===================================
     message(paste("***", "ngene:", dim(ind.data)[1], " ncell:", dim(ind.data)[2]))

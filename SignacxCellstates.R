@@ -23,7 +23,7 @@ signacxCellstates <- function(sobj, package.path, opt) {
     conv_gene <- sapply(rownames(sobj_tmp), function(x){
       converta2(gene=x, conv=xxTOhs)
     })
-    sobj_tmp <- RenameGenesSeurat(obj=sobj_tmp, newnames=conv_gene)
+    sobj_tmp <- RenameGenesSeurat(obj=sobj_tmp, newnames=as.vector(conv_gene))
     # generate cell type labels
     set.seed(42)
     cr <- Signac(E=sobj_tmp, set.seed=TRUE, seed="42", graph.used="nn")

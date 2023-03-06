@@ -105,7 +105,7 @@ ARG R_DEPS="c('devtools', 'optparse', 'dplyr', 'ggplot2', 'pheatmap', 'grid', \
             'reticulate', 'purrr', 'kableExtra', 'RcppAnnoy', 'uwot', 'ggrepel', \
             'Seurat', 'SignacX', 'igraph', 'gridtext', 'gplots', 'gtools', \
             'BiocManager', 'hdf5r', 'readxl', 'DT', 'data.tree', 'plotly', \
-            'visNetwork')"
+            'visNetwork', 'data.table', 'R.utils')"
 RUN Rscript -e "install.packages(${R_DEPS}, clean=TRUE)"
 # RE harmony error : https://github.com/immunogenomics/harmony/issues/166
 # RUN Rscript -e "devtools::install_github('eddelbuettel/harmony', force=TRUE)"
@@ -125,6 +125,7 @@ RUN ln Base.R /usr/local/bin/cellbridge
 # ===================================
 RUN Rscript ./Mouse.R
 RUN Rscript ./MacacaFascicularis.R
+RUN Rscript ./HgncEnsembl.R
 # ===================================
 # The VOLUME instruction and the -v option to docker run tell docker to store 
 # files in a directory on the host instead of in the container’s file system.

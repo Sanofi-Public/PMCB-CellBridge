@@ -201,3 +201,24 @@ DotPlot_helper <- function(sobj, ftrs) {
 }
 # ===================================
 # =================================== 
+EnsemblToGnHs <- function(obj, convr){
+  conv_gene <- sapply(rownames(obj), function(x){
+    converta2(gene=x, conv=convr)
+  })
+  stopifnot(dim(obj)[1] == length(conv_gene))
+  
+  dups <- which(duplicated(conv_gene))
+  dups <- which(as.vector(conv_gene) %in% as.vector(conv_gene)[dups]) 
+  
+  if (length(dups) > 0) {
+    message(paste("*** removed", length(dups)/2, "duplicated genes"))
+    conv_gene <- conv_gene[-dups]
+    obj <- obj[-dups, ]
+    stopifnot(dim(obj)[1] == length(conv_gene))
+  }
+  
+  rownames(obj) <- as.vector(conv_gene)
+  return(obj)
+}
+# ===================================
+# =================================== 

@@ -5,9 +5,9 @@ pipe_version <- "1.0.0"
 ### Call libraries
 libs <- list("optparse", "dplyr", "Seurat", "ggplot2", "ggrepel", "pheatmap", 
              "grid", "gridExtra", "cowplot", "RColorBrewer", "reticulate", 
-             "purrr", "kableExtra", "harmony", 'SignacX', 'sargent', 'igraph', 
-             'gridtext', 'gplots', 'gtools', 'readxl', 'DT', 'data.tree', 
-             'plotly', 'visNetwork', 'ComplexHeatmap')
+             "purrr", "kableExtra", "harmony", "SignacX", "sargent", "igraph", 
+             "gridtext", "gplots", "gtools", "readxl", "DT", "data.tree", 
+             "plotly", "visNetwork", "ComplexHeatmap", "data.table")
 shh <- suppressPackageStartupMessages
 loads <- sapply(libs, function(x){
   shh(require(x, character.only=TRUE))
@@ -46,11 +46,16 @@ option_list <- list(
                         metavar="character"),
   optparse::make_option(c("--genesets"), type="character", default="none", 
                         help="genesets for celltype annotation with SARGENT. 
-                        currently one of the 'none', 'curated', 'pbmc', 'cns', or 'nasal',
+                        Currently one of the 'none', 'curated', 'pbmc', 'cns', or 'nasal',
                         NOTE: if 'curated', the gene-sets must be provided in the 
                         'genesets.xlsx' format.
                         NOTE: genesets for 'pbmc','cns' (central nervous system), 
                         and 'nasal' are embedded.
+                        (default: 'none')", 
+                        metavar="character"),
+  optparse::make_option(c("--genetype"), type="character", default="none", 
+                        help="converts input ensembl gene ids to gene names.
+                        Currently one of the 'none' or 'hgnc_symbol' for human,
                         (default: 'none')", 
                         metavar="character"),
   optparse::make_option(c("--docker"), type="logical", default=TRUE, 
@@ -172,6 +177,7 @@ if (FALSE) {
   opt$mrk_min_pct <- 0.9
   opt$genesets <- "pbmc"
   opt$mrk_top_n <- 25
+  opt$genetype <- "hgnc_symbol"
 }
 # ===================================
 ### Rscript --vanilla read_in_samples.R /cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/RP/data_for_spring > project.out 2> project.err

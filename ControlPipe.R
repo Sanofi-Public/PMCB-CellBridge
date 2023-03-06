@@ -16,6 +16,7 @@ controlPipe <- function(package.path, project.path, opt, pipe_version) {
   # ===================================
   message("** running readIn function")
   readin.res <- readIn(project.path=project.path, 
+                       package.path=package.path,
                        opt=opt)
   # ===================================
   if (opt$scr_th != 0) { message("** running scrubletR function") }
