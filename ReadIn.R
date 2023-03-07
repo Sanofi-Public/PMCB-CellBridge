@@ -44,17 +44,16 @@ readIn <- function(project.path, package.path, opt) {
     filein <- list.files(file.path(project.path, smpl), recursive=FALSE, full.names=FALSE)
     # sfx <- tools::file_ext(filein)
     nm <- tools::file_path_sans_ext(filein, compression = TRUE)
-    sfx <- gsub(paste0(nm, "."), "", filein)
-    if (unique(sfx) == "gz") {
+    sfx <- sapply(1:length(nm), function(x) { gsub(paste0(nm[x], "."), "", filein[x]) })
+    # sfx <- gsub(paste0(nm, "."), "", filein)
+    if (all(unique(sfx) %in%  c("tsv.gz", "mtx.gz"))) {
       # Should show barcodes.tsv.gz, features.tsv.gz, and matrix.mtx.gz
       if (length(sfx) != 3) {
         msg <- paste("Directory should contain 3 barcodes.tsv.gz, features.tsv.gz, and matrix.mtx.gz files")
         stop(msg)
       }
       ind.data <- Read10X(data.dir=file.path(project.path, smpl)) 
-    }
-    # ===================================
-    if (unique(sfx) == "h5") {
+    } else if (unique(sfx) == "h5") {
       # Should show filtered_feature_bc_matrix.h5
       if (length(sfx) > 1) {
         msg <- paste("Directory should contain one *.h5 file")
@@ -62,9 +61,7 @@ readIn <- function(project.path, package.path, opt) {
       }
       ind.data <- Read10X_h5(filename=file.path(project.path, smpl, filein), 
                              use.names=TRUE, unique.features=TRUE)
-    }
-    # ===================================
-    if (unique(sfx) == "txt.gz") {
+    } else if (unique(sfx) == "txt.gz") {
       # Should show filtered_feature_bc_matrix.h5
       if (length(sfx) > 1) {
         msg <- paste("Directory should contain one *.txt.gz file")
@@ -72,6 +69,9 @@ readIn <- function(project.path, package.path, opt) {
       }
       ind.data <- data.table::fread(file = file.path(project.path, smpl, filein)) %>%
         tibble::column_to_rownames("V1")
+    } else {
+      msg <- paste("unidetified input file format.")
+      stop(msg)
     }
     # ===================================
     if (opt$genetype == "hgnc_symbol" & opt$species == "hs") {
