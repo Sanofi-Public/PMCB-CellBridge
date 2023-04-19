@@ -110,7 +110,7 @@ RUN Rscript -e "install.packages(${R_DEPS}, clean=TRUE)"
 # RE harmony error : https://github.com/immunogenomics/harmony/issues/166
 # RUN Rscript -e "devtools::install_github('eddelbuettel/harmony', force=TRUE)"
 RUN Rscript -e "devtools::install_github('immunogenomics/harmony')"
-RUN Rscript -e "devtools::install_github('Sanofi-GitHub/PMCB-Sargent', auth_token='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')"
+RUN Rscript -e "devtools::install_github('Sanofi-Public/PMCB-Sargent')"
 # ===================================
 ARG R_BIOC="c('biomaRt', 'Orthology.eg.db', 'org.Hs.eg.db', 'org.Mm.eg.db', \
               'limma', 'ComplexHeatmap')"

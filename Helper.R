@@ -188,8 +188,9 @@ replacegrepl <- function(vec, from, to) {
 # ===================================
 # =================================== 
 DotPlot_helper <- function(sobj, ftrs) {
+  clst.idnts <- ifelse(sum(ftrs %in% rownames(sobj)) > 2 & length(unique(sobj$temp)) > 2, TRUE, FALSE)
   p <- DotPlot(sobj, group.by = "temp", features = ftrs,
-               cluster.idents = TRUE, dot.min = 0.1) + 
+               cluster.idents = clst.idnts, dot.min = 0.1) + 
     theme(axis.title = element_blank(),
           axis.text.y = element_text(size = ifelse(length(ftrs) < 30, 10, 8)),
           axis.text.x = element_text(size = 8, angle = 25, hjust = 1, vjust = 1),
