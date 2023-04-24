@@ -669,6 +669,64 @@ if (opt$tsne) { plot(Q[["sample_id-tsne"]]) }
 - - -
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+combo_ls <- list(c("nCount_RNA", "spring", "UMI per cell - SPRING Projection"),
+                 c("nFeature_RNA", "spring", "Gene per cell - SPRING Projection"),
+                 c("percent_mt", "spring", "Mitochondrial (%) per cell - SPRING Projection"),
+                 c("nCount_RNA", "umap", "UMI per cell - UMAP Projection"),
+                 c("nFeature_RNA", "umap", "Gene per cell - UMAP Projection"),
+                 c("percent_mt", "umap", "Mitochondrial (%) per cell - UMAP Projection"),
+                 c("nCount_RNA" ,"tsne", "UMI per cell - TSNE Projection"),
+                 c("nFeature_RNA" ,"tsne", "Gene per cell - TSNE Projection"),
+                 c("percent_mt", "tsne", "Mitochondrial (%) per cell - TSNE Projection"))
+Q <- list()
+for (i in 1:length(combo_ls)) {
+  if (combo_ls[[i]][2] %in% Reductions(fsobj)) {
+    
+    p <- plot_density(fsobj, 
+                      features = combo_ls[[i]][1], 
+                      reduction = combo_ls[[i]][2],
+                      method = "ks", size = 1, pal = "inferno") +
+      getBaseTheme() +
+      theme(plot.title = element_blank(),
+            axis.title = element_text(size = 12, face = "bold"),
+            axis.text = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            axis.ticks = element_blank(),
+            panel.background = element_blank(),
+            legend.key.height=grid::unit(15, "points"), 
+            legend.key.width=grid::unit(50, "points"),
+            legend.spacing=grid::unit(2, "points"),
+            legend.text = element_text(size = 14, face = "bold")) +
+      guides(fill = "none", color = "none")
+    
+    Q[[length(Q) + 1]] <- p
+    names(Q)[length(Q)] <- combo_ls[[i]][3]
+  }
+}
+```
+
+### QC results by dimension reduction {.tabset .tabset-fade .tabset-dropdown}
+
+Note: QC metrics based on kernel density estimation.
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.0), fig.align = 'center', results='asis'}
+make_tab <- function(x) {      # function to make the tabs
+  cat("\n")                    # Space
+  cat("####", names(x), "\n")  # Label tab
+  plot(x[[1]])                 # Display plot
+  cat("\n")                    # Space
+}
+for(i in 1:length(Q)){
+  make_tab(Q[i])
+}
+```
+
+### {-}
+
+- - -
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
 if (opt$tsne) {
   combo_ls <- list(c("seurat_clusters", "umap"),
                    c("seurat_clusters", "tsne"),
