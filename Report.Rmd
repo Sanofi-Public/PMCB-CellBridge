@@ -8,6 +8,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 output:
   html_document:
+    css: style.css
     fig_caption: true
     df_print: kable
     toc: true
@@ -75,6 +76,8 @@ local({
 
 - - -
 
+# Data Summary
+
 ```{r cellbox, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.height=1.5, fig.width=10.0}
 summ1 <- sum(pre.qc.summ$cell)
 summ2 <- sum(post.qc.summ$cell)
@@ -111,10 +114,12 @@ grid.draw(g)
 
 - - -
 
-# Parameters used in the pipeline
+# BridgeSettings
+
+Configuration Settings for the Workflow
 
 ```{r table-1, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
-  rm.mtdata <- c("project", "docker", "input", "help", "only_qc")
+  rm.mtdata <- c("project", "docker", "input", "help", "only_qc", "paper_url", "data_url")
   data.frame(opt) %>% 
     dplyr::select(names(opt)[!names(opt) %in% rm.mtdata]) %>%
     kable() %>%
@@ -126,7 +131,7 @@ grid.draw(g)
 
 - - -
 
-# Quality control
+# BridgeQC
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
 umi_per_cell <- data.frame()
@@ -163,9 +168,9 @@ rownames(gene_per_cell) <- names(sobj_ls)
 rownames(mt_per_cell) <- names(sobj_ls)
 ```
 
-### Each sample characteristics, demographics, and QC metrics {.tabset}
+## Sample-level Characteristics and Quality Control Metrics {.tabset}
 
-#### Metadata
+### Metadata
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
 meta_data %>%
@@ -178,7 +183,7 @@ meta_data %>%
   scroll_box(width = "100%", height = "200px")
 ```
 
-#### Cells & Genes
+### Cells & Genes
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
 pre.qc.summ %>%
@@ -202,7 +207,7 @@ pre.qc.summ %>%
   scroll_box(width = "100%", height = "200px")
 ```
 
-#### UMI per cell
+### UMI per cell
 
 Vales are post-QC.
 
@@ -216,7 +221,7 @@ umi_per_cell %>%
   scroll_box(width = "100%", height = "200px")
 ```
 
-#### Gene per cell
+### Gene per cell
 
 Vales are post-QC.
 
@@ -230,7 +235,7 @@ gene_per_cell %>%
   scroll_box(width = "100%", height = "200px")
 ```
 
-#### Mitochondrial (%) per cell
+### Mitochondrial (%) per cell
 
 Vales are post-QC.
 
@@ -244,7 +249,7 @@ mt_per_cell %>%
   scroll_box(width = "100%", height = "200px")
 ```
 
-### {-}
+## {-}
 
 - - -
 
@@ -315,29 +320,29 @@ mt_per_cell %>%
   # ===================================
 ```
 
-### QC metrics distibution {.tabset}
+## Distribution Plots for Quality Control Metrics {.tabset}
 
-Dashed lines indicate the thresholds used to filter the data to only include cells with high quality.
+Thresholds, represented by dashed lines, were implemented to filter the data and only retain cells of high quality.
 
-#### UMI per cell
+### UMI per cell
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
 plot(Q[[1]])
 ```
 
-#### Gene per cell
+### Gene per cell
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
 plot(Q[[2]])
 ```
 
-#### Mitochondrial (%) per cell
+### Mitochondrial (%) per cell
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
 plot(Q[[3]])
 ```
 
-### {-}
+## {-}
 
 - - -
 
@@ -371,9 +376,9 @@ bc.qc.ji <- bc.qc.ji[!apply(bc.qc.ji, 1, function(x) sum(x == 0) == (n.sample-1)
                      !apply(bc.qc.ji, 2, function(x) sum(x == 0) == (n.sample-1))]
 ```
 
-### Barcodes contamination {.tabset}
+## Barcodes contamination {.tabset}
 
-#### Raw count
+### Raw count
 
 Number of barcodes shared between pairs of samples post-QC.
 
@@ -390,7 +395,7 @@ if (length(bc.qc.raw) != 0) {
 }
 ```
 
-#### Jaccard Index
+### Jaccard Index
 
 Fraction (%) of barcodes shared between pairs of samples post-QC.
 
@@ -407,13 +412,13 @@ if (length(bc.qc.ji) != 0) {
 }
 ```
 
-### {-}
+## {-}
 
 - - -
 
 `r keyval <- opt$scr_th != 0`
 
-`r if (keyval) {"### Doublet scores distribution {.tabset}"}`
+`r if (keyval) {"## Doublet Cell Detection using Scrublet Scoring System {.tabset}"}`
 
 `r if (keyval) {"Observed scores are used for doublet classification. Dashed line indicates the threshold used to identify doublets."}`
 
@@ -467,24 +472,24 @@ p <- ggplot() +
 Q[[length(Q) + 1]] <- p
 ```
 
-`r if(keyval) {"#### Observed scores"}`
+`r if(keyval) {"### Observed scores"}`
 
 ```{r eval=keyval, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
 plot(Q[[1]])
 ```
 
-`r if(keyval) {"#### Simulated scores"}`
+`r if(keyval) {"### Simulated scores"}`
 
 ```{r eval=keyval, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
 plot(Q[[2]])
 ```
 
-`r if(keyval) {"### {-}"}`
+`r if(keyval) {"## {-}"}`
 
 `r if(keyval) {"- - -"}`
 
 
-### Cells, genes, and UMIs abundances {.tabset}
+## Impact of Quality Control on Cell, Gene, and UMI Abundances {.tabset}
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
 db_plot <- bind_rows(pre.qc.summ, post.qc.summ) %>%
@@ -549,7 +554,7 @@ p2 <- ggplot(db_plot,
                 width = 0.1, size = 0.2) 
 ```
 
-#### Number of cells and genes per sample
+### Number of cells and genes per sample
 
 <span style="color:steelblue">diamonds</span> and <span style="color:firebrick">diamonds</span> refer to before and after QC, respectively.
 
@@ -559,7 +564,9 @@ ggplotly(p1, tooltip = c("sample_id", "cell", "gene"))
 ```
 <center>
 
-#### Average number of UMIs/cell and genes/cell per sample
+### Average number of UMIs/cell and genes/cell per sample
+
+The error bars represent the standard deviation of the number of UMIs and genes across cells per sample.
 
 <center>
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.0), fig.align = 'center'}
@@ -567,11 +574,11 @@ ggplotly(p2, tooltip = c("sample_id", "cell", "gene"))
 ```
 <center>
 
-### {-}
+## {-}
 
 - - -
 
-### Summary of the data after quality filters
+## Key QC Metrics of Merged Samples
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
 # UMI per cell
@@ -643,29 +650,29 @@ for (i in 1:length(combo_ls)) {
 }
 ```
 
-### Samples dimension reduction {.tabset}
+## Visualization of Merged scRNA-Seq Object in 2D Space {.tabset}
 
-Note: some labels may have been removed, if too many labels overlap.
+Note: Labels may have been removed if they overlap excessively.
 
-#### Signacx SPRING Projection
+### Signacx SPRING Projection
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
 plot(Q[["sample_id-spring"]])
 ```
 
-#### Seurat UMAP Projection
+### Seurat UMAP Projection
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
 plot(Q[["sample_id-umap"]])
 ```
 
-`r if (opt$tsne) { "#### Seurat TSNE Projection" }`
+`r if (opt$tsne) { "### Seurat TSNE Projection" }`
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
 if (opt$tsne) { plot(Q[["sample_id-tsne"]]) }
 ```
 
-### {-}
+## {-}
 
 - - -
 
@@ -707,14 +714,14 @@ for (i in 1:length(combo_ls)) {
 }
 ```
 
-### QC results by dimension reduction {.tabset .tabset-fade .tabset-dropdown}
+## Visualizing Cell QC Metrics Using Dimensionality Reduction {.tabset .tabset-fade .tabset-dropdown}
 
 Note: QC metrics based on kernel density estimation.
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.0), fig.align = 'center', results='asis'}
 make_tab <- function(x) {      # function to make the tabs
   cat("\n")                    # Space
-  cat("####", names(x), "\n")  # Label tab
+  cat("###", names(x), "\n")  # Label tab
   plot(x[[1]])                 # Display plot
   cat("\n")                    # Space
 }
@@ -723,7 +730,7 @@ for(i in 1:length(Q)){
 }
 ```
 
-### {-}
+## {-}
 
 - - -
 
@@ -764,35 +771,35 @@ for (i in 1:length(combo_ls)) {
 }
 ```
 
-# Clustering
+# BridgeCluster
 
-Note: some labels may have been removed, if too many labels overlap.
+Note: Labels may have been removed if they overlap excessively.
 
-### Dimension reduction {.tabset}
+## Visualizing Cell Populations with Dimensionality Reduction {.tabset}
 
-#### Signacx SPRING Projection
+### Signacx SPRING Projection
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
 plot(Q[["signacx_clusters-spring"]])
 ```
 
-#### Seurat UMAP Projection
+### Seurat UMAP Projection
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
 plot(Q[["seurat_clusters-umap"]])
 ```
 
-`r if (opt$tsne) { "#### Seurat TSNE Projection" }`
+`r if (opt$tsne) { "### Seurat TSNE Projection" }`
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
 if (opt$tsne) { plot(Q[["seurat_clusters-tsne"]]) }
 ```
 
-### {-}
+## {-}
 
 - - -
 
-### Number of cells per cluster {.tabset}
+## Cell Cluster Composition {.tabset}
 
 Values at the top of each bar indicate the percentage of cells
 
@@ -830,19 +837,19 @@ for (cls in as.vector(clusters)) {
 }
 ```
 
-#### Seurat 
+### Seurat 
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
 plot(Q[[1]])
 ```
 
-#### Signacx 
+### Signacx 
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
 plot(Q[[2]])
 ```
 
-### {-}
+## {-}
 
 - - -
 
@@ -902,23 +909,23 @@ if (opt$harmony == "none") {
 }
 ```
 
-### Clusters distribution per `r paste(vars, collapse=' and ')` {.tabset}
+## Statistical Dispersion Analysis of Cell Composition in Clusters per `r paste(vars, collapse=' and ')` {.tabset}
 
 This measurement is a proxy to batch effect artifacts. Values adjacent to each point indicate the number of cells.
 
-#### Seurat 
+### Seurat 
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
 plot(Q[[1]])
 ```
 
-#### Signacx 
+### Signacx 
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 7.5), fig.align = 'center'}
 plot(Q[[2]])
 ```
 
-### {-}
+## {-}
 
 - - -
 
@@ -959,11 +966,11 @@ mrks <- lapply(mrks, function(x){
 })
 ```
 
-`r if (opt$mrk_top_n != 0) { "### Markers per cluster {.tabset}" }`
+`r if (opt$mrk_top_n != 0) { "## Markers per cluster {.tabset}" }`
 
 `r if (opt$mrk_top_n != 0) { paste("Top", opt$mrk_top_n, "differentially expressed genes ( p_val_adj < 0.05 and pct.1 >", opt$mrk_min_pct, ") for each of the clusters") }`
 
-`r if (opt$mrk_top_n != 0) { "#### Seurat" }`
+`r if (opt$mrk_top_n != 0) { "### Seurat" }`
 
 ```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE}
 x <- data.frame(mrks$seurat_clusters)
@@ -973,7 +980,7 @@ datatable(head(x, n = nrow(x)), rownames = FALSE,
           options = list(pageLength = 5, scrollX = T))
 ```
 
-`r if (opt$mrk_top_n != 0) { "#### Signacx" }`
+`r if (opt$mrk_top_n != 0) { "### Signacx" }`
 
 ```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE}
 x <- data.frame(mrks$signacx_clusters)
@@ -983,7 +990,7 @@ datatable(head(x, n = nrow(x)), rownames = FALSE,
           options = list(pageLength = 5, scrollX = T))
 ```
 
-`r if (opt$mrk_top_n != 0) { "### {-}" }`
+`r if (opt$mrk_top_n != 0) { "## {-}" }`
 
 `r if (opt$mrk_top_n != 0) { "- - -" }`
 
@@ -1029,16 +1036,16 @@ for (i in 1:length(combo_ls)) {
 }
 ```
 
-# Annotation results
+# BridgeAnnotation
 
-### Celltypes dimension reduction {.tabset .tabset-fade .tabset-dropdown}
+## Visualizing Distinct Cell Type Populations with Dimensionality Reduction {.tabset .tabset-fade .tabset-dropdown}
 
-Note: some labels may have been removed, if too many labels overlap.
+Note: Labels may have been removed if they overlap excessively.
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(7.5, 5.5), fig.align = 'center', results='asis'}
 make_tab <- function(x) {      # function to make the tabs
   cat("\n")                    # Space
-  cat("####", names(x), "\n")  # Label tab
+  cat("###", names(x), "\n")  # Label tab
   plot(x[[1]])                 # Display plot
   cat("\n")                    # Space
 }
@@ -1047,7 +1054,7 @@ for(i in 1:length(Q)){
 }
 ```
 
-### {-}
+## {-}
 
 - - -
 
@@ -1089,14 +1096,14 @@ for (i in 1:length(combo_ls)) {
 }
 ```
 
-### Celltype count {.tabset}
+## Cell Type Population Composition {.tabset}
 
 Values at the top of each bar indicate the percentage of cells
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(17.5, 9.5), fig.align = 'center', results='asis'}
 make_tab <- function(x) {      # function to make the tabs
   cat("\n")                    # Space
-  cat("####", names(x), "\n")  # Label tab
+  cat("###", names(x), "\n")  # Label tab
   plot(x[[1]])                 # Display plot
   cat("\n")                    # Space
 }
@@ -1105,11 +1112,11 @@ for(i in 1:length(Q)){
 }
 ```
 
-### {-}
+## {-}
 
 - - -
 
-`r if (opt$genesets != "none") { "### Sargent gene-sets" }`
+`r if (opt$genesets != "none") { "## Visualizing the Hierarchy of User-Provided Gene Sets" }`
 
 <center>
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center'}
@@ -1221,14 +1228,14 @@ if (opt$genesets != "none") {
 }
 ```
 
-`r if (opt$genesets != "none") { "### Sargent marker expression {.tabset .tabset-fade .tabset-dropdown}" }`
+`r if (opt$genesets != "none") { "## Evaluating Sargent Cell Type Annotation with Gene Marker Expression {.tabset .tabset-fade .tabset-dropdown}" }`
 `r if (opt$genesets != "none") { "Expression level of selected genes for each group. Color indicates the average expression and size indicates the percent expressed." }`
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.0, 8.5), fig.align = 'center', results='asis'}
 if (opt$genesets != "none") {
   make_tab <- function(x) {      # function to make the tabs
     cat("\n")                    # Space
-    cat("####", names(x), "\n")  # Label tab
+    cat("###", names(x), "\n")  # Label tab
     plot(x[[1]])                 # Display plot
     cat("\n")                    # Space
   }
@@ -1241,9 +1248,29 @@ if (opt$genesets != "none") {
 `r if (opt$genesets != "none") { "---" }`
 
 
-# Session information
+# References
 
-This is the output of `sessionInfo()` on the system on which this document was compiled
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, results='asis'}
+if (!is.null(opt$paper_url)) {
+  cat(paste0("Publication: [paper](", opt$paper_url,")", collapse="\n\n"), sep="\n")
+} else {
+  cat(paste0("Publication: no referrence"), sep="\n")
+}
+```
+
+```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, results='asis'}
+if (!is.null(opt$data_url)) {
+  cat(paste0("Data Availability: [data](", opt$data_url,")", collapse="\n\n"), sep="\n")
+} else {
+  cat(paste0("Data Availability: no referrence"), sep="\n")
+}
+```
+
+- - -
+
+# Session Information
+
+This is the output of `sessionInfo()` on the computing system on which this document was compiled
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, max.height='300px'}
 sessionInfo()

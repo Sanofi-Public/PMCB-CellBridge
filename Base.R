@@ -159,7 +159,16 @@ option_list <- list(
   optparse::make_option(c("--mrk_top_n"), type="integer", default=25, 
                         help="return top n differentially expressed genes  
                         (default: 25). If zero, skip the marker identification.", 
-                        metavar="integer")
+                        metavar="integer"),
+  # References
+  optparse::make_option(c("--paper_url"), type="character", default=NULL, 
+                        help="url link to the refernce paper 
+                        (default=no url)", 
+                        metavar="character"),
+  optparse::make_option(c("--data_url"), type="character", default=NULL, 
+                        help="url link to the refernce data 
+                        (default=no url)", 
+                        metavar="character")
 ) 
 opt_parser <- optparse::OptionParser(option_list=option_list)
 opt <- optparse::parse_args(opt_parser)
@@ -174,10 +183,12 @@ if (FALSE) {
   opt$scr_th <- 0.25
   opt$metadata <- "sample_based"
   opt$docker <- FALSE
-  opt$mrk_min_pct <- 0.9
   opt$genesets <- "pbmc"
-  opt$mrk_top_n <- 25
+  opt$mrk_min_pct <- 0.9
+  opt$mrk_top_n <- 20
   opt$genetype <- "hgnc_symbol"
+  opt$paper_url <- "https://www.mdpi.com/1422-0067/22/14/7646"
+  opt$data_url <- "https://www.ebi.ac.uk/ena/browser/view/PRJEB44878"
 }
 # ===================================
 ### Rscript --vanilla read_in_samples.R /cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/RP/data_for_spring > project.out 2> project.err
