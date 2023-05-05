@@ -124,7 +124,7 @@ for (i in 1:length(obj_ls)) {
   }
   pctmt <- sobj$percent_mt
   summ3 <- c(min = min(pctmt), 
-             quantile(pctmt, c(0.0, 0.25, 0.5, 0.75, 1)),
+             quantile(pctmt, c(0.0, 0.25, 0.5, 0.75, 1), na.rm = TRUE),
              max = max(pctmt))
   mt_per_cell <- mt_per_cell %>%
     dplyr::bind_rows(round(summ3, 2))
