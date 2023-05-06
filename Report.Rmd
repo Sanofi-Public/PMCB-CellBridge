@@ -909,7 +909,7 @@ if (opt$harmony == "none") {
 }
 ```
 
-## Statistical Dispersion Analysis of Cell Composition in Clusters per `r paste(vars, collapse=' and ')` {.tabset}
+## Statistical Dispersion Analysis of Cell Composition in Clusters across `r paste(vars, collapse=' and ')` {.tabset}
 
 This measurement is a proxy to batch effect artifacts. Values adjacent to each point indicate the number of cells.
 
