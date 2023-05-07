@@ -688,8 +688,11 @@ combo_ls <- list(c("nCount_RNA", "spring", "UMI per cell - SPRING Projection"),
                  c("percent_mt", "tsne", "Mitochondrial (%) per cell - TSNE Projection"))
 Q <- list()
 for (i in 1:length(combo_ls)) {
+    if (combo_ls[[i]][1] == "percent_mt" & max(fsobj[["percent_mt"]]) == 0) {
+    message(paste("***", "maximum percent_mt = 0, no QC density plot."))
+    next()
+  } 
   if (combo_ls[[i]][2] %in% Reductions(fsobj)) {
-    
     p <- plot_density(fsobj, 
                       features = combo_ls[[i]][1], 
                       reduction = combo_ls[[i]][2],
@@ -707,7 +710,6 @@ for (i in 1:length(combo_ls)) {
             legend.spacing=grid::unit(2, "points"),
             legend.text = element_text(size = 14, face = "bold")) +
       guides(fill = "none", color = "none")
-    
     Q[[length(Q) + 1]] <- p
     names(Q)[length(Q)] <- combo_ls[[i]][3]
   }
