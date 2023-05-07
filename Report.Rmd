@@ -57,6 +57,7 @@ htmltools::img(src = knitr::image_uri("cellbridge_logo.png"),
     opt <- params$opt
     ui <- params$ui
     n.sample <- length(obj_ls)
+    samples <- names(obj_ls)
 ```
 
 
@@ -347,9 +348,7 @@ plot(Q[[3]])
 - - -
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
- # Check overlap of cell barcodes
-samples <- unique(meta_data$sample_id)
-
+# Check overlap of cell barcodes
 bc.qc.raw <- matrix(nrow = n.sample, ncol = n.sample)
 colnames(bc.qc.raw) <- as.vector(samples)
 rownames(bc.qc.raw) <- as.vector(samples)
@@ -367,13 +366,14 @@ for(i in samples){
     bc.qc.ji[i,j] <- qc/mean(c(dim(qi)[2],dim(qj)[2]))
   }
 }
-
-bc.qc.raw <- bc.qc.raw[!apply(bc.qc.raw, 1, function(x) sum(x == 0) == (n.sample-1)), 
-                       !apply(bc.qc.raw, 2, function(x) sum(x == 0) == (n.sample-1))]
-
-bc.qc.ji <- round(bc.qc.ji*100, 2)
-bc.qc.ji <- bc.qc.ji[!apply(bc.qc.ji, 1, function(x) sum(x == 0) == (n.sample-1)), 
-                     !apply(bc.qc.ji, 2, function(x) sum(x == 0) == (n.sample-1))]
+if (length(samples) > 1) {
+  bc.qc.raw <- bc.qc.raw[!apply(bc.qc.raw, 1, function(x) sum(x == 0) == (n.sample-1)), 
+                         !apply(bc.qc.raw, 2, function(x) sum(x == 0) == (n.sample-1))]
+  
+  bc.qc.ji <- round(bc.qc.ji*100, 2)
+  bc.qc.ji <- bc.qc.ji[!apply(bc.qc.ji, 1, function(x) sum(x == 0) == (n.sample-1)), 
+                       !apply(bc.qc.ji, 2, function(x) sum(x == 0) == (n.sample-1))]
+}
 ```
 
 ## Barcodes contamination {.tabset}

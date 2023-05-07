@@ -226,3 +226,50 @@ EnsemblToGnHs <- function(obj, convr){
 }
 # ===================================
 # =================================== 
+opt_in_sobj <- function(sobj, opt, id){
+  # ===================================
+  if (opt$harmony == "none") {
+    logik <- which(names(sobj@meta.data) != "sample")  
+    names(sobj@meta.data)[logik] <- paste0("input.", names(sobj@meta.data)[logik])
+  } else {
+    vars <- strsplit(opt$harmony, split = ",")[[1]]
+    vars <- gsub(" ", "", vars)  
+    vars <- unique(c("sample", vars))
+    logik <- which(names(sobj@meta.data) %nin% vars)  
+    names(sobj@meta.data)[logik] <- paste0("input.", names(sobj@meta.data)[logik])
+  }
+  # ===================================
+  # if (length(sobj@reductions) > 0) {
+  #   names(sobj@reductions) <- paste0("input.", names(sobj@reductions))
+  # }
+  # if (length(sobj@graphs) > 0) {
+  #   names(sobj@graphs) <- paste0("input.", names(sobj@graphs))  
+  # }
+  # if (length(sobj@misc) > 0) {
+  #   names(sobj@misc) <- paste0("input.", names(sobj@misc))
+  # }
+  # ===================================
+  meta_data_ext <- sobj@meta.data %>%
+    tibble::rownames_to_column(var = "cell") %>%
+    dplyr::rename_all(tolower) %>%
+    dplyr::group_by(sample) %>%
+    dplyr::mutate(sample_id = paste0("S", cur_group_id())) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(cell = paste(id, cell, sep = "_"))
+  # ===================================
+  meta_data <- meta_data_ext
+  meta_data$cell <- NULL
+  meta_data <- meta_data %>%
+    dplyr::group_by(sample, sample_id) %>%
+    dplyr::summarise(across(everything(), .fns = function(x){
+      y <- paste(unique(x), collapse = ",")
+      ifelse(nchar(y) > 50, "n_char > 50", y)
+    }), .groups = "drop")
+  meta_data[, apply(meta_data, 2, function(x) all(x == "n_char > 50"))] <- NULL
+  # ===================================
+  # return
+  return(list("meta_data"=meta_data,
+              "meta_data_ext"=meta_data_ext))
+}
+# ===================================
+# =================================== 

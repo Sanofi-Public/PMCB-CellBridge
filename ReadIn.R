@@ -3,9 +3,10 @@
 # ===================================
 readIn <- function(project.path, package.path, opt) {
   # ===================================
+  meta_data_ext <- NULL
+  # ===================================
   if (opt$metadata == "sample_based") {
     # readin sample based metadata
-    meta_data_ext <- NULL
     meta_data <- read.csv(file=file.path(project.path, "metadata.csv"), header=TRUE) %>%
       dplyr::rename_all(tolower) %>%
       dplyr::mutate(sample_id = paste0("S", 1:n()))  
@@ -47,14 +48,12 @@ readIn <- function(project.path, package.path, opt) {
     sfx <- sapply(1:length(nm), function(x) { gsub(paste0(nm[x], "."), "", filein[x]) })
     # sfx <- gsub(paste0(nm, "."), "", filein)
     if (all(unique(sfx) %in%  c("tsv.gz", "mtx.gz"))) {
-      # Should show barcodes.tsv.gz, features.tsv.gz, and matrix.mtx.gz
       if (length(sfx) != 3) {
         msg <- paste("Directory should contain 3 barcodes.tsv.gz, features.tsv.gz, and matrix.mtx.gz files")
         stop(msg)
       }
       ind.data <- Read10X(data.dir=file.path(project.path, smpl)) 
     } else if (unique(sfx) == "h5") {
-      # Should show filtered_feature_bc_matrix.h5
       if (length(sfx) > 1) {
         msg <- paste("Directory should contain one *.h5 file")
         stop(msg)
@@ -62,13 +61,20 @@ readIn <- function(project.path, package.path, opt) {
       ind.data <- Read10X_h5(filename=file.path(project.path, smpl, filein), 
                              use.names=TRUE, unique.features=TRUE)
     } else if (unique(sfx) == "txt.gz") {
-      # Should show filtered_feature_bc_matrix.h5
       if (length(sfx) > 1) {
         msg <- paste("Directory should contain one *.txt.gz file")
         stop(msg)
       }
       ind.data <- data.table::fread(file = file.path(project.path, smpl, filein)) %>%
         tibble::column_to_rownames("V1")
+    } else if (unique(sfx) == "rds") {
+      sobj <- readRDS(file.path(project.path, smpl, filein))
+      stopifnot(class(sobj) == "Seurat")
+      stopifnot("sample" %in% names(sobj@meta.data))
+      opt.res <- opt_in_sobj(sobj=sobj, opt=opt, id=id)
+      meta_data <- opt.res$meta_data
+      meta_data_ext <- opt.res$meta_data_ext
+      ind.data <- GetAssayData(sobj, assay="RNA", slot="counts")
     } else {
       msg <- paste("unidetified input file format.")
       stop(msg)
