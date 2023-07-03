@@ -20,8 +20,10 @@ params:
     scrub_ls: NULL
     fsobj: NULL
     meta_data: NULL
-    pre.qc.summ: NULL
-    post.qc.summ: NULL
+    pre.qc.summ.rna: NULL
+    post.qc.summ.rna: NULL
+    pre.qc.summ.adt: NULL
+    post.qc.summ.adt: NULL
     opt: NULL
     ui: NULL
 ---
@@ -52,8 +54,10 @@ htmltools::img(src = knitr::image_uri("cellbridge_logo.png"),
     scrub_ls <- params$scrub_ls
     fsobj <- params$fsobj
     meta_data <- params$meta_data
-    pre.qc.summ <- params$pre.qc.summ
-    post.qc.summ <- params$post.qc.summ
+    pre.qc.summ.rna <- params$pre.qc.summ.rna
+    post.qc.summ.rna <- params$post.qc.summ.rna
+    pre.qc.summ.adt <- params$pre.qc.summ.adt
+    post.qc.summ.adt <- params$post.qc.summ.adt
     opt <- params$opt
     ui <- params$ui
     n.sample <- length(obj_ls)
@@ -80,8 +84,8 @@ local({
 # Data Summary
 
 ```{r cellbox, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.height=1.5, fig.width=10.0}
-summ1 <- sum(pre.qc.summ$cell)
-summ2 <- sum(post.qc.summ$cell)
+summ1 <- sum(pre.qc.summ.rna$cell)
+summ2 <- sum(post.qc.summ.rna$cell)
 # UMI per cell
 exprMat <- fsobj@assays$RNA@counts
 countByCell <- colSums(exprMat)
@@ -184,16 +188,16 @@ meta_data %>%
   scroll_box(width = "100%", height = "200px")
 ```
 
-### Cells & Genes
+### Cells & Genes (RNA)
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
-pre.qc.summ %>%
+pre.qc.summ.rna %>%
   dplyr::rename(pre_qc_cell = cell,
                 pre_qc_gene = gene) %>%
   dplyr::mutate(pre_qc_cell = scales::comma(pre_qc_cell, accuracy = 1),
          pre_qc_gene = scales::comma(pre_qc_gene, accuracy = 1)) %>%
   dplyr::select(-type) %>%
-  base::merge(., post.qc.summ, by = c("sample_id")) %>%
+  base::merge(., post.qc.summ.rna, by = c("sample_id")) %>%
   dplyr::rename(post_qc_cell = cell,
                 post_qc_gene = gene) %>%
   dplyr::mutate(post_qc_cell = scales::comma(post_qc_cell, accuracy = 1),
@@ -208,7 +212,33 @@ pre.qc.summ %>%
   scroll_box(width = "100%", height = "200px")
 ```
 
-### UMI per cell
+`r eval_mrks <- ifelse(opt$adt, TRUE, FALSE)`
+
+`r if (eval_mrks) { "### Cells & Genes (ADT)" }`
+
+```{r, eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
+  pre.qc.summ.adt %>%
+  dplyr::rename(pre_qc_cell = cell,
+                pre_qc_gene = gene) %>%
+  dplyr::mutate(pre_qc_cell = scales::comma(pre_qc_cell, accuracy = 1),
+                pre_qc_gene = scales::comma(pre_qc_gene, accuracy = 1)) %>%
+  dplyr::select(-type) %>%
+  base::merge(., post.qc.summ.adt, by = c("sample_id")) %>%
+  dplyr::rename(post_qc_cell = cell,
+                post_qc_gene = gene) %>%
+  dplyr::mutate(post_qc_cell = scales::comma(post_qc_cell, accuracy = 1),
+                post_qc_gene = scales::comma(post_qc_gene, accuracy = 1)) %>%
+  dplyr::select(-type) %>%
+  dplyr::mutate(sample_id = factor(sample_id, levels = sample_id[mixedorder(sample_id)], ordered = TRUE)) %>%
+  dplyr::arrange(sample_id) %>%
+  kable() %>%
+  kable_classic(full_width = F, html_font = "Cambria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                full_width = F, fixed_thead = TRUE) %>%
+  scroll_box(width = "100%", height = "200px")
+```
+
+### UMI per cell (RNA)
 
 Vales are post-QC.
 
@@ -222,7 +252,7 @@ umi_per_cell %>%
   scroll_box(width = "100%", height = "200px")
 ```
 
-### Gene per cell
+### Gene per cell (RNA)
 
 Vales are post-QC.
 
@@ -236,7 +266,7 @@ gene_per_cell %>%
   scroll_box(width = "100%", height = "200px")
 ```
 
-### Mitochondrial (%) per cell
+### Mitochondrial (%) per cell (RNA)
 
 Vales are post-QC.
 
@@ -492,7 +522,7 @@ plot(Q[[2]])
 ## Impact of Quality Control on Cell, Gene, and UMI Abundances {.tabset}
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
-db_plot <- bind_rows(pre.qc.summ, post.qc.summ) %>%
+db_plot <- bind_rows(pre.qc.summ.rna, post.qc.summ.rna) %>%
   dplyr::group_by(sample_id) %>%
   dplyr::mutate(group = cur_group_id())
 p1 <- ggplot(db_plot, 
@@ -533,7 +563,7 @@ for (i in 1:length(sobj_ls)) {
                                 avg_count_c = mean(colSums(sobj@assays$RNA@counts != 0)), # genes/cell
                                 sd_count_c = sd(colSums(sobj@assays$RNA@counts != 0))))  
 }
-db_plot <- merge(db_plot, post.qc.summ, by = "sample_id", all = TRUE)
+db_plot <- merge(db_plot, post.qc.summ.rna, by = "sample_id", all = TRUE)
 p2 <- ggplot(db_plot, 
             aes(x = avg_count_g/1000, y = avg_count_c/1000, label = sample_id,
                 cell = cell, gene = gene)) +
@@ -721,6 +751,53 @@ for (i in 1:length(combo_ls)) {
 Note: QC metrics based on kernel density estimation.
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.0), fig.align = 'center', results='asis'}
+make_tab <- function(x) {      # function to make the tabs
+  cat("\n")                    # Space
+  cat("###", names(x), "\n")  # Label tab
+  plot(x[[1]])                 # Display plot
+  cat("\n")                    # Space
+}
+for(i in 1:length(Q)){
+  make_tab(Q[i])
+}
+```
+
+## {-}
+
+`r eval_mrks <- ifelse(opt$adt, TRUE, FALSE)`
+
+```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE}
+  adts <- rownames(fsobj@assays$ADT)
+  rds <- Reductions(fsobj)[Reductions(fsobj) %nin% c("pca")]
+  adt.fsobj <- fsobj
+  DefaultAssay(adt.fsobj) <- "ADT"
+  Q <- list()
+  for (rd in rds) {
+    for (ad in adts) {
+      p <- FeaturePlot(adt.fsobj, 
+                       features = ad, 
+                       reduction = rd, order = TRUE) +
+        getBaseTheme() +
+        theme(plot.title = element_blank(),
+              axis.title = element_text(size = 12, face = "bold"),
+              axis.text = element_blank(),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              axis.ticks = element_blank(),
+              panel.background = element_blank(),
+              legend.key.height=grid::unit(15, "points"), 
+              legend.key.width=grid::unit(50, "points"),
+              legend.spacing=grid::unit(2, "points"),
+              legend.text = element_text(size = 14, face = "bold"))
+      Q[[length(Q) + 1]] <- p
+      names(Q)[length(Q)] <- paste(ad , "-", toupper(rd), "Projection")
+    }
+  } 
+```
+
+`r if (eval_mrks) { "## Visualizing Antibody-Derived Tags (ADT) Using Dimensionality Reduction {.tabset .tabset-fade .tabset-dropdown}" }`
+
+```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.5), fig.align = 'center', results='asis'}
 make_tab <- function(x) {      # function to make the tabs
   cat("\n")                    # Space
   cat("###", names(x), "\n")  # Label tab

@@ -1,17 +1,22 @@
 # ===================================
 # script for quality control filter
 # ===================================
-qcFilter <- function(obj_ls, scrub_ls, opt) {
+qcFilter <- function(obj_ls, adt_ls, scrub_ls, opt) {
   # ===================================
   sobj_flt_ls <- list()
-  fltr_summ <- data.frame()
+  rna_flt_summ <- data.frame()
+  if (!opt$adt) {
+    adt_flt_summ <- NULL  
+  } else {  
+    adt_flt_summ <- data.frame()
+  }
   for (i in 1:length(obj_ls)) {
     # ===================================
     obj <- obj_ls[[i]]
     smpl <- names(obj_ls)[i]
     # ===================================
     message(paste("***", smpl, "QC"))
-    message(paste("***", "ngene:", dim(obj)[1], " ncell:", dim(obj)[2]))
+    # message(paste("***", "ngene:", dim(obj)[1], " ncell:", dim(obj)[2]))
     # ===================================
     if (opt$scr_th != 0){
       dblts <- scrub_ls[[smpl]][["doublet_scores_obs"]]
@@ -83,14 +88,13 @@ qcFilter <- function(obj_ls, scrub_ls, opt) {
     # double check
     stopifnot(dim(sobj)[1] == sum(rowSums(sobj) != 0))
     stopifnot(dim(sobj)[2] == sum(colSums(sobj) != 0))
+    # ===================================
     # save counts
-    fltr_summ <- fltr_summ %>%
+    rna_flt_summ <- rna_flt_summ %>%
       dplyr::bind_rows(data.frame(sample_id=smpl,
                                   type="post-qc",
                                   gene=dim(sobj)[1],
                                   cell=dim(sobj)[2]))
-    # ===================================
-    message(paste("***","ngene:", dim(obj)[1], " ncell:", dim(obj)[2]))
     # ===================================
     if (opt$scr_th != 0){
       y <- scrub_ls[[smpl]][["doublet_scores_obs"]]
@@ -101,6 +105,31 @@ qcFilter <- function(obj_ls, scrub_ls, opt) {
       )
     }
     # ===================================
+    # It is recommended to remove cells with zero reads from both the RNA and 
+    # ADT (CITE) data during the quality control step to ensure data integrity and 
+    # consistency in subsequent analyses. This is because cells with zero reads 
+    # in the RNA data are likely to be dead or dying, and they are unlikely to 
+    # be contributing to the ADT (CITE) data.
+    if (opt$adt) {
+      adt <- adt_ls[[i]]
+      sobj[["ADT"]] <- CreateAssayObject(counts=adt[, colnames(adt) %in% colnames(sobj)])
+      DefaultAssay(sobj) <- "RNA"
+      adt_flt_summ <- adt_flt_summ %>%
+        dplyr::bind_rows(data.frame(sample_id=smpl,
+                                    type="post-qc",
+                                    gene=sum(rowSums(sobj@assays$ADT@counts) != 0),
+                                    cell=sum(colSums(sobj@assays$ADT@counts) != 0)))
+    } 
+    # ===================================
+    if (!opt$adt) {
+      message(paste("*** (non-zeros)", "ngene:", dim(sobj)[1], " ncell:", dim(sobj)[2]))
+    } else {
+      message(paste("*** RNA (non-zeros) ->", "ngene:", dim(sobj)[1], " ncell:", dim(sobj)[2]))
+      message(paste("*** ADT (non-zeros) ->", 
+                    "ngene:", sum(rowSums(sobj@assays$ADT@counts) != 0), 
+                    " ncell:", sum(colSums(sobj@assays$ADT@counts) != 0)))
+    }
+    # ===================================
     sobj_flt_ls[[length(sobj_flt_ls) + 1]] <- sobj
     names(sobj_flt_ls)[length(sobj_flt_ls)] <- sobj@project.name
   }
@@ -108,7 +137,8 @@ qcFilter <- function(obj_ls, scrub_ls, opt) {
   # returns
   qcfilter.res <- new("qcfilterRes",
                       sobj_flt_ls=sobj_flt_ls,
-                      flt_summ=fltr_summ)
+                      rna_flt_summ=rna_flt_summ,
+                      adt_flt_summ=adt_flt_summ)
   return(qcfilter.res)
   # ===================================
 }

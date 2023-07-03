@@ -38,7 +38,16 @@ readIn <- function(project.path, package.path, opt) {
   # ===================================
   samples <- unique(meta_data$sample)
   obj_ls <- list()
-  obj_summ <- data.frame()
+  rna_summ <- data.frame()
+  # ===================================
+  if (!opt$adt) {
+    adt_ls <- NULL  
+    adt_summ <- NULL
+  } else {
+    adt_ls <- list()  
+    adt_summ <- data.frame()
+  }
+  # ===================================
   for (smpl in samples) {
     id <- meta_data$sample_id[meta_data$sample == smpl]
     message(paste("***", smpl, "->", id))
@@ -47,12 +56,15 @@ readIn <- function(project.path, package.path, opt) {
     nm <- tools::file_path_sans_ext(filein, compression = TRUE)
     sfx <- sapply(1:length(nm), function(x) { gsub(paste0(nm[x], "."), "", filein[x]) })
     # sfx <- gsub(paste0(nm, "."), "", filein)
+    # ===================================
     if (all(unique(sfx) %in%  c("tsv.gz", "mtx.gz"))) {
+      # ===================================
       if (length(sfx) != 3) {
         msg <- paste("Directory should contain 3 barcodes.tsv.gz, features.tsv.gz, and matrix.mtx.gz files")
         stop(msg)
       }
       ind.data <- Read10X(data.dir=file.path(project.path, smpl)) 
+      # ===================================
     } else if (unique(sfx) == "h5") {
       if (length(sfx) > 1) {
         msg <- paste("Directory should contain one *.h5 file")
@@ -60,6 +72,7 @@ readIn <- function(project.path, package.path, opt) {
       }
       ind.data <- Read10X_h5(filename=file.path(project.path, smpl, filein), 
                              use.names=TRUE, unique.features=TRUE)
+      # ===================================
     } else if (unique(sfx) == "txt.gz") {
       if (length(sfx) > 1) {
         msg <- paste("Directory should contain one *.txt.gz file")
@@ -67,6 +80,7 @@ readIn <- function(project.path, package.path, opt) {
       }
       ind.data <- data.table::fread(file = file.path(project.path, smpl, filein)) %>%
         tibble::column_to_rownames("V1")
+      # ===================================
     } else if (unique(sfx) == "rds") {
       sobj <- readRDS(file.path(project.path, smpl, filein))
       stopifnot(class(sobj) == "Seurat")
@@ -75,6 +89,7 @@ readIn <- function(project.path, package.path, opt) {
       meta_data <- opt.res$meta_data
       meta_data_ext <- opt.res$meta_data_ext
       ind.data <- GetAssayData(sobj, assay="RNA", slot="counts")
+      # ===================================
     } else {
       msg <- paste("unidetified input file format.")
       stop(msg)
@@ -85,22 +100,50 @@ readIn <- function(project.path, package.path, opt) {
       ind.data <- EnsemblToGnHs(ind.data, convr = xxTOhs)  
     }
     # ===================================
-    message(paste("***", "ngene:", dim(ind.data)[1], " ncell:", dim(ind.data)[2]))
-    obj_summ <- obj_summ %>%
-      dplyr::bind_rows(data.frame(sample_id = id,
-                                  type="pre-qc",
-                                  gene=sum(rowSums(ind.data) != 0),   # genes: number of rows with non-zero values
-                                  cell=sum(colSums(ind.data) != 0)))  # cells: number of cols with non-zero values
-    obj_ls[[length(obj_ls) + 1]] <- ind.data
-    names(obj_ls)[length(obj_ls)] <- id
+    # check assay
+    if (!opt$adt) {
+      message(paste("*** (non-zeros)", "ngene:", sum(rowSums(ind.data) != 0), " ncell:", sum(colSums(ind.data) != 0)))
+      rna_summ <- rna_summ %>%
+        dplyr::bind_rows(data.frame(sample_id = id,
+                                    type="pre-qc",
+                                    gene=sum(rowSums(ind.data) != 0),   # genes: number of rows with non-zero values
+                                    cell=sum(colSums(ind.data) != 0)))  # cells: number of cols with non-zero values
+      obj_ls[[length(obj_ls) + 1]] <- ind.data
+      names(obj_ls)[length(obj_ls)] <- id
+    } else {
+      rna <- ind.data[[1]]
+      adt <- ind.data[[2]] # ADT stands for Antibody-Derived Tag
+      message(paste("*** RNA (non-zeros) ->", "ngene:", sum(rowSums(rna) != 0), " ncell:", sum(colSums(rna) != 0)))
+      message(paste("*** ADT (non-zeros) ->", "ngene:", sum(rowSums(adt) != 0), " ncell:", sum(colSums(adt) != 0)))
+      
+      rna_summ <- rna_summ %>%
+        dplyr::bind_rows(data.frame(sample_id = id,
+                                    type="pre-qc",
+                                    gene=sum(rowSums(rna) != 0),   # genes: number of rows with non-zero values
+                                    cell=sum(colSums(rna) != 0)))  # cells: number of cols with non-zero values
+      adt_summ <- adt_summ %>%
+        dplyr::bind_rows(data.frame(sample_id = id,
+                                    type="pre-qc",
+                                    gene=sum(rowSums(adt) != 0),   # genes: number of rows with non-zero values
+                                    cell=sum(colSums(adt) != 0)))  # cells: number of cols with non-zero values
+      
+      obj_ls[[length(obj_ls) + 1]] <- rna
+      names(obj_ls)[length(obj_ls)] <- id
+      
+      adt_ls[[length(adt_ls) + 1]] <- adt
+      names(adt_ls)[length(adt_ls)] <- id
+    }
+    # ===================================
   }
   # ===================================
   # returns
   readin.res <- new("readinRes",
                     obj_ls=obj_ls,
+                    adt_ls=adt_ls,
                     meta_data=meta_data,
                     meta_data_ext=meta_data_ext,
-                    obj_summ=obj_summ)
+                    rna_summ=rna_summ,
+                    adt_summ=adt_summ)
   return(readin.res)
   # ===================================
 }

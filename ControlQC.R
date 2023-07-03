@@ -23,7 +23,7 @@ controlQC <- function(package.path, project.path, opt) {
                     params=list(obj_ls=readin.res@obj_ls,
                                 scrub_ls=scrublet.res@obj_scrub_ls,
                                 meta_data=readin.res@meta_data,
-                                pre.qc.summ=readin.res@obj_summ,
+                                pre.qc.summ.rna=readin.res@rna_summ,
                                 opt=opt),
                     quiet=TRUE)
   # ===================================

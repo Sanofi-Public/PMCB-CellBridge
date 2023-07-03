@@ -39,6 +39,14 @@ seuratPipe <- function(sobj, opt) {
   message(paste("*** Run UMAP"))
   sobj <- RunUMAP(sobj, reduction=rdction, dims=1:opt$seu_n_dim) 
   # ===================================
+  if (opt$adt){
+    # https://github.com/satijalab/seurat/issues/3605
+    # margin=1 means "perform CLR normalization within a feature"
+    # margin=2 means "perform CLR normalization within a cell"
+    sobj <- NormalizeData(sobj, normalization.method="CLR", margin=2, assay="ADT")
+    sobj <- ScaleData(sobj, assay="ADT")
+  }
+  # ===================================
   # returns
   seurat.res <- new("seuratRes",
                     sobj=sobj)

@@ -20,17 +20,26 @@ mergeSamples <- function(sobj_ls, meta_data, meta_data_ext, opt) {
     stopifnot(length(unique(unlist(lapply(sobj_ls, function(x) colnames(x))))) == dim(sobj)[2])
     stopifnot(sum(unlist(lapply(sobj_ls, function(x) dim(x)[2]))) == dim(sobj)[2])
     # ===================================
-    message(paste("***", "merged object with:"))
-    message(paste("***","ngene:", dim(sobj)[1], " ncell:", dim(sobj)[2]))
+    message(paste("***", "merged", length(sobj_ls), "objects:"))
     # ===================================
   } else if (length(sobj_ls) == 1) {
     sobj <- sobj_ls[[1]]
     sobj@project.name <- opt$project
     # ===================================
-    message(paste("***", "single object with:"))
-    message(paste("***","ngene:", dim(sobj)[1], " ncell:", dim(sobj)[2]))
+    message(paste("***", "A single object with:"))
   } else {
     stop()
+  }
+  # ===================================
+  DefaultAssay(sobj) <- "RNA"
+  # ===================================
+  if (!opt$adt) {
+    message(paste("*** (non-zeros)","ngene:", dim(sobj)[1], " ncell:", dim(sobj)[2]))
+  } else {
+    message(paste("*** RNA (non-zeros) ->", "ngene:", dim(sobj)[1], " ncell:", dim(sobj)[2]))
+    message(paste("*** ADT (non-zeros) ->", 
+                  "ngene:", sum(rowSums(sobj@assays$ADT@counts) != 0), 
+                  " ncell:", sum(colSums(sobj@assays$ADT@counts) != 0)))
   }
   # ===================================
   if (is.null(meta_data_ext)) {

@@ -24,7 +24,8 @@ controlPipe <- function(package.path, project.path, opt, pipe_version) {
                             opt=opt)
   # ===================================
   message("** running qcFilter function")
-  qcfilter.res <- qcFilter(obj_ls=readin.res@obj_ls, 
+  qcfilter.res <- qcFilter(obj_ls=readin.res@obj_ls,
+                           adt_ls=readin.res@adt_ls,
                            scrub_ls=scrublet.res@obj_scrub_ls,
                            opt=opt)
   # ===================================
@@ -64,8 +65,10 @@ controlPipe <- function(package.path, project.path, opt, pipe_version) {
                                 scrub_ls=scrublet.res@obj_scrub_ls,
                                 fsobj=signatures.res@sobj,
                                 meta_data=readin.res@meta_data,
-                                pre.qc.summ=readin.res@obj_summ,
-                                post.qc.summ=qcfilter.res@flt_summ,
+                                pre.qc.summ.rna=readin.res@rna_summ,
+                                post.qc.summ.rna=qcfilter.res@rna_flt_summ,
+                                pre.qc.summ.adt=readin.res@adt_summ,
+                                post.qc.summ.adt=qcfilter.res@adt_flt_summ,
                                 opt=opt,
                                 ui=ui),
                     quiet=TRUE)

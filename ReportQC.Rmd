@@ -15,7 +15,7 @@ params:
     obj_ls: NULL
     scrub_ls: NULL
     meta_data: NULL
-    pre.qc.summ: NULL
+    pre.qc.summ.rna: NULL
     opt: NULL
     ui: NULL
 ---
@@ -44,7 +44,7 @@ htmltools::img(src = knitr::image_uri("cellbridge_logo.png"),
     obj_ls <- params$obj_ls
     scrub_ls <- params$scrub_ls
     meta_data <- params$meta_data
-    pre.qc.summ <- params$pre.qc.summ
+    pre.qc.summ.rna <- params$pre.qc.summ.rna
     opt <- params$opt
     ui <- params$ui
     n.sample <- length(obj_ls)
@@ -152,7 +152,7 @@ meta_data %>%
 #### Cells & Genes
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
-pre.qc.summ %>%
+pre.qc.summ.rna %>%
   dplyr::rename(pre_qc_cell = cell,
                 pre_qc_gene = gene) %>%
   dplyr::mutate(pre_qc_cell = scales::comma(pre_qc_cell, accuracy = 1),

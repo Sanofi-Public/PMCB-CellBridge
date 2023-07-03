@@ -160,6 +160,11 @@ option_list <- list(
                         help="return top n differentially expressed genes  
                         (default: 25). If zero, skip the marker identification.", 
                         metavar="integer"),
+  # ADT
+  optparse::make_option(c("--adt"), type="logical", default=FALSE, 
+                        help="Antibody-Derived Tags (ADT) included  
+                        (default: false)", 
+                        metavar="logical"),
   # References
   optparse::make_option(c("--paper_url"), type="character", default=NULL, 
                         help="url link to the refernce paper 

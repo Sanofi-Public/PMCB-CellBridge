@@ -8,16 +8,19 @@ setClassUnion("DfNULL", members=c("data.frame", "NULL"))
 
 setClass("readinRes", 
          slots=c(obj_ls="list",
+                 adt_ls="ListNULL",
                  meta_data="data.frame",
                  meta_data_ext="DfNULL",
-                 obj_summ="data.frame"))
+                 rna_summ="data.frame",
+                 adt_summ="DfNULL"))
 
 setClass("scrubletRes", 
          slots=c(obj_scrub_ls="ListNULL"))
 
 setClass("qcfilterRes", 
          slots=c(sobj_flt_ls="list",
-                 flt_summ="data.frame"))
+                 rna_flt_summ="data.frame",
+                 adt_flt_summ="DfNULL"))
 
 setClass("mergeRes", 
          slots=c(sobj="Seurat"))
