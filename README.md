@@ -24,7 +24,7 @@ See [ToBridge](https://github.com/Sanofi-GitHub/PMCB-ToBridge) for the
 pre-processing of the data.
 
 <p align="center" width="100%">
-<img width="95%" src="./pipeline_schematic.png"> 
+<img width="85%" src="./pipeline_schematic.png"> 
 </p>
 
 ---
