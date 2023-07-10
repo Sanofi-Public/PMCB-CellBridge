@@ -51,20 +51,31 @@ Serialization) objects as the input. NOTE:
 ---
 
 To run the docker locally follow the instructions:
-* Before you can run the pipeline, you need to get the source code onto your machine. Clone the cellbridge repository using the following command: 
-  + ask from [cellbridge's maintenance team](mailto:nima.nouri@sanofi.com) to be added to the repo.
-  + `git clone https://github.com/Sanofi-GitHub/PMCB-CellBridge.git`
-  + clone a pecific `x.y.z` tag (release) with `git clone -b <x.y.z> https://github.com/Sanofi-GitHub/PMCB-CellBridge.git`
-* In order to build the container image, you’ll need to use the Dockerfile. A Dockerfile is simply a text-based file with no file extension. A Dockerfile contains a script of instructions that Docker uses to create a container image.
-  + change directory to the cellbridge directory you just cloned.
-  + build the pipeline container image: `docker build -t <image_name> .`. 
-  + This step may take 30-45 minutes.
-* Now that you have an image, you can run the `cellbridge` command in a container. To do so, you will use the `docker run` command.
-  + to see the pipeline help options use: `docker run --rm -it <image_name> cellbridge --help`.
-  + sharing files between the host operating system and the container requires you to bind a directory on the host to one of the container's mount points using the `-v` argument. There is one available mount points defined in the container named `data`.
-  + to execute the `cellbridge` command directly inside the container use: `docker run -it --rm -v <local-path-to-data>:/data:z <image_name> cellbridge [options ...]`.
+* Before you can run the pipeline, you need to get the source code onto your machine. Clone the cellbridge repository using the following command:
++ `git clone https://github.com/Sanofi-GitHub/PMCB-CellBridge.git` + clone a
+pecific `x.y.z` tag (release) with `git clone -b <x.y.z>
+https://github.com/Sanofi-GitHub/PMCB-CellBridge.git`
+* In order to build the container image, you’ll need to use the Dockerfile. A
+Dockerfile is simply a text-based file with no file extension. A Dockerfile
+contains a script of instructions that Docker uses to create a container image.
++ change directory to the cellbridge directory you just cloned. 
++ build the pipeline container image: `docker build -t <image_name> .`. 
++ This step may take 30-45 minutes.
+* Now that you have an image, you can run the `cellbridge` command in a container. 
+To do so, you will use the `docker run` command.
++ to see the pipeline help options use: `docker run --rm -it <image_name>
+cellbridge --help`. 
++ sharing files between the host operating system and the
+container requires you to bind a directory on the host to the container
+mount points using the `-v` argument. There is one available mount points
+defined in the container named `data`. 
++ to execute the `cellbridge` command directly inside the container use: 
+`docker run -it --rm -v <local-path-to-data>:/data:z <image_name> cellbridge [options ...]`.
 
-In most of the cases, it is hard to tell the optimal parameter values for best QC in advance. The `only_qc` argument will help users to take a look at the overall metrics of the data in advance. After examination of all the QC metrics, user can run the pipeline with the optimal parameter values.
+In most of the cases, it is hard to tell the optimal parameter values for best
+QC in advance. The `only_qc` argument will help users to take a look at the
+overall metrics of the data in advance. After examination of all the QC metrics,
+user can run the pipeline with the optimal parameter values.
 
 ---
 
