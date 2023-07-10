@@ -23,6 +23,10 @@ results across diverse computing environments.
 See [ToBridge](https://github.com/Sanofi-GitHub/PMCB-ToBridge) for the
 pre-processing of the data.
 
+<p align="center" width="100%">
+<img width="40%" src="./pipeline_schematic.png"> 
+</p>
+
 ---
 
 The pipeline inputs (required) is one folder containing:
