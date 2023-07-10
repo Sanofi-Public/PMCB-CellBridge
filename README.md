@@ -7,7 +7,21 @@
 
 # CellBridge
 
-PMCB SCB scRNA-seq pipeline. The pipeline reads-in multiple scRNA-seq samples, performs QC per sample, merges samples, clusters cells into groups, performs dimension reduction, annotates cells, and identifies gene markers.
+**CellBridge** is an automated and versatile workflow meticulously designed to
+simplify and expedite the standard procedures entailed in scRNA-seq analysis,
+eliminating the need for specialized bioinformatics expertise. CellBridge
+harnesses cutting-edge computational methods, integrating an array of advanced
+functionalities. It encompasses various crucial steps in scRNA-seq analysis,
+starting from the initial conversion of raw unaligned sequencing reads into the
+FASTQ format, followed by read alignment, gene expression quantification,
+quality control, doublet removal, normalization, batch correction,
+dimensionality reduction, clustering, identification of cell markers, and
+accurate cell type annotation. CellBridge provides convenient parameterization
+of the workflow, while its Docker-based framework ensures reproducibility of
+results across diverse computing environments. 
+
+See [ToBRidge](https://github.com/Sanofi-GitHub/PMCB-ToBridge) for the
+pre-processing of the data.
 
 ---
 
