@@ -59,9 +59,7 @@ To run the docker locally follow the instructions:
 + `git clone https://github.com/Sanofi-GitHub/PMCB-CellBridge.git` 
 + clone a specific `x.y.z` tag (release) with `git clone -b <x.y.z>
 https://github.com/Sanofi-GitHub/PMCB-CellBridge.git`
-* In order to build the container image, you’ll need to use the Dockerfile. A
-Dockerfile is simply a text-based file with no file extension. A Dockerfile
-contains a script of instructions that Docker uses to create a container image.
+* In order to build the container image, you’ll need to use the Dockerfile. 
 + change directory to the cellbridge directory you just cloned. 
 + build the pipeline container image: `docker build -t <image_name> .`. 
 + This step may take 30-45 minutes.
