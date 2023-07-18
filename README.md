@@ -31,7 +31,7 @@ pre-processing step of the data.
 
 The pipeline inputs (required) is one folder containing:
 
-1) A metadata file is required, which should be in `CSV` format and contain
+1) A metadata file which should be in `CSV` format and contain
 demographic and experimental information. The metadata file can be either
 `sample_based` or `cell_based`. NOTE: 
   * one column containing the name of samples is required in both metadata types and must be named `sample`; 
