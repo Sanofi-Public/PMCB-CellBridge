@@ -20,8 +20,8 @@ accurate cell type annotation. CellBridge provides convenient parameterization
 of the workflow, while its Docker-based framework ensures reproducibility of
 results across diverse computing environments. 
 
-See [ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) for the
-pre-processing of the data.
+See [ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github for the
+pre-processing step of the data.
 
 <p align="center" width="100%">
 <img width="85%" src="./pipeline_schematic.png"> 
