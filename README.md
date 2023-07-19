@@ -95,6 +95,16 @@ information.
 3) An RDS object (`<project_name>_cellbridge_v<x.y.z>_<UI>_middle-object.rds`)
 containing all intermediate files required to repreduce the html summary.
 
+CellBridge generates a unique identifier (UID) for all three output files. The
+UID is a 15-character alphanumeric code (consisting of upper and lower-case
+letters and numbers) that is assigned to all three output files and projected on
+the HTML summary report. The UID serves as a tracking mechanism for the data in
+case the same dataset is processed multiple times with different input
+parameters. The UID ensures that the output files can be easily identified and
+distinguished, allowing investigators to easily trace their analysis and results
+back to the specific run and set of parameters used and minimizing confusion and
+errors in data management.
+
 ---
 
 In addition to scRNA-seq data, CellBridge seamlessly integrates Cellular
