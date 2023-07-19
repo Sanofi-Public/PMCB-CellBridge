@@ -74,6 +74,8 @@ defined in the container named `data`.
 + to execute the `cellbridge` command directly inside the container use: 
 `docker run -it --rm -v <local-path-to-data>:/data:z <image_name> cellbridge [options ...]`.
 
+---
+
 In most of the cases, it is hard to tell the optimal parameter values for best
 QC in advance. The `only_qc` argument will help users to take a look at the
 overall metrics of the data in advance. After examination of all the QC metrics,
@@ -92,6 +94,14 @@ containing the final seurat object with all accosiated metadata and miscellaneou
 information.
 3) An RDS object (`<project_name>_cellbridge_v<x.y.z>_<UI>_middle-object.rds`)
 containing all intermediate files required to repreduce the html summary.
+
+---
+
+In addition to scRNA-seq data, CellBridge seamlessly integrates Cellular
+Indexing of Transcriptomes and Epitopes by sequencing (CITE-seq) data. 
+This integration empowers CellBridge to offer a comprehensive solution
+for concurrent analysis of transcriptomic and proteomic information, enabling
+multiomic single cell analysis.
 
 ---
 
