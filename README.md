@@ -115,6 +115,11 @@ multiomic single cell analysis.
 
 ---
 
+## Docker
+A public Docker image will be provided. 
+
+---
+
 ## Contact
 
 For help and questions please contact the [cellbridge's maintenance team](mailto:nima.nouri@sanofi.com).
