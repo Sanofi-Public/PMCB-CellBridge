@@ -1,0 +1,13 @@
+sample,tissue,tissue_type,disease,age,sex,race,smoking
+acute-A-air,lung,small_airway_epithelial_culture,control,67,female,caucasian,no
+acute-A-smoke,lung,small_airway_epithelial_culture,control,67,female,caucasian,no
+acute-B-air,lung,small_airway_epithelial_culture,control,42,female,hispanic,no
+acute-B-smoke,lung,small_airway_epithelial_culture,control,42,female,hispanic,no
+acute-C-air,lung,small_airway_epithelial_culture,control,38,male,caucasian,no
+acute-C-smoke,lung,small_airway_epithelial_culture,control,38,male,caucasian,no
+acute-D-air,lung,small_airway_epithelial_culture,copd,57,female,caucasian,yes
+acute-D-smoke,lung,small_airway_epithelial_culture,copd,57,female,caucasian,yes
+acute-E-air,lung,small_airway_epithelial_culture,copd,51,female,caucasian,yes
+acute-E-smoke,lung,small_airway_epithelial_culture,copd,51,female,caucasian,yes
+acute-F-air,lung,small_airway_epithelial_culture,copd,62,female,black,yes
+acute-F-smoke,lung,small_airway_epithelial_culture,copd,62,female,black,yes
