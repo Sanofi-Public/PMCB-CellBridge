@@ -190,7 +190,7 @@ if (FALSE) {
   opt$docker <- FALSE
   opt$genesets <- "pbmc"
   opt$mrk_min_pct <- 0.9
-  opt$mrk_top_n <- 20
+  opt$mrk_top_n <- 0
   opt$genetype <- "hgnc_symbol"
   opt$paper_url <- "https://www.mdpi.com/1422-0067/22/14/7646"
   opt$data_url <- "https://www.ebi.ac.uk/ena/browser/view/PRJEB44878"

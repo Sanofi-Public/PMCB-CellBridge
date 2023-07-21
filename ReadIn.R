@@ -57,13 +57,14 @@ readIn <- function(project.path, package.path, opt) {
     sfx <- sapply(1:length(nm), function(x) { gsub(paste0(nm[x], "."), "", filein[x]) })
     # sfx <- gsub(paste0(nm, "."), "", filein)
     # ===================================
-    if (all(unique(sfx) %in%  c("tsv.gz", "mtx.gz"))) {
+    if (all(unique(sfx) %in%  c("tsv.gz", "mtx.gz")) | all(unique(sfx) %in%  c("tsv", "mtx"))) {
       # ===================================
       if (length(sfx) != 3) {
         msg <- paste("Directory should contain 3 barcodes.tsv.gz, features.tsv.gz, and matrix.mtx.gz files")
         stop(msg)
       }
-      ind.data <- Read10X(data.dir=file.path(project.path, smpl)) 
+      ind.data <- Read10X(data.dir=file.path(project.path, smpl), 
+                          gene.column = ifelse(any(grepl("genes", filein)), 1, 2)) 
       # ===================================
     } else if (unique(sfx) == "h5") {
       if (length(sfx) > 1) {

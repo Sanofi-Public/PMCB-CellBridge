@@ -89,6 +89,12 @@ qcFilter <- function(obj_ls, adt_ls, scrub_ls, opt) {
     stopifnot(dim(sobj)[1] == sum(rowSums(sobj) != 0))
     stopifnot(dim(sobj)[2] == sum(colSums(sobj) != 0))
     # ===================================
+    # I saw a sample with "S6T_AAACCTGAGTACCGGA-1"
+    # CreateSeuratObject take "S6T" as the orig.ident, instead of smpl,
+    # which will be prolematic when we are adding the metadata. So, I enforce 
+    # the orig.ident below
+    sobj$orig.ident <- smpl
+    # ===================================
     # save counts
     rna_flt_summ <- rna_flt_summ %>%
       dplyr::bind_rows(data.frame(sample_id=smpl,
