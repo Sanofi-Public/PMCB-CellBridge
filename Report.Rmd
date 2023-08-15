@@ -1252,7 +1252,7 @@ if (opt$genesets != "none") {
                                      length) == 0))
   # ===================================
   xsobj <- fsobj
-  xsobj$temp <- xsobj$sargent_cellstates
+  xsobj$temp <- xsobj$sargent_onto
   # print(table(xsobj$temp))
   for (x in root_cltypes) {
     xsobj$temp <- replacegrepl(xsobj$temp, x, x)  
@@ -1279,10 +1279,10 @@ if (opt$genesets != "none") {
     # ===================================
     childs <- setdiff(names(neighborhood(g, nodes=cltype, mode="out")[[1]]), cltype)
     if (length(childs) == 0) { next }
-    cells <- Cells(fsobj)[grepl(paste0("^", childs, collapse="|"), fsobj$sargent_cellstates)]
+    cells <- Cells(fsobj)[grepl(paste0("^", childs, collapse="|"), fsobj$sargent_onto)]
     if (length(cells) == 0) { next }
     xsobj <- subset(fsobj, cells = cells)
-    xsobj$temp <- xsobj$sargent_cellstates
+    xsobj$temp <- xsobj$sargent_onto
     # print(table(xsobj$temp))
     for (x in childs) {
       xsobj$temp <- replacegrepl(xsobj$temp, x, x)  

@@ -16,6 +16,7 @@ sargentCellstates <- function(sobj, opt) {
     gpos <- GENESETS[[opt$genesets]]
     gneg <- GENESETS.neg[[opt$genesets]]
   } 
+  # ===================================
   if (opt$genesets == 'curated') {
     # readin genesets
     exls <- excel_sheets(file.path(project.path, "genesets.xlsx"))
@@ -42,21 +43,39 @@ sargentCellstates <- function(sobj, opt) {
                                   gene.sets.neg=gneg)
   # ===================================
   # label cells
-  # if (opt$genesets %in% c('pbmc', 'cns', 'nasal')) {  
-  #   cellstates <- LABEL.trans[[opt$genesets]][as.character(res$cellstates)]
-  #   names(cellstates) <- names(res$cellstates)
-  # } else {
-  #   cellstates <- res$cellstates
-  #   names(cellstates) <- names(res$cellstates)
-  # }
-  cellstates <- toupper(res$cellstates)
-  # ===================================
-  # add new metadata
-  sobj <- AddMetaData(
-    object = sobj,
-    metadata = cellstates[Cells(sobj)],
-    col.name = "sargent_cellstates"
-  )
+  if ("alias" %in% exls) {
+    cellstates_onto <- res$cellstates
+    # add new metadata
+    sobj <- AddMetaData(
+      object = sobj,
+      metadata = cellstates_onto[Cells(sobj)],
+      col.name = "sargent_onto"
+    )
+    # relabeling by aliases
+    message(paste("*** relabeling based on the aliases"))
+    aliases <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
+                          sheet="alias", col_names=FALSE, col_types="text")
+    colnames(aliases) <- c("old_label", "new_label") 
+    aliases$old_label <- toupper(aliases$old_label)
+    aliases <- setNames(aliases$new_label, aliases$old_label)
+    cellstates <- res$cellstates
+    cellstates_new <- ifelse(cellstates %in% names(aliases), aliases[cellstates], cellstates)
+    cellstates <- setNames(cellstates_new, names(cellstates))
+    sobj <- AddMetaData(
+      object = sobj,
+      metadata = cellstates[Cells(sobj)],
+      col.name = "sargent_cellstates"
+    )
+  } else {
+    cellstates <- res$cellstates
+    # add new metadata
+    sobj <- AddMetaData(
+      object = sobj,
+      metadata = cellstates[Cells(sobj)],
+      col.name = "sargent_cellstates"
+    )
+    sobj$sargent_onto <- sobj$sargent_cellstates
+  }
   # ===================================
   # update miscellaneous
   sobj@misc$sargent_genesets_pos <- gpos
