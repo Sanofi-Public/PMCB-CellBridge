@@ -19,6 +19,7 @@ params:
     sobj_ls: NULL
     scrub_ls: NULL
     fsobj: NULL
+    sobj_noharm: NULL
     meta_data: NULL
     pre.qc.summ.rna: NULL
     post.qc.summ.rna: NULL
@@ -53,6 +54,7 @@ htmltools::img(src = knitr::image_uri("cellbridge_logo.png"),
     sobj_ls <- params$sobj_ls
     scrub_ls <- params$scrub_ls
     fsobj <- params$fsobj
+    sobj_noharm <- params$sobj_noharm
     meta_data <- params$meta_data
     pre.qc.summ.rna <- params$pre.qc.summ.rna
     post.qc.summ.rna <- params$post.qc.summ.rna
@@ -647,19 +649,29 @@ data.frame(summ1, summ2, summ3) %>%
 - - -
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
-if (opt$tsne) {
-  combo_ls <- list(c("sample_id", "umap"),
-                   c("sample_id", "tsne"),
-                   c("sample_id", "spring"))
-} else {
-  combo_ls <- list(c("sample_id", "umap"),
-                   c("sample_id", "spring"))
+combo_ls <- list(c("fsobj","sample_id", "spring", "Signacx SPRING Projection"),
+                 c("fsobj","sample_id", "umap", "Seurat UMAP Projection"),
+                 c("fsobj","sample_id", "tsne", "Seurat TSNE Projection"),
+                 c("sobj_noharm","sample_id", "umap", "Seurat UMAP Projection (no-batch correction)"),
+                 c("sobj_noharm","sample_id", "tsne", "Seurat TSNE Projection (no-batch correction)"))
+if (!opt$tsne) {
+  idx <- which(unlist(lapply(combo_ls, function(x) any(grepl("tsne", x)))))
+  combo_ls[idx] <- NULL
+}
+if (is.null(sobj_noharm)) {
+  idx <- which(unlist(lapply(combo_ls, function(x) any(grepl("no-batch", x)))))
+  combo_ls[idx] <- NULL
 }
 Q <- list()
 for (i in 1:length(combo_ls)) {
-  p <- DimPlot(fsobj, 
-               reduction = combo_ls[[i]][2],
-               group.by = combo_ls[[i]][1],
+  if (combo_ls[[i]][[1]] == "fsobj") {
+    x <- fsobj
+  } else {
+    x <- sobj_noharm
+  }
+  p <- DimPlot(object = x, 
+               reduction = combo_ls[[i]][3],
+               group.by = combo_ls[[i]][2],
                label = TRUE, 
                repel = TRUE,
                raster = FALSE,
@@ -676,30 +688,24 @@ for (i in 1:length(combo_ls)) {
           legend.text = element_text(size = 14, face = "bold")) +
     guides(fill = "none", color = "none")  
     Q[[length(Q) + 1]] <- p
-    names(Q)[length(Q)] <- paste(combo_ls[[i]][1], combo_ls[[i]][2], sep = "-")
+    names(Q)[length(Q)] <- combo_ls[[i]][4]
 }
 ```
 
-## Visualization of Merged scRNA-Seq Object in 2D Space {.tabset}
+## Visualization of Merged scRNA-Seq Object in 2D Space {.tabset .tabset-fade .tabset-dropdown}
 
 Note: Labels may have been removed if they overlap excessively.
 
-### Signacx SPRING Projection
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
-plot(Q[["sample_id-spring"]])
-```
-
-### Seurat UMAP Projection
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
-plot(Q[["sample_id-umap"]])
-```
-
-`r if (opt$tsne) { "### Seurat TSNE Projection" }`
-
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5), fig.align = 'center'}
-if (opt$tsne) { plot(Q[["sample_id-tsne"]]) }
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.0), fig.align = 'center', results='asis'}
+make_tab <- function(x) {      # function to make the tabs
+  cat("\n")                    # Space
+  cat("###", names(x), "\n")  # Label tab
+  plot(x[[1]])                 # Display plot
+  cat("\n")                    # Space
+}
+for(i in 1:length(Q)){
+  make_tab(Q[i])
+}
 ```
 
 ## {-}

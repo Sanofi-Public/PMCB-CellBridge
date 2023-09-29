@@ -5,6 +5,7 @@
 setClassUnion("NumNULL", members=c("numeric", "NULL"))
 setClassUnion("ListNULL", members=c("list", "NULL"))
 setClassUnion("DfNULL", members=c("data.frame", "NULL"))
+setClassUnion("SeuratNULL", members=c("Seurat", "NULL"))
 
 setClass("readinRes", 
          slots=c(obj_ls="list",
@@ -26,7 +27,8 @@ setClass("mergeRes",
          slots=c(sobj="Seurat"))
 
 setClass("seuratRes", 
-         slots=c(sobj="Seurat"))
+         slots=c(sobj_noharm="SeuratNULL",
+                 sobj="Seurat"))
 
 setClass("fatlasRes", 
          slots=c(sobj="Seurat"))

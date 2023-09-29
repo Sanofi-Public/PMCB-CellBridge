@@ -43,29 +43,31 @@ sargentCellstates <- function(sobj, opt) {
                                   gene.sets.neg=gneg)
   # ===================================
   # label cells
-  if ("alias" %in% exls) {
-    cellstates_onto <- res$cellstates
-    # add new metadata
-    sobj <- AddMetaData(
-      object = sobj,
-      metadata = cellstates_onto[Cells(sobj)],
-      col.name = "sargent_onto"
-    )
-    # relabeling by aliases
-    message(paste("*** relabeling based on the aliases"))
-    aliases <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
-                          sheet="alias", col_names=FALSE, col_types="text")
-    colnames(aliases) <- c("old_label", "new_label") 
-    aliases$old_label <- toupper(aliases$old_label)
-    aliases <- setNames(aliases$new_label, aliases$old_label)
-    cellstates <- res$cellstates
-    cellstates_new <- ifelse(cellstates %in% names(aliases), aliases[cellstates], cellstates)
-    cellstates <- setNames(cellstates_new, names(cellstates))
-    sobj <- AddMetaData(
-      object = sobj,
-      metadata = cellstates[Cells(sobj)],
-      col.name = "sargent_cellstates"
-    )
+  if (opt$genesets == 'curated') {
+    if ("alias" %in% exls) {
+      cellstates_onto <- res$cellstates
+      # add new metadata
+      sobj <- AddMetaData(
+        object = sobj,
+        metadata = cellstates_onto[Cells(sobj)],
+        col.name = "sargent_onto"
+      )
+      # relabeling by aliases
+      message(paste("*** relabeling based on the aliases"))
+      aliases <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
+                            sheet="alias", col_names=FALSE, col_types="text")
+      colnames(aliases) <- c("old_label", "new_label") 
+      aliases$old_label <- toupper(aliases$old_label)
+      aliases <- setNames(aliases$new_label, aliases$old_label)
+      cellstates <- res$cellstates
+      cellstates_new <- ifelse(cellstates %in% names(aliases), aliases[cellstates], cellstates)
+      cellstates <- setNames(cellstates_new, names(cellstates))
+      sobj <- AddMetaData(
+        object = sobj,
+        metadata = cellstates[Cells(sobj)],
+        col.name = "sargent_cellstates"
+      )
+    }
   } else {
     cellstates <- res$cellstates
     # add new metadata
