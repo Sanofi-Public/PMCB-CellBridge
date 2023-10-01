@@ -127,8 +127,8 @@ cells, B cell, and NK kills) and monocytes:
 ### Set up the command for processing the data
 
 1)	Pull the latest version of the images:
-+	`docker pull pmcbscb/cellbridge`
-+	`docker pull pmcbscb/tobridge `
++	`docker pull pmcbscb/tobridge`
++	`docker pull pmcbscb/cellbridge `
 2)	Get the metadata: 
 +	wget <path_to_github_raw>/metadata.csv
 3)	Run ToBridge (simplest case scenario): `docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags` 
