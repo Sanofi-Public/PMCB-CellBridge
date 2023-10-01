@@ -76,7 +76,7 @@ defined in the container named `data`.
 
 ---
 
-## Falg Options
+## Available Falg Options
 
 <details>
 <br>
@@ -90,10 +90,17 @@ An up-to-date HTML manual that describes all the available flag options is here:
 
 ---
 
+## Perform only QC
+
+<details>
+<br>
+
 In most of the cases, it is hard to tell the optimal parameter values for best
 QC in advance. The `only_qc` argument will help users to take a look at the
 overall metrics of the data in advance. After examination of all the QC metrics,
 user can run the pipeline with the optimal parameter values.
+
+</details>
 
 ---
 
