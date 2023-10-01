@@ -70,8 +70,8 @@ The pre-built images are available in the `pmcbscb` (Precision Medicine and
 Computational Biology – Single Cell Biology) Docker Hub repository. They can be
 seamlessly pulled by:
 
-+	`docker pull pmcbscb/cellbridge`
-+	`docker pull pmcbscb/tobridge `
++	`docker pull pmcbscb/tobridge`
++	`docker pull pmcbscb/cellbridge `
 
 Note: for details about pre-processing step, visit
 [ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github page.
@@ -88,8 +88,8 @@ Note: for details about pre-processing step, visit
 The extensive documentation for flag options is embedded within the workflow.
 For a review of the flags, please execute:
 
-+ `docker run pmcbscb/tobridge:latest tobridge --help`
-+ `docker run pmcbscb/cellbridge:latest cellbridge --help`
++ `docker run pmcbscb/tobridge tobridge --help`
++ `docker run pmcbscb/cellbridge cellbridge --help`
 
 For detailed information about the available flag options in `cellbridge`, refer
 to our up-to-date HTML manual:
