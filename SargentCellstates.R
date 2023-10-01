@@ -20,6 +20,7 @@ sargentCellstates <- function(sobj, opt) {
   if (opt$genesets == 'curated') {
     # readin genesets
     exls <- excel_sheets(file.path(project.path, "genesets.xlsx"))
+    # positive genes
     gpos <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
                        sheet="positive", col_names=TRUE, col_types="text")
     gpos <- lapply(as.list(gpos), function(x){
@@ -27,6 +28,7 @@ sargentCellstates <- function(sobj, opt) {
     })
     gpos[lengths(gpos) == 0] <- NULL
     names(gpos) <- toupper(names(gpos))
+    # negative genes
     if ("negative" %in% exls) {
       gneg <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
                          sheet="negative", col_names=TRUE, col_types="text")
@@ -36,6 +38,8 @@ sargentCellstates <- function(sobj, opt) {
       gneg[lengths(gneg) == 0] <- NULL
       names(gneg) <- toupper(names(gneg))
     } else { gneg <- NULL }
+    # alias
+    alias <- "alias" %in% exls
   }
   # ===================================
   res <- sargentAnnotation_helper(sobj=sobj,
@@ -43,31 +47,29 @@ sargentCellstates <- function(sobj, opt) {
                                   gene.sets.neg=gneg)
   # ===================================
   # label cells
-  if (opt$genesets == 'curated') {
-    if ("alias" %in% exls) {
-      cellstates_onto <- res$cellstates
-      # add new metadata
-      sobj <- AddMetaData(
-        object = sobj,
-        metadata = cellstates_onto[Cells(sobj)],
-        col.name = "sargent_onto"
-      )
-      # relabeling by aliases
-      message(paste("*** relabeling based on the aliases"))
-      aliases <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
-                            sheet="alias", col_names=FALSE, col_types="text")
-      colnames(aliases) <- c("old_label", "new_label") 
-      aliases$old_label <- toupper(aliases$old_label)
-      aliases <- setNames(aliases$new_label, aliases$old_label)
-      cellstates <- res$cellstates
-      cellstates_new <- ifelse(cellstates %in% names(aliases), aliases[cellstates], cellstates)
-      cellstates <- setNames(cellstates_new, names(cellstates))
-      sobj <- AddMetaData(
-        object = sobj,
-        metadata = cellstates[Cells(sobj)],
-        col.name = "sargent_cellstates"
-      )
-    }
+  if (opt$genesets == 'curated' & alias) {
+    cellstates_onto <- res$cellstates
+    # add new metadata
+    sobj <- AddMetaData(
+      object = sobj,
+      metadata = cellstates_onto[Cells(sobj)],
+      col.name = "sargent_onto"
+    )
+    # relabeling by aliases
+    message(paste("*** relabeling based on the aliases"))
+    aliases <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
+                          sheet="alias", col_names=FALSE, col_types="text")
+    colnames(aliases) <- c("old_label", "new_label") 
+    aliases$old_label <- toupper(aliases$old_label)
+    aliases <- setNames(aliases$new_label, aliases$old_label)
+    cellstates <- res$cellstates
+    cellstates_new <- ifelse(cellstates %in% names(aliases), aliases[cellstates], cellstates)
+    cellstates <- setNames(cellstates_new, names(cellstates))
+    sobj <- AddMetaData(
+      object = sobj,
+      metadata = cellstates[Cells(sobj)],
+      col.name = "sargent_cellstates"
+    )
   } else {
     cellstates <- res$cellstates
     # add new metadata

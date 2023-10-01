@@ -25,6 +25,7 @@ params:
     post.qc.summ.rna: NULL
     pre.qc.summ.adt: NULL
     post.qc.summ.adt: NULL
+    trajs: NULL
     opt: NULL
     ui: NULL
 ---
@@ -60,6 +61,7 @@ htmltools::img(src = knitr::image_uri("cellbridge_logo.png"),
     post.qc.summ.rna <- params$post.qc.summ.rna
     pre.qc.summ.adt <- params$pre.qc.summ.adt
     post.qc.summ.adt <- params$post.qc.summ.adt
+    trajs <- params$trajs
     opt <- params$opt
     ui <- params$ui
     n.sample <- length(obj_ls)
@@ -1314,6 +1316,7 @@ if (opt$genesets != "none") {
 ```
 
 `r if (opt$genesets != "none") { "## Evaluating Sargent Cell Type Annotation with Gene Marker Expression {.tabset .tabset-fade .tabset-dropdown}" }`
+
 `r if (opt$genesets != "none") { "Expression level of selected genes for each group. Color indicates the average expression and size indicates the percent expressed." }`
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.0, 8.5), fig.align = 'center', results='asis'}
@@ -1332,6 +1335,67 @@ if (opt$genesets != "none") {
 
 `r if (opt$genesets != "none") { "---" }`
 
+`r eval_mrks <- !is.null(trajs)`
+
+```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE}
+Q <- list()
+for (i in 1:length(trajs)) {
+  rdc <- strsplit(names(trajs)[i], split="-")[[1]][2]
+  grp <- strsplit(names(trajs)[i], split="-")[[1]][1]
+  colrs <- color_helper(set.names=sort(unique(fsobj@meta.data[[grp]])), 
+                        panel="Set1") 
+  p <- DimPlot(fsobj, 
+               reduction = rdc,
+               group.by = grp,
+               cols = colrs, 
+               label = TRUE, 
+               repel = TRUE,
+               raster = FALSE,
+               pt.size = 0.05,
+               label.size = 4) + 
+    getBaseTheme() +
+    theme(plot.title = element_blank(),
+          axis.title = element_text(size = 12, face = "bold"),
+          axis.text = element_blank(),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          axis.ticks = element_blank(),
+          panel.background = element_blank(),
+          legend.text = element_text(size = 14, face = "bold")) +
+    guides(fill = "none", color = "none")  
+  
+  curves <- slingCurves(trajs[[i]], as.df=TRUE)
+  rdc <- ifelse(rdc == "umap", "UMAP", "tSNE")
+  p <- p + geom_path(data = curves %>% arrange(Order),
+                     aes(x=!!sym(paste0(rdc,"_1")) , y=!!sym(paste0(rdc,"_2")), 
+                         group = Lineage), 
+                     linetype = "dashed", linewidth= 0.4)
+  Q[[length(Q) + 1]] <- p
+  names(Q)[length(Q)] <- paste("Seurat", toupper(rdc), "Projection")
+}
+```
+
+`r if (eval_mrks) { "# BridgeTrajectory" }`
+
+`r if (eval_mrks) { "Note: Labels may have been removed if they overlap excessively." }`
+
+`r if (eval_mrks) { "## Visualizing Infered Trajectory {.tabset}" }`
+
+```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.0), fig.align = 'center', results='asis'}
+make_tab <- function(x) {      # function to make the tabs
+  cat("\n")                    # Space
+  cat("###", names(x), "\n")  # Label tab
+  plot(x[[1]])                 # Display plot
+  cat("\n")                    # Space
+}
+for(i in 1:length(Q)){
+  make_tab(Q[i])
+}
+```
+
+`r if (eval_mrks) { "## {-}" }`
+
+`r if (eval_mrks) { "---" }`
 
 # References
 

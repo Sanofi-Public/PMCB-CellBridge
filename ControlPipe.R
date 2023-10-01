@@ -56,6 +56,10 @@ controlPipe <- function(package.path, project.path, opt, pipe_version) {
   signatures.res <- findSignatures(sobj=sargent.res@sobj, 
                                    opt=opt)
   # ===================================
+  message("** running Trajectory function")
+  traj.res <- Trajectory(sobj=signatures.res@sobj, 
+                         opt=opt)  
+  # ===================================
   message("** running Report function")
   rmarkdown::render(input=file.path(package.path, "Report.Rmd"),
                     output_file=paste(opt$project, ui, "summary.html", sep = "_"),
@@ -70,6 +74,7 @@ controlPipe <- function(package.path, project.path, opt, pipe_version) {
                                 post.qc.summ.rna=qcfilter.res@rna_flt_summ,
                                 pre.qc.summ.adt=readin.res@adt_summ,
                                 post.qc.summ.adt=qcfilter.res@adt_flt_summ,
+                                trajs=traj.res@sds_ls,
                                 opt=opt,
                                 ui=ui),
                     quiet=TRUE)

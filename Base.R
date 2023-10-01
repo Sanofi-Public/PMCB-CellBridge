@@ -3,11 +3,12 @@
 pipe_version <- "1.0.0"
 # ===================================
 ### Call libraries
-libs <- list("optparse", "dplyr", "Seurat", "ggplot2", "ggrepel", "pheatmap", 
-             "grid", "gridExtra", "cowplot", "RColorBrewer", "reticulate", 
-             "purrr", "kableExtra", "harmony", "SignacX", "sargent", "igraph", 
-             "gridtext", "gplots", "gtools", "readxl", "DT", "data.tree", 
-             "plotly", "visNetwork", "ComplexHeatmap", "data.table", "Nebulosa")
+libs <- list("optparse","dplyr","Seurat","ggplot2","ggrepel","pheatmap", 
+             "grid","gridExtra","cowplot","RColorBrewer","reticulate", 
+             "purrr","kableExtra","harmony","SignacX","sargent","igraph", 
+             "gridtext","gplots","gtools","readxl","DT","data.tree", 
+             "plotly","visNetwork","ComplexHeatmap","data.table","Nebulosa",
+             "slingshot")
 shh <- suppressPackageStartupMessages
 loads <- sapply(libs, function(x){
   shh(require(x, character.only=TRUE))
@@ -165,6 +166,12 @@ option_list <- list(
                         help="Antibody-Derived Tags (ADT) included  
                         (default: false)", 
                         metavar="logical"),
+  # trajectory
+  optparse::make_option(c("--trajectory"), type="character", default="none", 
+                        help="the reduction type name to perform trajectory analysis.
+                        one of the 'none', 'tsne', 'umap', 'both' 
+                        (default=none)", 
+                        metavar="character"),
   # References
   optparse::make_option(c("--paper_url"), type="character", default=NULL, 
                         help="url link to the refernce paper 
@@ -189,6 +196,7 @@ if (FALSE) {
   opt$metadata <- "sample_based"
   opt$docker <- FALSE
   opt$genesets <- "pbmc"
+  opt$trajectory <- "both"
   opt$mrk_min_pct <- 0.9
   opt$mrk_top_n <- 0
   opt$genetype <- "hgnc_symbol"

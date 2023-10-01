@@ -113,7 +113,7 @@ RUN Rscript -e "devtools::install_github('immunogenomics/harmony')"
 RUN Rscript -e "devtools::install_github('Sanofi-Public/PMCB-Sargent')"
 # ===================================
 ARG R_BIOC="c('biomaRt', 'Orthology.eg.db', 'org.Hs.eg.db', 'org.Mm.eg.db', \
-              'limma', 'ComplexHeatmap', 'Nebulosa')"
+              'limma','ComplexHeatmap','Nebulosa','DelayedMatrixStats','slingshot')"
 RUN Rscript -e "BiocManager::install(ask=FALSE)"
 RUN Rscript -e "BiocManager::install(${R_BIOC})"
 # ===================================

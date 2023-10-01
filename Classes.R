@@ -42,6 +42,9 @@ setClass("sargentRes",
 setClass("signaturesRes", 
          slots=c(sobj="Seurat"))
 
+setClass("trajectoryRes", 
+         slots=c(sds_ls="ListNULL"))
+
 #### Specific ####
 
 `%nin%` = Negate(`%in%`)

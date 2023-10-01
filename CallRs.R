@@ -6,7 +6,7 @@ callRs <- function(package.path) {
              "Scrublet.R", "QcFilter.R", "MergeSamples.R", 
              "SeuratPipe.R", "ForceAtlas.R", "SignacxCellstates.R", 
              "GeneSets.R", "SargentCellstates.R", "FindSignatures.R",
-             "CallDocker.R", "ControlPipe.R", "ControlQC.R")
+             "CallDocker.R", "ControlPipe.R", "ControlQC.R", "Trajectory.R")
   for(func in funcs) {
     source(file.path(package.path, func))
   }

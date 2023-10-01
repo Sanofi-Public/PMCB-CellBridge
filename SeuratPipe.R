@@ -22,7 +22,7 @@ seuratPipe <- function(sobj, opt) {
       msg <- paste("variable column name(s) not exist. (RE: harmony)")
       stop(msg)
     }
-    sobj <- RunHarmony(sobj, reduction=rdction, group.by.vars=vars)
+    sobj <- RunHarmony(sobj, reduction.use=rdction, group.by.vars=vars)
     rdction <- "harmony"
   }
   # ===================================
