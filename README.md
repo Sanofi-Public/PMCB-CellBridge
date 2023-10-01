@@ -143,19 +143,11 @@ user can run the pipeline with the optimal parameter values.
 
 ---
 
-In addition to scRNA-seq data, CellBridge seamlessly integrates Cellular
-Indexing of Transcriptomes and Epitopes by sequencing (CITE-seq) data. 
-This integration empowers CellBridge to offer a comprehensive solution
-for concurrent analysis of transcriptomic and proteomic information, enabling
-multiomic single cell analysis.
-
----
-
-## Docker
-A public Docker image will be provided. 
-
----
-
 ## Contact
 
+<details>
+<br>
+
 For help and questions please contact the [cellbridge's maintenance team](mailto:nima.nouri@sanofi.com).
+
+</details>
