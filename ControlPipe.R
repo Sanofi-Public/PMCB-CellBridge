@@ -84,14 +84,14 @@ controlPipe <- function(package.path, project.path, opt, pipe_version) {
   signatures.res@sobj@misc$date <- format(Sys.time(), '%d %B, %Y')
   # ===================================
   message("** saving middle files")
-  res <- list(readin.res, qcfilter.res, scrublet.res, opt)
-  names(res) <- c("readin.res", "qcfilter.res", "scrublet.res", "opt")
-  saveRDS(res, 
-          file=file.path(outputs.path, paste(opt$project, ui, "middle-object.rds", sep="_")))
+  res <- list(readin.res, qcfilter.res, scrublet.res, seurat.res, opt)
+  names(res) <- c("readin.res", "qcfilter.res", "scrublet.res", "seurat.res", "opt")
+  filename <- paste(opt$project, ui, "middle-object.rds", sep="_")
+  saveRDS(res, file=file.path(outputs.path, filename))
   # ===================================
   message("** saving final object")
-  saveRDS(signatures.res@sobj, 
-          file=file.path(outputs.path, paste(opt$project, ui, "final-object.rds", sep="_")))
+  filename <- paste(opt$project, ui, "final-object.rds", sep="_")
+  saveRDS(signatures.res@sobj, file=file.path(outputs.path, filename))
   # ===================================
   message("** pipeline completed")
   # ===================================  
