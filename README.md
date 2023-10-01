@@ -98,20 +98,6 @@ An up-to-date HTML manual that describes all the available flag options is here:
 
 ---
 
-## Perform only QC
-
-<details>
-<br>
-
-In most of the cases, it is hard to tell the optimal parameter values for best
-QC in advance. The `only_qc` argument will help users to take a look at the
-overall metrics of the data in advance. After examination of all the QC metrics,
-user can run the pipeline with the optimal parameter values.
-
-</details>
-
----
-
 ## Workflow Outputs
 
 <details>
@@ -138,6 +124,20 @@ parameters. The UID ensures that the output files can be easily identified and
 distinguished, allowing investigators to easily trace their analysis and results
 back to the specific run and set of parameters used and minimizing confusion and
 errors in data management.
+
+</details>
+
+---
+
+## Perform only QC
+
+<details>
+<br>
+
+In most of the cases, it is hard to tell the optimal parameter values for best
+QC in advance. The `only_qc` argument will help users to take a look at the
+overall metrics of the data in advance. After examination of all the QC metrics,
+user can run the pipeline with the optimal parameter values.
 
 </details>
 
