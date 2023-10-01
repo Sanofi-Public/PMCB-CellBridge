@@ -125,8 +125,8 @@ cells, B cell, and NK kills) and monocytes:
 +	`docker pull pmcbscb/tobridge `
 2)	Get the metadata: 
 +	wget <path_to_github_raw>/metadata.csv
-3)	Run ToBridge (simplest case scenario ~X mins): `<command_line>` 
-4)	Run CellBridge (simplest case scenario ~X mins): `docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge --project project-demo --species hs --tissue pbmc --metadata sample_based`
+3)	Run ToBridge (simplest case scenario): `docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags` 
+4)	Run CellBridge (simplest case scenario): `docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge --project project-demo --species hs --tissue pbmc --metadata sample_based`
 
 Note: sharing files between the host operating system and the container requires
 you to bind a directory on the host to the container mount points using the `-v`
