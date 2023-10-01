@@ -61,25 +61,22 @@ Serialization) objects as the input. NOTE:
 
 ---
 
-To run the docker locally follow the instructions:
-* Before you can run the pipeline, you need to get the source code onto your machine. Clone the cellbridge repository using the following command:
-+ `git clone https://github.com/Sanofi-GitHub/PMCB-CellBridge.git` 
-+ clone a specific `x.y.z` tag (release) with `git clone -b <x.y.z>
-https://github.com/Sanofi-GitHub/PMCB-CellBridge.git`
-* In order to build the container image, you’ll need to use the Dockerfile. 
-+ change directory to the cellbridge directory you just cloned. 
-+ build the pipeline container image: `docker build -t <image_name> .`. 
-+ This step may take 30-45 minutes.
-* Now that you have an image, you can run the `cellbridge` command in a container. 
-To do so, you will use the `docker run` command.
-+ to see the pipeline help options use: `docker run --rm -it <image_name>
-cellbridge --help`. 
-+ sharing files between the host operating system and the
-container requires you to bind a directory on the host to the container
-mount points using the `-v` argument. There is one available mount points
-defined in the container named `data`. 
-+ to execute the `cellbridge` command directly inside the container use: 
-`docker run -it --rm -v <local-path-to-data>:/data:z <image_name> cellbridge [options ...]`.
+## Docker Images
+
+<details>
+<br>
+
+The pre-built images are available in the `pmcbscb` (Precision Medicine and
+Computational Biology – Single Cell Biology) Docker Hub repository. They can be
+seamlessly pulled by:
+
++	`docker pull pmcbscb/cellbridge`
++	`docker pull pmcbscb/tobridge `
+
+Note: for details about pre-processing step, visit
+[ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github
+
+</details>
 
 ---
 
@@ -88,11 +85,54 @@ defined in the container named `data`.
 <details>
 <br>
 
-The extensive documentation for flag options is embedded within the workflow. For a review of the flags, please execute:
+The extensive documentation for flag options is embedded within the workflow.
+For a review of the flags, please execute:
 
 + `docker run pmcbscb/cellbridge:latest cellbridge --help`
 
 An up-to-date HTML manual that describes all the available flag options is here: [flags](http://htmlpreview.github.io/?https://github.com/Sanofi-Public/PMCB-CellBridge/blob/master/cellbridge_flags.html)
+
+</details>
+
+---
+
+## Instructions for Running the Workflow on Demo Dataset
+
+<details>
+<br>
+
+### Get fastq demo files
+
+Users can download FASTQ files from one of the publicly-available data sets on
+the 10x Genomics support site. This example uses the 1,000 PBMC data set from
+human peripheral blood mononuclear cells (PBMC), consisting of lymphocytes (T
+cells, B cell, and NK kills) and monocytes:
+
+1)	`mkdir sandbox`
+2)	`cd sandbox`
+3)	`wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_fastqs.tar`
+4)	`tar -xvf pbmc_1k_v3_fastqs.tar`
+
+### Get the reference transcriptome
+
+1)	wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz
+2)	tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz
+
+### Set up the command for processing the data
+
+1)	Pull the latest version of the images:
++	`docker pull pmcbscb/cellbridge`
++	`docker pull pmcbscb/tobridge `
+2)	Get the metadata: 
++	wget <path_to_github_raw>/metadata.csv
+3)	Run ToBridge (simplest case scenario ~X mins): `<command_line>` 
+4)	Run CellBridge (simplest case scenario ~X mins): `docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge --project project-demo --species hs --tissue pbmc --metadata sample_based`
+
+Note: sharing files between the host operating system and the container requires
+you to bind a directory on the host to the container mount points using the `-v`
+argument. There is one available mount points defined in the container named
+`data`. In the example above the current directory `${PWD}` was used and not an
+absolute notation. If you intended to pass a host directory, use absolute path.
 
 </details>
 
