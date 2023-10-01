@@ -29,6 +29,11 @@ pre-processing step of the data.
 
 ---
 
+## Workflow Inputs
+
+<details>
+<br>
+
 The pipeline inputs (required) is one folder containing:
 
 1) A metadata file which should be in `CSV` format and contain
@@ -51,6 +56,8 @@ Finally, CellBridge accepts previously processed Seurat RDS (R Data
 Serialization) objects as the input. NOTE:
   * data corresponding to each sample must be provided in separate folders. 
   * the name of each folder must be the same as the sample names provided in the `sample` column of the metadata file.
+
+</details>
 
 ---
 
@@ -86,6 +93,7 @@ The extensive documentation for flag options is embedded within the workflow. Fo
 + `docker run pmcbscb/cellbridge:latest cellbridge --help`
 
 An up-to-date HTML manual that describes all the available flag options is here: [flags](http://htmlpreview.github.io/?https://github.com/Sanofi-Public/PMCB-CellBridge/blob/master/cellbridge_flags.html)
+
 </details>
 
 ---
