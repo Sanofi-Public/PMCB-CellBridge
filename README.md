@@ -104,6 +104,11 @@ user can run the pipeline with the optimal parameter values.
 
 ---
 
+## Workflow Outputs
+
+<details>
+<br>
+
 As a result, the pipeline produces one `outputs` folder containing three files,
 each of which is tagged by a 15-character unique identifier (UI).
 
@@ -125,6 +130,8 @@ parameters. The UID ensures that the output files can be easily identified and
 distinguished, allowing investigators to easily trace their analysis and results
 back to the specific run and set of parameters used and minimizing confusion and
 errors in data management.
+
+</details>
 
 ---
 
