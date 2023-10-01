@@ -80,7 +80,7 @@ The extensive documentation for flag options is embedded within the workflow. Fo
 
 + `docker run pmcbscb/cellbridge:latest cellbridge --help`
 
-An HTML manual that describes all the available flag options is available here: [flags](http://htmlpreview.github.io/?https://github.com/Sanofi-Public/PMCB-CellBridge/blob/master/cellbridge_flags.html)
+An up-to-date HTML manual that describes all the available flag options is here: [flags](http://htmlpreview.github.io/?https://github.com/Sanofi-Public/PMCB-CellBridge/blob/master/cellbridge_flags.html)
 
 ---
 
