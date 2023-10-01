@@ -88,6 +88,7 @@ Note: for details about pre-processing step, visit
 The extensive documentation for flag options is embedded within the workflow.
 For a review of the flags, please execute:
 
++ `docker run pmcbscb/tobridge:latest tobridge --help`
 + `docker run pmcbscb/cellbridge:latest cellbridge --help`
 
 For detailed information about the available flag options, refer to our up-to-date HTML manual: [flags](http://htmlpreview.github.io/?https://github.com/Sanofi-Public/PMCB-CellBridge/blob/master/cellbridge_flags.html)
