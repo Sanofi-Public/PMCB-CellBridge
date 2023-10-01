@@ -80,7 +80,7 @@ Note: for details about pre-processing step, visit
 
 ---
 
-## Available Falg Options
+## Available Flag Options
 
 <details>
 <br>
