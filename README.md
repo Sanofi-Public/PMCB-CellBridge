@@ -76,13 +76,12 @@ defined in the container named `data`.
 
 ---
 
-<details>
 ## Falg Options
+
+<details>
 <br>
 The extensive documentation for flag options is embedded within the workflow. For a review of the flags, please execute:
-
 + `docker run pmcbscb/cellbridge:latest cellbridge --help`
-
 An up-to-date HTML manual that describes all the available flag options is here: [flags](http://htmlpreview.github.io/?https://github.com/Sanofi-Public/PMCB-CellBridge/blob/master/cellbridge_flags.html)
 </details>
 
