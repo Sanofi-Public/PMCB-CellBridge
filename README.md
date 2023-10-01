@@ -76,6 +76,14 @@ defined in the container named `data`.
 
 ---
 
+The extensive documentation for flag options is embedded within the workflow. For a review of the flags, please execute:
+
++ `docker run pmcbscb/cellbridge:latest cellbridge --help`
+
+An HTML manual that describes all the available flag options is available here: [flags](http://htmlpreview.github.io/?https://github.com/Sanofi-Public/PMCB-CellBridge/blob/master/cellbridge_flags.html)
+
+---
+
 In most of the cases, it is hard to tell the optimal parameter values for best
 QC in advance. The `only_qc` argument will help users to take a look at the
 overall metrics of the data in advance. After examination of all the QC metrics,
