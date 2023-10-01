@@ -1,0 +1,16 @@
+---
+title: "Flags available in CellBridge workflow"
+output: html_document
+date: "`r Sys.Date()`"
+params:
+  opt_parser: NULL
+---
+
+```{r variable, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+    opt_parser <- params$opt_parser
+```
+
+```{r cars, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
+print_help(opt_parser)
+```
+
