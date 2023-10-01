@@ -1377,9 +1377,9 @@ for (i in 1:length(trajs)) {
 
 `r if (eval_mrks) { "# BridgeTrajectory" }`
 
-`r if (eval_mrks) { "Note: Labels may have been removed if they overlap excessively." }`
-
 `r if (eval_mrks) { "## Visualizing Infered Trajectory {.tabset}" }`
+
+`r if (eval_mrks) { "Note: Labels may have been removed if they overlap excessively." }`
 
 ```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 5.0), fig.align = 'center', results='asis'}
 make_tab <- function(x) {      # function to make the tabs
