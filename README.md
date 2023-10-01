@@ -77,7 +77,7 @@ defined in the container named `data`.
 ---
 
 <details>
-<summary>Falg Options</summary>
+<summary> ## Falg Options</summary>
 <br>
 The extensive documentation for flag options is embedded within the workflow. For a review of the flags, please execute:
 
