@@ -74,7 +74,7 @@ seamlessly pulled by:
 +	`docker pull pmcbscb/tobridge `
 
 Note: for details about pre-processing step, visit
-[ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github
+[ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github page.
 
 </details>
 
@@ -90,7 +90,7 @@ For a review of the flags, please execute:
 
 + `docker run pmcbscb/cellbridge:latest cellbridge --help`
 
-An up-to-date HTML manual that describes all the available flag options is here: [flags](http://htmlpreview.github.io/?https://github.com/Sanofi-Public/PMCB-CellBridge/blob/master/cellbridge_flags.html)
+For detailed information about the available flag options, refer to our up-to-date HTML manual: [flags](http://htmlpreview.github.io/?https://github.com/Sanofi-Public/PMCB-CellBridge/blob/master/cellbridge_flags.html)
 
 </details>
 
