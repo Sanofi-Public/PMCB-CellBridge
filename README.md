@@ -145,9 +145,9 @@ user can run the pipeline with the optimal parameter values.
 
 ## Contact
 
-<d+>
+<details>
 <br>
 
 For help and questions please contact the [cellbridge's maintenance team](mailto:nima.nouri@sanofi.com).
 
-</d+>
+</details>
