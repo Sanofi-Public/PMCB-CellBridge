@@ -96,7 +96,7 @@ For detailed information about the available flag options, refer to our up-to-da
 
 ---
 
-## Step-by-Step Instructions for Running the Workflow on the Demo Dataset
+## Instructions for Running the Workflow on the Demo Dataset
 
 <details>
 <br>
