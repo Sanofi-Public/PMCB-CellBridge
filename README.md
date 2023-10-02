@@ -118,21 +118,21 @@ cells, B cell, and NK kills) and monocytes:
 2)	`cd sandbox`
 3)	`wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_fastqs.tar`
 4)	`tar -xvf pbmc_1k_v3_fastqs.tar`
+5)  `cd pbmc_1k_v3_fastqs`
 
-### Get the reference transcriptome
+### Get the reference transcriptome and metadata
 
 1)	wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz
 2)	tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz
+3)	wget <path_to_github_raw>/metadata.csv
 
 ### Set up the command for processing the data
 
 1)	Pull the latest version of the images:
 +	`docker pull pmcbscb/tobridge`
 +	`docker pull pmcbscb/cellbridge `
-2)	Get the metadata: 
-+	wget <path_to_github_raw>/metadata.csv
-3)	Run ToBridge (simplest case scenario): `docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags` 
-4)	Run CellBridge (simplest case scenario): `docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge --project project-demo --species hs --tissue pbmc --metadata sample_based`
+2)	Run ToBridge (simplest case scenario): `docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags` 
+3)	Run CellBridge (simplest case scenario): `docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge --project project-demo --species hs --tissue pbmc --metadata sample_based`
 
 Note: sharing files between the host operating system and the container requires
 you to bind a directory on the host to the container mount points using the `-v`
