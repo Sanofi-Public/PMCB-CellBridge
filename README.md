@@ -128,10 +128,13 @@ cells, B cell, and NK kills) and monocytes:
 
 ### Set up the command for processing the data
 
-1)	`docker pull pmcbscb/tobridge`
-2)	`docker pull pmcbscb/cellbridge `
-3)	Run pre-processing (simplest case scenario): `docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags` 
-4)	Run processing (simplest case scenario): `docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge --project project-demo --species hs --tissue pbmc --metadata sample_based`
+1) Pull docker images
++	`docker pull pmcbscb/tobridge`
++	`docker pull pmcbscb/cellbridge`
+2)	Run pre-processing (simplest case scenario): 
++ `docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags` 
+3)	Run processing (simplest case scenario): 
++ `docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge --project project-demo --species hs --tissue pbmc --metadata sample_based`
 
 Note: sharing files between the host operating system and the container requires
 you to bind a directory on the host to the container mount points using the `-v`
