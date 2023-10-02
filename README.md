@@ -122,9 +122,9 @@ cells, B cell, and NK kills) and monocytes:
 
 ### Get the reference transcriptome and metadata
 
-1)	wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz
-2)	tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz
-3)	wget <path_to_github_raw>/metadata.csv
+1)	`wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz`
+2)	`tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz`
+3)	`wget <path_to_github_raw>/metadata.csv`
 
 ### Set up the command for processing the data
 
