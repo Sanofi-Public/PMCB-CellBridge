@@ -110,7 +110,7 @@ Note: for details about pre-processing step, visit
 
 ---
 
-## Instructions for Running the Workflow on the Demo Dataset
+## Demo Workflow Execution Instructions
 
 <details>
 <br>
