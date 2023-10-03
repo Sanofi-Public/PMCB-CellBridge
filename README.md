@@ -230,6 +230,7 @@ If you use CellBridge please cite our paper:
     doi = {DOI},
   }
 ```
+</details>
 
 ---
 
