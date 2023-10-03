@@ -127,7 +127,7 @@ instructions into the terminal:
 mkdir sandbox && cd sandbox && \
 mkdir -p input_fastq/run_1 && \
 wget -P input_fastq/run_1 https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_fastqs.tar && \
-tar -xvf input_fastq/run_1/pbmc_1k_v3_fastqs.tar input_fastq/run_1 --strip-components=1
+tar -xvf input_fastq/run_1/pbmc_1k_v3_fastqs.tar -C input_fastq/run_1 --strip-components=1
 ```
 
 #### Get the reference transcriptome and metadata
@@ -135,7 +135,7 @@ tar -xvf input_fastq/run_1/pbmc_1k_v3_fastqs.tar input_fastq/run_1 --strip-compo
 ``` 
 mkdir cr_count_reference
 wget -P cr_count_reference https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz && \
-tar -zxvf cr_count_reference/refdata-gex-GRCh38-2020-A.tar.gz cr_count_reference --strip-components=1 && \
+tar -zxvf cr_count_reference/refdata-gex-GRCh38-2020-A.tar.gz -C cr_count_reference --strip-components=1 && \
 wget https://raw.githubusercontent.com/Sanofi-Public/PMCB-CellBridge/master/demo/metadata.csv 
 ```
 
