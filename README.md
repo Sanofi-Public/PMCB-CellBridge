@@ -114,19 +114,19 @@ the 10x Genomics support site. This example uses the 1,000 PBMC data set from
 human peripheral blood mononuclear cells (PBMC), consisting of lymphocytes (T
 cells, B cell, and NK kills) and monocytes:
 
-``` bash
+``` 
 mkdir sandbox
 ```
-``` bash
+``` 
 cd sandbox
 ```
-``` bash
+``` 
 wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_fastqs.tar
 ```
-``` bash
+``` 
 tar -xvf pbmc_1k_v3_fastqs.tar
 ```
-``` bash
+``` 
 cd pbmc_1k_v3_fastqs
 ```
 
