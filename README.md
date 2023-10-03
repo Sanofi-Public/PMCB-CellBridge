@@ -84,7 +84,7 @@ Note: for details about pre-processing step, visit
 
 ---
 
-## Available Flags
+## Flag Options
 
 <details>
 <br>
