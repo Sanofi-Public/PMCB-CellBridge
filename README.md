@@ -213,6 +213,17 @@ user can run the pipeline with the optimal parameter values.
 
 ---
 
+## Contact
+
+<details>
+<br>
+
+For help and questions please contact the [cellbridge's maintenance team](mailto:nima.nouri@sanofi.com).
+
+</details>
+
+---
+
 ## Citing CellBridge
 
 <details>
@@ -230,15 +241,4 @@ If you use CellBridge please cite our paper:
     doi = {DOI},
   }
 ```
-</details>
-
----
-
-## Contact
-
-<details>
-<br>
-
-For help and questions please contact the [cellbridge's maintenance team](mailto:nima.nouri@sanofi.com).
-
 </details>
