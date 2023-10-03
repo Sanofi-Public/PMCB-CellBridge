@@ -141,18 +141,18 @@ wget https://raw.githubusercontent.com/Sanofi-Public/PMCB-CellBridge/master/demo
 #### Assuming the images have already been pulled (see Docker Images above), execute the workflows
 
 ``` 
-docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
-                                                    --flag1 flag1 \ 
-                                                    --flag2 flag2 \ 
-                                                    --flag3 flag3 \ 
-                                                    --flag4 flag4 \ 
+docker run -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
+                                                --flag1 flag1 \ 
+                                                --flag2 flag2 \ 
+                                                --flag3 flag3 \ 
+                                                --flag4 flag4 \ 
 ```
 ``` 
-docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge \
-                                                    --project project-demo \
-                                                    --species hs \
-                                                    --tissue pbmc \
-                                                    --metadata sample_based
+docker run -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge \
+                                           --project project-demo \
+                                           --species hs \
+                                           --tissue pbmc \
+                                           --metadata sample_based
 ```
 
 Note: sharing files between the host operating system and the container requires
