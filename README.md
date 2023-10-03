@@ -127,8 +127,8 @@ mkdir sandbox && cd sandbox
 ```
 ``` 
 wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_fastqs.tar && \
-tar -xvf pbmc_1k_v3_fastqs.tar && \
-cd pbmc_1k_v3_fastqs
+                                                         tar -xvf pbmc_1k_v3_fastqs.tar && \
+                                                         cd pbmc_1k_v3_fastqs
 ```
 
 #### Get the reference transcriptome and metadata
