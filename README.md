@@ -123,20 +123,19 @@ human peripheral blood mononuclear cells (PBMC), consisting of lymphocytes (T
 cells, B cell, and NK kills) and monocytes:
 
 ``` 
-mkdir sandbox && cd sandbox
-```
-``` 
+mkdir sandbox && \
+cd sandbox && \
 wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_fastqs.tar && \
-                                                         tar -xvf pbmc_1k_v3_fastqs.tar && \
-                                                         cd pbmc_1k_v3_fastqs
+tar -xvf pbmc_1k_v3_fastqs.tar && \
+cd pbmc_1k_v3_fastqs
 ```
 
 #### Get the reference transcriptome and metadata
 
 ``` 
 wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz && \
-                                    tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz && \
-                                    wget <path_to_github_raw>/metadata.csv
+tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz && \
+wget <path_to_github_raw>/metadata.csv
 ```
 
 #### Assuming the images have already been pulled (see above), execute the workflows
