@@ -110,7 +110,7 @@ Note: for details about pre-processing step, visit
 
 ---
 
-## Demo Workflow Instructions
+## Demo Workflow
 
 <details>
 <br>
