@@ -213,6 +213,26 @@ user can run the pipeline with the optimal parameter values.
 
 ---
 
+## Citing CellBridge
+
+<details>
+<br>
+
+If you use CellBridge please cite our paper: 
+
+```
+  @Article{,
+    author = {Nima Nouri and Andre H. Kurlovs, et al.},
+    title = {Scaling up Single-Cell RNA-seq Data Analysis with CellBridge Workflow},
+    journal = {Journal},
+    year = {2023},
+    url = {URL},
+    doi = {DOI},
+  }
+```
+
+---
+
 ## Contact
 
 <details>
