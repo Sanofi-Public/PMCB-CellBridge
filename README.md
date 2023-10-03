@@ -128,10 +128,13 @@ cells, B cell, and NK kills) and monocytes:
 
 ### Pull images and execute workflows
 
-```
+``` bash
 docker pull pmcbscb/tobridge
 ```
-```docker pull pmcbscb/cellbridge```
+``` bash
+docker pull pmcbscb/cellbridge
+```
+
 3)  `docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags` 
 4)  `docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge --project project-demo --species hs --tissue pbmc --metadata sample_based`
 
