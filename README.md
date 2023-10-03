@@ -132,6 +132,8 @@ tar -xvf input_fastq/run_1/pbmc_1k_v3_fastqs.tar -C input_fastq/run_1 --strip-co
 
 #### Get the reference transcriptome and metadata
 
+The following command lines set up the required data structure to run the workflow:
+
 ``` 
 mkdir cr_count_reference && \
 wget -P cr_count_reference https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz && \
@@ -139,7 +141,9 @@ tar -zxvf cr_count_reference/refdata-gex-GRCh38-2020-A.tar.gz -C cr_count_refere
 wget https://raw.githubusercontent.com/Sanofi-Public/PMCB-CellBridge/master/demo/metadata.csv 
 ```
 
-#### Assuming the images have already been pulled (see 'Docker Images' above), execute the workflows
+#### Execute workflows
+
+Assuming the images have already been pulled (see 'Docker Images' above):
 
 ``` 
 docker run -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
