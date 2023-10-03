@@ -135,7 +135,7 @@ cd pbmc_1k_v3_fastqs
 ``` 
 wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz && \
 tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz && \
-wget <path_to_github_raw>/metadata.csv
+wget https://raw.githubusercontent.com/Sanofi-Public/PMCB-CellBridge/master/demo/metadata.csv
 ```
 
 #### Assuming the images have already been pulled (see above), execute the workflows
