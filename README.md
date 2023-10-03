@@ -138,7 +138,7 @@ tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz && \
 wget https://raw.githubusercontent.com/Sanofi-Public/PMCB-CellBridge/master/demo/metadata.csv
 ```
 
-#### Assuming the images have already been pulled (see above), execute the workflows
+#### Assuming the images have already been pulled (see Docker Images above), execute the workflows
 
 ``` 
 docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
