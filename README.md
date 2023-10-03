@@ -89,7 +89,7 @@ Note: for details about pre-processing step, visit
 <details>
 <br>
 
-The extensive documentation for flag options is embedded within the workflow.
+The extensive documentation for flag options is embedded within the workflows.
 For a review of the flags, please execute:
 
 ```
@@ -115,7 +115,7 @@ Note: for details about pre-processing step, visit
 <details>
 <br>
 
-### Get fastq demo files
+#### Get fastq demo files
 
 Users can download FASTQ files from one of the publicly-available data sets on
 the 10x Genomics support site. This example uses the 1,000 PBMC data set from
@@ -138,7 +138,7 @@ tar -xvf pbmc_1k_v3_fastqs.tar
 cd pbmc_1k_v3_fastqs
 ```
 
-### Get the reference transcriptome and metadata
+#### Get the reference transcriptome and metadata
 
 ``` 
 wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz
@@ -150,14 +150,8 @@ tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz
 wget <path_to_github_raw>/metadata.csv
 ```
 
-### Pull images and execute workflows
+#### Assuming the images have already been pulled (see above), execute the workflows
 
-``` 
-docker pull pmcbscb/tobridge
-```
-``` 
-docker pull pmcbscb/cellbridge
-```
 ``` 
 docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
                                                     --flag1 flag1 \ 
