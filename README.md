@@ -134,13 +134,9 @@ wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_fas
 #### Get the reference transcriptome and metadata
 
 ``` 
-wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz
-```
-``` 
-tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz
-```
-``` 
-wget <path_to_github_raw>/metadata.csv
+wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz && \
+                                    tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz && \
+                                    wget <path_to_github_raw>/metadata.csv
 ```
 
 #### Assuming the images have already been pulled (see above), execute the workflows
