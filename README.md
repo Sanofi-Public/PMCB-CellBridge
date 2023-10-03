@@ -114,11 +114,21 @@ the 10x Genomics support site. This example uses the 1,000 PBMC data set from
 human peripheral blood mononuclear cells (PBMC), consisting of lymphocytes (T
 cells, B cell, and NK kills) and monocytes:
 
-1)	`mkdir sandbox`
-2)	`cd sandbox`
-3)	`wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_fastqs.tar`
-4)	`tar -xvf pbmc_1k_v3_fastqs.tar`
-5)  `cd pbmc_1k_v3_fastqs`
+``` bash
+mkdir sandbox
+```
+``` bash
+cd sandbox
+```
+``` bash
+wget https://cf.10xgenomics.com/samples/cell-exp/3.0.0/pbmc_1k_v3/pbmc_1k_v3_fastqs.tar
+```
+``` bash
+tar -xvf pbmc_1k_v3_fastqs.tar
+```
+``` bash
+cd pbmc_1k_v3_fastqs
+```
 
 ### Get the reference transcriptome and metadata
 
@@ -141,7 +151,11 @@ docker pull pmcbscb/tobridge
 docker pull pmcbscb/cellbridge
 ```
 ``` bash
-docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags 
+docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
+                                                    --flag1 flag1 \ 
+                                                    --flag2 flag2 \ 
+                                                    --flag3 flag3 \ 
+                                                    --flag4 flag4 \ 
 ```
 ``` bash
 docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge \
