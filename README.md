@@ -120,7 +120,8 @@ Note: for details about pre-processing step, visit
 Users can download FASTQ files from one of the publicly-available data sets on
 the 10x Genomics support site. This example uses the 1,000 PBMC data set from
 human peripheral blood mononuclear cells (PBMC), consisting of lymphocytes (T
-cells, B cell, and NK kills) and monocytes:
+cells, B cell, and NK kills) and monocytes. Please copy and paste the following
+instructions into the terminal:
 
 ``` 
 mkdir sandbox && \
