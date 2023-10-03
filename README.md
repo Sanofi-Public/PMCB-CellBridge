@@ -122,9 +122,15 @@ cells, B cell, and NK kills) and monocytes:
 
 ### Get the reference transcriptome and metadata
 
-1)	`wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz`
-2)	`tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz`
-3)	`wget <path_to_github_raw>/metadata.csv`
+``` bash
+wget https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz
+```
+``` bash
+tar -zxvf refdata-gex-GRCh38-2020-A.tar.gz
+```
+``` bash
+wget <path_to_github_raw>/metadata.csv
+```
 
 ### Pull images and execute workflows
 
@@ -135,7 +141,7 @@ docker pull pmcbscb/tobridge
 docker pull pmcbscb/cellbridge
 ```
 ``` bash
-`docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags` 
+docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags 
 ```
 ``` bash
 docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge \
