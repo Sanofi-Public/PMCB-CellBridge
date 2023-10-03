@@ -131,11 +131,11 @@ cells, B cell, and NK kills) and monocytes:
 1)  `docker pull pmcbscb/tobridge`
 2)  `docker pull pmcbscb/cellbridge`
 3)  `docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags`  
-4)  `docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge \` <br>
-    `                                                    --project project-demo \` <br>
-    `                                                    --species hs \` <br>
-    `                                                    --tissue pbmc \` <br>
-    `                                                    --metadata sample_based`
+4)  `docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge \ <br>
+                                                         --project project-demo \ <br>
+                                                         --species hs \ <br>
+                                                         --tissue pbmc \ <br>
+                                                         --metadata sample_based`
 
 Note: sharing files between the host operating system and the container requires
 you to bind a directory on the host to the container mount points using the `-v`
