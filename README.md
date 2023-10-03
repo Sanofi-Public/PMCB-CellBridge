@@ -199,7 +199,7 @@ errors in data management.
 
 ---
 
-## Perform only QC
+## Perform QC
 
 <details>
 <br>
