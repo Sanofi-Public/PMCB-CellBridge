@@ -134,9 +134,16 @@ docker pull pmcbscb/tobridge
 ``` bash
 docker pull pmcbscb/cellbridge
 ```
-
-3)  `docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags` 
-4)  `docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge --project project-demo --species hs --tissue pbmc --metadata sample_based`
+``` bash
+`docker run -it --rm -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge --flags` 
+```
+``` bash
+docker run -it --rm -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge \
+                                                    --project project-demo \
+                                                    --species hs \
+                                                    --tissue pbmc \
+                                                    --metadata sample_based
+```
 
 Note: sharing files between the host operating system and the container requires
 you to bind a directory on the host to the container mount points using the `-v`
