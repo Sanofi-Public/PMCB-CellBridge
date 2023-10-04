@@ -137,8 +137,7 @@ The following command lines set up the required data structure to run the workfl
 ``` 
 mkdir cr_count_reference && \
 wget -P cr_count_reference https://cf.10xgenomics.com/supp/cell-exp/refdata-gex-GRCh38-2020-A.tar.gz && \
-tar -zxvf cr_count_reference/refdata-gex-GRCh38-2020-A.tar.gz -C cr_count_reference --strip-components=1 && \
-wget https://raw.githubusercontent.com/Sanofi-Public/PMCB-CellBridge/master/demo/metadata.csv 
+tar -zxvf cr_count_reference/refdata-gex-GRCh38-2020-A.tar.gz -C cr_count_reference --strip-components=1
 ```
 
 #### Execute workflows
@@ -151,6 +150,10 @@ docker run -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
                                                 --flag2 flag2 \ 
                                                 --flag3 flag3 \ 
                                                 --flag4 flag4 \ 
+```
+```
+cd cr_count_organized_output/cellbridge_input
+wget https://raw.githubusercontent.com/Sanofi-Public/PMCB-CellBridge/master/demo/metadata.csv 
 ```
 ``` 
 docker run -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge \
