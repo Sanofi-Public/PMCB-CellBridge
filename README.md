@@ -147,8 +147,7 @@ Assuming the images have already been pulled (see 'Docker Images' above):
 ``` 
 docker run -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
                                                 --fastqc \ 
-                                                --cr_count \ 
-
+                                                --cr_count
 ```
 ```
 cd cr_count_organized_output/cellbridge_input
