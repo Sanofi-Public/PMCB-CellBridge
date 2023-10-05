@@ -142,24 +142,19 @@ tar -zxvf cr_count_reference/refdata-gex-GRCh38-2020-A.tar.gz -C cr_count_refere
 
 #### Execute workflows
 
-Assuming the images have already been pulled (see 'Docker Images' above), run
-the pre-processing pipeline:
+Assuming the images have already been pulled (see 'Docker Images' above):
 
 ``` 
 docker run -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
-                                           --fastqc \
-                                           --cr_count 
+                                                --flag1 flag1 \ 
+                                                --flag2 flag2 \ 
+                                                --flag3 flag3 \ 
+                                                --flag4 flag4 \ 
 ```
-
-Change directory to access the pre-processed data and download the metadata:
-
 ```
 cd cr_count_organized_output/cellbridge_input
 wget https://raw.githubusercontent.com/Sanofi-Public/PMCB-CellBridge/master/demo/metadata.csv 
 ```
-
-Run the processing pipeline:
-
 ``` 
 docker run -v ${PWD}:/data:z pmcbscb/cellbridge:latest cellbridge \
                                            --project project-demo \
