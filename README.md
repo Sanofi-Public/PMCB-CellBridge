@@ -20,6 +20,9 @@ accurate cell type annotation. CellBridge provides convenient parameterization
 of the workflow, while its Docker-based framework ensures reproducibility of
 results across diverse computing environments. 
 
+The CellBridge ecosystem comprises two main executables: 1) pre-processing
+(`tobridge`) and 2) processing (`cellbridge`).
+
 See [ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github for the
 pre-processing step of the data.
 
