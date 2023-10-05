@@ -56,6 +56,7 @@ Finally, CellBridge accepts previously processed Seurat RDS (R Data
 Serialization) objects as the input. NOTE:
   * data corresponding to each sample must be provided in separate folders. 
   * the name of each folder must be the same as the sample names provided in the `sample` column of the metadata file.
+
 An illustration of input data schema:
 
 ```
