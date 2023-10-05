@@ -151,10 +151,10 @@ docker run -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
                                            --cr_count 
 ```
 
-Move to the directory `cellbridge_input` and download the `metadata`:
+Move to `cellbridge_input` directory and download the `metadata`:
 
 ```
-cd cr_count_organized_output/cellbridge_input
+cd cr_count_organized_output/cellbridge_input && \
 wget https://raw.githubusercontent.com/Sanofi-Public/PMCB-CellBridge/master/demo/metadata.csv 
 ```
 
@@ -186,8 +186,14 @@ Note: for details about pre-processing step, visit
 <details>
 <br>
 
-As a result, the pipeline produces one `outputs` folder containing three files,
-each of which is tagged by a 15-character unique identifier (UI).
+As a result, the pipeline produces one `outputs` folder containing three files:
+
+```
+outputs
+├── <project_name>_cellbridge_v<x.y.z>_<UI>_summary.html
+├── <project_name>_cellbridge_v<x.y.z>_<UI>_final-object.rds
+└── <project_name>_cellbridge_v<x.y.z>_<UI>_middle-object.rds
+```
 
 1) An HTML report (`<project_name>_cellbridge_v<x.y.z>_<UI>_summary.html`),
 containing quality metric plots, tables, and several other plots providing an
@@ -207,6 +213,9 @@ parameters. The UID ensures that the output files can be easily identified and
 distinguished, allowing investigators to easily trace their analysis and results
 back to the specific run and set of parameters used and minimizing confusion and
 errors in data management.
+
+Note: for details about pre-processing step, visit
+[ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github page.
 
 </details>
 
