@@ -195,7 +195,7 @@ if (FALSE) {
   opt$scr_th <- 0.25
   opt$metadata <- "sample_based"
   opt$docker <- FALSE
-  opt$genesets <- "pbmc"
+  opt$genesets <- "curated"
   opt$trajectory <- "both"
   opt$mrk_min_pct <- 0.9
   opt$mrk_top_n <- 0
