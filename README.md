@@ -56,6 +56,20 @@ Finally, CellBridge accepts previously processed Seurat RDS (R Data
 Serialization) objects as the input. NOTE:
   * data corresponding to each sample must be provided in separate folders. 
   * the name of each folder must be the same as the sample names provided in the `sample` column of the metadata file.
+An illustration of input data schema:
+
+```
+inputs
+├── metadata.csv
+├── <sample_1>
+    ├──	matrix.mtx.gz
+    ├──	features.tsv.gz
+    └── barcodes.tsv.gz
+└── <sample_2>
+    ├──	matrix.mtx.gz
+    ├──	features.tsv.gz
+    └── barcodes.tsv.gz
+```
 
 </details>
 
