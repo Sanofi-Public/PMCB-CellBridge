@@ -171,7 +171,7 @@ docker run -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
 Move to `cellbridge_input` directory and download the `metadata`:
 
 ```
-cd cr_count_organized_output/cellbridge_input && \
+cd cr_count_organized_output/cellbridge && \
 wget https://raw.githubusercontent.com/Sanofi-Public/PMCB-CellBridge/master/demo/metadata.csv 
 ```
 
@@ -231,7 +231,7 @@ distinguished, allowing investigators to easily trace their analysis and results
 back to the specific run and set of parameters used and minimizing confusion and
 errors in data management.
 
-Note: for details about pre-processing step, visit
+Note: for outputs of the pre-processing step, please visit
 [ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github page.
 
 </details>
