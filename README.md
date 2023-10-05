@@ -22,7 +22,7 @@ results across diverse computing environments.
 
 The CellBridge ecosystem comprises two main executables: 1) `tobridge` for
 pre-processing and 2) `cellbridge` for processing. See
-[ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github for the
+[ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github page for the
 pre-processing step of the data.
 
 <p align="center" width="100%">
