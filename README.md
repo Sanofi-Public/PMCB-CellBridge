@@ -191,7 +191,7 @@ argument. There is one available mount points defined in the container named
 `data`. In the example above the current directory `${PWD}` was used and not an
 absolute notation. If you intended to pass a host directory, use absolute path.
 
-Note: for details about the pre-processing step, visit the
+Note: for details about the pre-processing step, please visit the
 [ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github page.
 
 </details>
