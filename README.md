@@ -61,15 +61,15 @@ An illustration of input data schema:
 
 ```
 inputs
-├── metadata.csv
 ├── <sample_1>
-    ├──	matrix.mtx.gz
-    ├──	features.tsv.gz
-    └── barcodes.tsv.gz
+|   ├──	matrix.mtx.gz
+|   ├──	features.tsv.gz
+|   └── barcodes.tsv.gz
 └── <sample_2>
-    ├──	matrix.mtx.gz
-    ├──	features.tsv.gz
-    └── barcodes.tsv.gz
+|   ├──	matrix.mtx.gz
+|   ├──	features.tsv.gz
+|   └── barcodes.tsv.gz
+└── metadata.csv
 ```
 
 </details>
