@@ -146,10 +146,8 @@ Assuming the images have already been pulled (see 'Docker Images' above):
 
 ``` 
 docker run -v ${PWD}:/data:z pmcbscb/tobridge:latest tobridge \
-                                                --flag1 flag1 \ 
-                                                --flag2 flag2 \ 
-                                                --flag3 flag3 \ 
-                                                --flag4 flag4 \ 
+                                           --fastqc \
+                                           --cr_count 
 ```
 ```
 cd cr_count_organized_output/cellbridge_input
