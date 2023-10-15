@@ -241,9 +241,9 @@ mt_per_cell %>%
   }
   # ===================================
 filters <- data.frame(threshold = c(opt$min_umi_per_cell, 
-                                    ifelse(is.null(opt$max_umi_per_cell), NA, opt$max_umi_per_cell), 
+                                    ifelse(is.null(opt$max_umi_per_cell), 0, opt$max_umi_per_cell), 
                                     opt$min_genes_per_cell, 
-                                    ifelse(is.null(opt$max_genes_per_cell), NA, opt$max_genes_per_cell), 
+                                    ifelse(is.null(opt$max_genes_per_cell), 0, opt$max_genes_per_cell), 
                                     opt$max_mt_percent),
                       type = c("nCount_RNA", "nCount_RNA", 
                                "nFeature_RNA", "nFeature_RNA", 
@@ -251,50 +251,58 @@ filters <- data.frame(threshold = c(opt$min_umi_per_cell,
   # ===================================
   Q <- list()
   for (tp in unique(db_plot$type)) {
-    p <- ggplot(data = filter(db_plot, type == tp)) +
+    p <- ggplot() +
       getBaseTheme() +
       theme(strip.text = element_text(size = 20, face = "bold"),
-            axis.title.x = element_blank(),
-            axis.title.y = element_text(size = 14, face = "bold"),
+            axis.title = element_text(size = 14, face = "bold"),
             axis.text = element_text(size = 12, face = "bold"),
             legend.title = element_text(size=13),
             legend.text = element_text(size=11)) +
       scale_x_continuous(trans = scales::log10_trans(),
                          breaks = scales::trans_breaks("log10", function(x) 10^x),
                          labels = scales::trans_format("log10", scales::math_format(10^.x))) +
-      xlab("") + ylab("Density") +
-      geom_density(aes(x = count, group = sample_id, color = sample_id), 
+      xlab("10^x") + ylab("Density") +
+      geom_density(data = filter(db_plot, type == tp),
+                   aes(x = feature, color = sample_id), 
                    show.legend = FALSE, na.rm = TRUE) +
-      geom_vline(data = filter(filters, type == tp), 
-                 aes(xintercept = threshold), linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
-      scale_color_manual(name = "Sample",
-                         values = colrs)
+      geom_vline(data = filter(filters, type == tp),
+                 aes(xintercept = threshold),
+                 linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
+      scale_color_manual(values = colrs) +
+      guides(fill = "none", color = "none")
     Q[[length(Q) + 1]] <- p  
   }
   # ===================================
 ```
 
-### QC metrics distibution {.tabset}
+### Distribution Plots for Quality Control Metrics {.tabset}
 
 Dashed lines indicate the thresholds provided to the pipeline.
 
 #### UMI per cell
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
-plot(Q[[1]])
+<center>
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
+# plot(Q[[1]])
+ggplotly(Q[[1]], tooltip = c("sample_id"))
 ```
+<center>
 
-#### Gene per cell
+### Gene per cell
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
-plot(Q[[2]])
+<center>
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
+ggplotly(Q[[2]], tooltip = c("sample_id"))
 ```
+<center>
 
-#### Mitochondrial (%) per cell
+### Mitochondrial (%) per cell
 
-```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(4.0, 3.0), fig.align = 'center'}
-plot(Q[[3]])
+<center>
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
+ggplotly(Q[[3]], tooltip = c("sample_id"))
 ```
+<center>
 
 ### {-}
 
