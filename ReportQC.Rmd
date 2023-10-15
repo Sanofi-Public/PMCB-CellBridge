@@ -283,7 +283,6 @@ Dashed lines indicate the thresholds provided to the pipeline.
 
 <center>
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
-# plot(Q[[1]])
 ggplotly(Q[[1]], tooltip = c("sample_id"))
 ```
 <center>

@@ -364,7 +364,6 @@ Thresholds, represented by dashed lines, were implemented to filter the data and
 
 <center>
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
-# plot(Q[[1]])
 ggplotly(Q[[1]], tooltip = c("sample_id"))
 ```
 <center>
