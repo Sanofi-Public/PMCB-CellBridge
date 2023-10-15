@@ -276,11 +276,11 @@ filters <- data.frame(threshold = c(opt$min_umi_per_cell,
   # ===================================
 ```
 
-### Distribution Plots for Quality Control Metrics {.tabset}
+## Distribution Plots for Quality Control Metrics {.tabset}
 
-Dashed lines indicate the thresholds provided to the pipeline.
+Thresholds, represented by dashed lines, will be implemented to filter the data and only retain cells of high quality.
 
-#### UMI per cell
+### UMI per cell
 
 <center>
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(5.5, 4.5), fig.align = 'center'}
@@ -304,7 +304,7 @@ ggplotly(Q[[3]], tooltip = c("sample_id"))
 ```
 <center>
 
-### {-}
+## {-}
 
 - - -
 
