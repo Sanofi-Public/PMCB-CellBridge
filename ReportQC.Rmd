@@ -263,12 +263,13 @@ filters <- data.frame(threshold = c(opt$min_umi_per_cell,
                          labels = scales::trans_format("log10", scales::math_format(10^.x))) +
       xlab("10^x") + ylab("Density") +
       geom_density(data = filter(db_plot, type == tp),
-                   aes(x = feature, color = sample_id), 
+                   aes(x = count, color = sample_id), 
                    show.legend = FALSE, na.rm = TRUE) +
-      geom_vline(data = filter(filters, type == tp),
-                 aes(xintercept = threshold),
+      geom_vline(data = filter(filters, type == tp), 
+                 aes(xintercept = threshold), 
                  linetype = 2, color = "firebrick", size = 0.45, na.rm = TRUE) +
-      scale_color_manual(values = colrs) +
+      scale_color_manual(name = "Sample",
+                         values = colrs) +
       guides(fill = "none", color = "none")
     Q[[length(Q) + 1]] <- p  
   }
