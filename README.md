@@ -231,6 +231,13 @@ distinguished, allowing investigators to easily trace their analysis and results
 back to the specific run and set of parameters used and minimizing confusion and
 errors in data management.
 
+We note that one Seurat object is generated for each sample after QC.
+Subsequently, these individual objects are merged into a single object for
+downstream analysis. If investigators require multiple objects for different
+conditions, the best approach would be to run the workflow separately for each
+condition. This scenario can be accomplished simply by creating two different
+sample-based metadata sheets, one for each condition.
+
 Note: for outputs of the pre-processing step, please visit
 [ToBridge](https://github.com/Sanofi-Public/PMCB-ToBridge) Github page.
 
