@@ -15,6 +15,7 @@ sargentCellstates <- function(sobj, opt) {
   if (opt$genesets %in% c('pbmc', 'cns', 'nasal')) {
     gpos <- GENESETS[[opt$genesets]]
     gneg <- GENESETS.neg[[opt$genesets]]
+    alias <- FALSE
   } 
   # ===================================
   if (opt$genesets == 'curated') {
