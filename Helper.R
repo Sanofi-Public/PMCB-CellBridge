@@ -68,7 +68,7 @@ sargentAnnotation_helper <- function(sobj, gene.sets, gene.sets.neg,
   gsets.ng <- gene.sets.neg[names(gene.sets.neg) %in% root_cltypes]
   if (length(gsets.ng) == 0) { gsets.ng <- NULL }
   # ===================================
-  gex <- GetAssayData(sobj, assay="RNA", slot="counts")
+  gex <- GetAssayData(sobj, assay="RNA", layer="counts")
   adj.mtx <- attr(sobj, which="graphs")[["RNA_nn"]]
   # ===================================
   sargent_anot <- sargentAnnotation(gex=gex, 
