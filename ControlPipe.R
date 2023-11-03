@@ -48,15 +48,15 @@ controlPipe <- function(package.path, project.path, opt, pipe_version) {
                                    package.path=package.path,
                                    opt=opt)
   # ===================================
-  message("** running sargentCellstates function")
+  if (opt$genesets != 'none') { message("** running sargentCellstates function") }
   sargent.res <- sargentCellstates(sobj=signacx.res@sobj, 
                                    opt=opt)
   # ===================================
-  message("** running findSignatures function")
+  if (opt$mrk_top_n > 0) { message("** running findSignatures function") }
   signatures.res <- findSignatures(sobj=sargent.res@sobj, 
                                    opt=opt)
   # ===================================
-  message("** running Trajectory function")
+  if (opt$trajectory != "none") { message("** running Trajectory function") }
   traj.res <- Trajectory(sobj=signatures.res@sobj, 
                          opt=opt)  
   # ===================================
