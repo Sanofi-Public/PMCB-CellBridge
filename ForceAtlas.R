@@ -3,7 +3,7 @@
 # ===================================
 forceAtlas <- function(sobj, opt) {
   # ===================================
-  E <- GetAssayData(sobj, assay="RNA", slot="counts")
+  E <- GetAssayData(sobj, assay="RNA", layer="counts")
   E <- as(Matrix::t(E), "TsparseMatrix")
   gene_list <- rownames(sobj)
   # ===================================
