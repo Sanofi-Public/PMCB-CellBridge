@@ -36,7 +36,8 @@ seuratPipe <- function(sobj, opt) {
                        verbose=TRUE)
   if (opt$tsne) {
     message(paste("*** Run TSNE"))
-    sobj <- RunTSNE(sobj, reduction=rdction, dims=1:opt$seu_n_dim)  
+    sobj <- RunTSNE(sobj, reduction=rdction, dims=1:opt$seu_n_dim, 
+                    check_duplicates=FALSE)  
   }
   message(paste("*** Run UMAP"))
   sobj <- RunUMAP(sobj, reduction=rdction, dims=1:opt$seu_n_dim) 
@@ -54,7 +55,8 @@ seuratPipe <- function(sobj, opt) {
                          verbose=TRUE)
     if (opt$tsne) {
       message(paste("*** Run TSNE"))
-      sobj_noharm <- RunTSNE(sobj_noharm, reduction=rdction_noharm, dims=1:opt$seu_n_dim)  
+      sobj_noharm <- RunTSNE(sobj_noharm, reduction=rdction_noharm, dims=1:opt$seu_n_dim,
+                             check_duplicates=FALSE)  
     }
     message(paste("*** Run UMAP"))
     sobj_noharm <- RunUMAP(sobj_noharm, reduction=rdction_noharm, dims=1:opt$seu_n_dim) 
