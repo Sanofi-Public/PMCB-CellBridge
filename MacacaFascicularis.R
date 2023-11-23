@@ -7,8 +7,8 @@ message("** Building cyno monkey genome convertor")
 `%nin%` = Negate(`%in%`)
 # ===================================
 message("*** Fetching ensembls...")
-human <- useEnsembl(host = "https://dec2021.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
-monkey <- useEnsembl(host = "https://dec2021.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "mfascicularis_gene_ensembl")
+human <- useEnsembl(host = "https://jul2023.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
+monkey <- useEnsembl(host = "https://jul2023.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "mfascicularis_gene_ensembl")
 message("*** Ensembls fetched.")
 # ===================================
 # this will only convert gene names; it will NOT convert ENSEMBL symbols
