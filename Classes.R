@@ -43,7 +43,8 @@ setClass("signaturesRes",
          slots=c(sobj="Seurat"))
 
 setClass("trajectoryRes", 
-         slots=c(sds_ls="ListNULL"))
+         slots=c(sobj="Seurat",
+                 sds_ls="ListNULL"))
 
 #### Specific ####
 

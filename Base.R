@@ -8,7 +8,7 @@ libs <- list("optparse","dplyr","Seurat","ggplot2","ggrepel","pheatmap",
              "purrr","kableExtra","harmony","SignacX","sargent","igraph", 
              "gridtext","gplots","gtools","readxl","DT","data.tree", 
              "plotly","visNetwork","ComplexHeatmap","data.table","Nebulosa",
-             "slingshot")
+             "slingshot", "edgeR")
 shh <- suppressPackageStartupMessages
 loads <- sapply(libs, function(x){
   shh(require(x, character.only=TRUE))
@@ -168,10 +168,19 @@ option_list <- list(
                         metavar="logical"),
   # trajectory
   optparse::make_option(c("--trajectory"), type="character", default="none", 
-                        help="the reduction type name to perform trajectory analysis.
+                        help="reduction type name to perform trajectory analysis.
                         one of the 'none', 'tsne', 'umap', 'both' 
                         (default=none)", 
                         metavar="character"),
+  optparse::make_option(c("--traj_var_gene"), type="integer", default=500, 
+                        help="number of top variable genes to perform trajectory-based 
+                        differential expression analysis. 
+                        (default=500)", 
+                        metavar="integer"),
+  optparse::make_option(c("--traj_top_n"), type="integer", default=50, 
+                        help="return top n trajectory-based differentially expressed genes  
+                        (default: 50).", 
+                        metavar="integer"),
   # References
   optparse::make_option(c("--paper_url"), type="character", default=NULL, 
                         help="url link to the refernce paper 
@@ -196,12 +205,15 @@ if (FALSE) {
   opt$metadata <- "sample_based"
   opt$docker <- FALSE
   opt$genesets <- "curated"
-  opt$trajectory <- "both"
-  opt$mrk_min_pct <- 0.9
+  opt$mrk_min_pct <- 0.5
   opt$mrk_top_n <- 0
   opt$genetype <- "hgnc_symbol"
   opt$paper_url <- "https://www.mdpi.com/1422-0067/22/14/7646"
   opt$data_url <- "https://www.ebi.ac.uk/ena/browser/view/PRJEB44878"
+  opt$trajectory <- "both"
+  opt$traj_var_gene <- 200
+  opt$traj_top_n <- 25
+  opt$adt <- TRUE
 }
 # ===================================
 ### Rscript --vanilla read_in_samples.R /cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/RP/data_for_spring > project.out 2> project.err
@@ -213,6 +225,8 @@ if (!opt$docker) {
 }
 # ===================================
 # project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/3gz"
+# project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/COPD_PRJEB44878"
+# project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/adt_rds"
 # project.path <- "/cloud-data/its-cmo-darwin-bgi-virginia/Downloads/Public_Datasets/GSE174332/pipeline_input"
 if (is.null(opt$input)) {
   project.path <- getwd()

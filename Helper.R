@@ -226,36 +226,24 @@ EnsemblToGnHs <- function(obj, convr){
 }
 # ===================================
 # =================================== 
-opt_in_sobj <- function(sobj, opt, id){
+update_metadata <- function(meta_data, rds_meta_data){
   # ===================================
-  if (opt$harmony == "none") {
-    logik <- which(names(sobj@meta.data) != "sample")  
-    names(sobj@meta.data)[logik] <- paste0("input.", names(sobj@meta.data)[logik])
-  } else {
-    vars <- strsplit(opt$harmony, split = ",")[[1]]
-    vars <- gsub(" ", "", vars)  
-    vars <- unique(c("sample", vars))
-    logik <- which(names(sobj@meta.data) %nin% vars)  
-    names(sobj@meta.data)[logik] <- paste0("input.", names(sobj@meta.data)[logik])
-  }
-  # ===================================
-  # if (length(sobj@reductions) > 0) {
-  #   names(sobj@reductions) <- paste0("input.", names(sobj@reductions))
-  # }
-  # if (length(sobj@graphs) > 0) {
-  #   names(sobj@graphs) <- paste0("input.", names(sobj@graphs))  
-  # }
-  # if (length(sobj@misc) > 0) {
-  #   names(sobj@misc) <- paste0("input.", names(sobj@misc))
-  # }
-  # ===================================
-  meta_data_ext <- sobj@meta.data %>%
-    tibble::rownames_to_column(var = "cell") %>%
-    dplyr::rename_all(tolower) %>%
-    dplyr::group_by(sample) %>%
-    dplyr::mutate(sample_id = paste0("S", cur_group_id())) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(cell = paste(id, cell, sep = "_"))
+  meta_data_ext <- lapply(rds_meta_data, function(x) {
+    # x <- rds_meta_data[[1]]
+    y <- filter(meta_data, sample_id == unique(x$sample_id))
+    # ===================================
+    logik <- which(names(x) != "sample_id")
+    names(x)[logik] <- paste0("orig.", names(x)[logik])
+    # ===================================
+    stopifnot(intersect(names(x), names(y)) == "sample_id")
+    # ===================================
+    x %>%
+      tibble::rownames_to_column(var = "cell") %>%
+      dplyr::rename_all(tolower) %>%
+      base::merge(., y, by="sample_id", all=TRUE) %>%
+      dplyr::mutate(cell=paste(sample_id, cell, sep="_")) # I used orig.sample_id because in the merge section cells will be renamed the same way  
+  })
+  meta_data_ext <- do.call(rbind, meta_data_ext)
   # ===================================
   meta_data <- meta_data_ext
   meta_data$cell <- NULL
@@ -270,6 +258,23 @@ opt_in_sobj <- function(sobj, opt, id){
   # return
   return(list("meta_data"=meta_data,
               "meta_data_ext"=meta_data_ext))
+}
+# ===================================
+# =================================== 
+qcGex <- function(gex, min_gene=0, min_cell=0) {
+  dims_i <- dim(gex)
+  while (any(Matrix::colSums(gex != 0) < min_gene) | any(Matrix::rowSums(gex != 0) < min_cell)) {
+    # filtered out cells for which fewer than min_gene genes were detected,
+    # and genes that were expressed in fewer than min_cell cells.
+    gex <- gex[, Matrix::colSums(gex != 0) >= min_gene ]
+    gex <- gex[Matrix::rowSums(gex != 0) >= min_cell , ]
+  }
+  dims_f <- dim(gex)
+  # ===================================
+  message("*** ", paste(dims_i[1] - dims_f[1], "gene(s) and", dims_i[2] - dims_f[2], "cell(s) removed."))
+  # ===================================
+  # returns
+  return(list("gex" = gex))
 }
 # ===================================
 # =================================== 

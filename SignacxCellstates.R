@@ -6,9 +6,9 @@ signacxCellstates <- function(sobj, package.path, opt) {
   # generate cell type labels
   if (opt$species == "hs") {
     set.seed(42)
-    cr <- Signac(E=sobj, set.seed=TRUE, seed="42", graph.used="nn")
+    cr <- Signac(E=sobj, set.seed=TRUE, seed="42")
     set.seed(42)
-    crx <- GenerateLabels(cr, E=sobj, graph.used="nn")
+    crx <- GenerateLabels(cr, E=sobj)
   } 
   if (opt$species %in% c("mm", "mf")) {
     # if mouse, convert gene names to human
@@ -26,9 +26,9 @@ signacxCellstates <- function(sobj, package.path, opt) {
     sobj_tmp <- RenameGenesSeurat(obj=sobj_tmp, newnames=as.vector(conv_gene))
     # generate cell type labels
     set.seed(42)
-    cr <- Signac(E=sobj_tmp, set.seed=TRUE, seed="42", graph.used="nn")
+    cr <- Signac(E=sobj_tmp, set.seed=TRUE, seed="42")
     set.seed(42)
-    crx <- GenerateLabels(cr, E=sobj_tmp, graph.used="nn")
+    crx <- GenerateLabels(cr, E=sobj_tmp)
   } 
   # print(table(crx$CellStates))
   # ===================================

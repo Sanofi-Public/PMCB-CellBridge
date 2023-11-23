@@ -67,7 +67,6 @@ controlPipe <- function(package.path, project.path, opt, pipe_version) {
                     params=list(obj_ls=readin.res@obj_ls,
                                 sobj_ls=qcfilter.res@sobj_flt_ls, 
                                 scrub_ls=scrublet.res@obj_scrub_ls,
-                                fsobj=signatures.res@sobj,
                                 sobj_noharm=seurat.res@sobj_noharm,
                                 meta_data=readin.res@meta_data,
                                 pre.qc.summ.rna=readin.res@rna_summ,
@@ -75,6 +74,7 @@ controlPipe <- function(package.path, project.path, opt, pipe_version) {
                                 pre.qc.summ.adt=readin.res@adt_summ,
                                 post.qc.summ.adt=qcfilter.res@adt_flt_summ,
                                 trajs=traj.res@sds_ls,
+                                fsobj=traj.res@sobj,
                                 opt=opt,
                                 ui=ui),
                     quiet=TRUE)

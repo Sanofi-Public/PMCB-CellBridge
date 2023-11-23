@@ -91,11 +91,11 @@ local({
 summ1 <- sum(pre.qc.summ.rna$cell)
 summ2 <- sum(post.qc.summ.rna$cell)
 # UMI per cell
-exprMat <- fsobj@assays$RNA@counts
+exprMat <- fsobj@assays$RNA$counts
 countByCell <- colSums(exprMat)
 summ3 <- round(mean(countByCell))
 # Gene per cell
-exprMat <- fsobj@assays$RNA@counts
+exprMat <- fsobj@assays$RNA$counts
 countByCell <- colSums(exprMat > 0)
 summ4 <- round(mean(countByCell))
 
@@ -149,7 +149,7 @@ mt_per_cell <- data.frame()
 for (i in 1:length(sobj_ls)) {
   sobj <- sobj_ls[[i]]
   # UMI per cell
-  exprMat <- sobj@assays$RNA@counts
+  exprMat <- sobj@assays$RNA$counts
   countByCell <- colSums(exprMat)
   summ1 <- c(min = min(countByCell), 
              quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
@@ -157,7 +157,7 @@ for (i in 1:length(sobj_ls)) {
   umi_per_cell <- umi_per_cell %>%
     dplyr::bind_rows(scales::comma(summ1, accuracy = 1))
   # Gene per cell
-  exprMat <- sobj@assays$RNA@counts
+  exprMat <- sobj@assays$RNA$counts
   countByCell <- colSums(exprMat > 0)
   summ2 <- c(min = min(countByCell), 
              quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
@@ -569,10 +569,10 @@ for (i in 1:length(sobj_ls)) {
   smpl <- names(sobj_ls)[i]
   db_plot <- db_plot %>%
     dplyr::bind_rows(data.frame(sample_id = smpl, 
-                                avg_count_g = mean(colSums(sobj@assays$RNA@counts)), # reads/cell
-                                sd_count_g = sd(colSums(sobj@assays$RNA@counts)), 
-                                avg_count_c = mean(colSums(sobj@assays$RNA@counts != 0)), # genes/cell
-                                sd_count_c = sd(colSums(sobj@assays$RNA@counts != 0))))  
+                                avg_count_g = mean(colSums(sobj@assays$RNA$counts)), # reads/cell
+                                sd_count_g = sd(colSums(sobj@assays$RNA$counts)), 
+                                avg_count_c = mean(colSums(sobj@assays$RNA$counts != 0)), # genes/cell
+                                sd_count_c = sd(colSums(sobj@assays$RNA$counts != 0))))  
 }
 db_plot <- merge(db_plot, post.qc.summ.rna, by = "sample_id", all = TRUE)
 p2 <- ggplot(db_plot, 
@@ -623,14 +623,14 @@ ggplotly(p2, tooltip = c("sample_id", "cell", "gene"))
 
 ```{r, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE, fig.align = 'center'}
 # UMI per cell
-exprMat <- fsobj@assays$RNA@counts
+exprMat <- fsobj@assays$RNA$counts
 countByCell <- colSums(exprMat)
 summ1 <- c(min = min(countByCell), 
          quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
          max = max(countByCell))
 summ1 <- scales::comma(summ1, accuracy = 1)
 # Gene per cell
-exprMat <- fsobj@assays$RNA@counts
+exprMat <- fsobj@assays$RNA$counts
 countByCell <- colSums(exprMat > 0)
 summ2 <- c(min = min(countByCell), 
          quantile(countByCell, c(0.0, 0.25, 0.5, 0.75, 1)),
@@ -837,14 +837,22 @@ if (opt$tsne) {
   combo_ls <- list(c("seurat_clusters", "umap"),
                    c("signacx_clusters", "spring"))
 }
+
+cluster_colrs <- list()
+for (i in 1:length(combo_ls)) {
+  cluster_colrs[[length(cluster_colrs) + 1]] <- color_helper(set.names=sort(unique(fsobj@meta.data[[combo_ls[[i]][1]]])), 
+                        panel="Set1") 
+  names(cluster_colrs)[length(cluster_colrs)] <- paste(combo_ls[[i]][1], combo_ls[[i]][2], sep = "-")
+}
+```
+
+```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
 Q <- list()
 for (i in 1:length(combo_ls)) {
-  colrs <- color_helper(set.names=sort(unique(fsobj@meta.data[[combo_ls[[i]][1]]])), 
-                        panel="Set1") 
   p <- DimPlot(fsobj, 
                reduction = combo_ls[[i]][2],
                group.by = combo_ls[[i]][1],
-               cols = colrs, 
+               cols = cluster_colrs[[i]], 
                label = TRUE, 
                repel = TRUE,
                raster = FALSE,
@@ -1060,11 +1068,11 @@ mrks <- lapply(mrks, function(x){
 })
 ```
 
-`r if (opt$mrk_top_n != 0) { "## Markers per cluster {.tabset}" }`
+`r if (eval_mrks) { "## Markers per cluster {.tabset}" }`
 
-`r if (opt$mrk_top_n != 0) { paste("Top", opt$mrk_top_n, "differentially expressed genes ( p_val_adj < 0.05 and pct.1 >", opt$mrk_min_pct, ") for each of the clusters") }`
+`r if (eval_mrks) { paste("Top", opt$mrk_top_n, "differentially expressed genes ( p_val_adj < 0.05 and pct.1 >", opt$mrk_min_pct, ") for each of the clusters") }`
 
-`r if (opt$mrk_top_n != 0) { "### Seurat" }`
+`r if (eval_mrks) { "### Seurat" }`
 
 ```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE}
 x <- data.frame(mrks$seurat_clusters)
@@ -1074,7 +1082,7 @@ datatable(head(x, n = nrow(x)), rownames = FALSE,
           options = list(pageLength = 5, scrollX = T))
 ```
 
-`r if (opt$mrk_top_n != 0) { "### Signacx" }`
+`r if (eval_mrks) { "### Signacx" }`
 
 ```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE}
 x <- data.frame(mrks$signacx_clusters)
@@ -1084,9 +1092,9 @@ datatable(head(x, n = nrow(x)), rownames = FALSE,
           options = list(pageLength = 5, scrollX = T))
 ```
 
-`r if (opt$mrk_top_n != 0) { "## {-}" }`
+`r if (eval_mrks) { "## {-}" }`
 
-`r if (opt$mrk_top_n != 0) { "- - -" }`
+`r if (eval_mrks) { "- - -" }`
 
 ```{r eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
 combo_ls <- list(c("signacx_cellstates", "spring", "Signacx SPRING Projection"),
@@ -1340,17 +1348,25 @@ if (opt$genesets != "none") {
 }
 ```
 
+`r if (opt$genesets != "none") { "## {-}" }`
+
 `r if (opt$genesets != "none") { "---" }`
 
 `r eval_mrks <- !is.null(trajs)`
 
 ```{r eval=eval_mrks, warning=FALSE, message=FALSE, echo=FALSE}
-Q <- list()
+trajs_rds <- list()
+trajs_bx <- list()
 for (i in 1:length(trajs)) {
-  rdc <- strsplit(names(trajs)[i], split="-")[[1]][2]
-  grp <- strsplit(names(trajs)[i], split="-")[[1]][1]
-  colrs <- color_helper(set.names=sort(unique(fsobj@meta.data[[grp]])), 
-                        panel="Set1") 
+  name_sds <- names(trajs)[i]
+  rdc <- strsplit(name_sds, split="-")[[1]][2]
+  grp <- strsplit(name_sds, split="-")[[1]][1]
+  colrs <- cluster_colrs[[name_sds]]
+  # rdc <- strsplit(names(trajs)[i], split="-")[[1]][2]
+  # grp <- strsplit(names(trajs)[i], split="-")[[1]][1]
+  # colrs <- color_helper(set.names=sort(unique(fsobj@meta.data[[grp]])), 
+  #                       panel="Set1")
+  # ===================================
   p <- DimPlot(fsobj, 
                reduction = rdc,
                group.by = grp,
@@ -1370,21 +1386,79 @@ for (i in 1:length(trajs)) {
           panel.background = element_blank(),
           legend.text = element_text(size = 14, face = "bold")) +
     guides(fill = "none", color = "none")  
-  
+  # ===================================
   curves <- slingCurves(trajs[[i]], as.df=TRUE)
-  rdc <- ifelse(rdc == "umap", "UMAP", "tSNE")
+  rdc <- ifelse(rdc == "umap", "umap", "tSNE")
   p <- p + geom_path(data = curves %>% arrange(Order),
                      aes(x=!!sym(paste0(rdc,"_1")) , y=!!sym(paste0(rdc,"_2")), 
                          group = Lineage), 
                      linetype = "dashed", linewidth= 0.4)
-  Q[[length(Q) + 1]] <- p
-  names(Q)[length(Q)] <- paste("Seurat", toupper(rdc), "Projection")
-}
+  # ===================================
+  trajs_rds[[length(trajs_rds) + 1]] <- p
+  names(trajs_rds)[length(trajs_rds)] <- paste("Seurat", toupper(rdc))
+  # ===================================
+  lineages <- names(slingLineages(trajs[[i]]))
+  num_lineages <- length(lineages)
+  # ===================================
+  ftrs <- names(fsobj@meta.data)
+  ftrs <- ftrs[grepl(paste0("^", name_sds, "-Lineage"), ftrs)]
+  stopifnot(length(ftrs) == num_lineages)
+  db_plot <- FetchData(fsobj, c("seurat_clusters", ftrs)) %>%
+    tibble::rownames_to_column(var="barcode") %>%
+    tidyr::gather(., key = ftrs, value = "pseudotime", -barcode, -seurat_clusters) %>%
+    dplyr::group_by(ftrs) %>%
+    dplyr::mutate(lineage = paste0("Lineage-", cur_group_id())) %>%
+    dplyr::ungroup()
+  # ===================================
+  p <- plot_ly(data = db_plot, x = ~pseudotime, y = ~lineage, 
+        type = "box", boxpoints = FALSE, showlegend = T,
+        color = ~seurat_clusters, colors = colrs) %>%
+  layout(xaxis = list(title = "Pseudotime"),
+         yaxis = list(title = ""),
+         legend = list(title = list(text = 'Seurat Clusters')),
+         boxmode = "group", boxgap = 0, boxgroupgap = 0)
+
+  # ===================================
+  trajs_bx[[length(trajs_bx) + 1]] <- p
+  names(trajs_bx)[length(trajs_bx)] <- paste("Seurat", toupper(rdc))
+  # ===================================
+  mrks <- fsobj@misc$traj_genes
+  
+  mrks <- mrks %>%
+    dplyr::group_by(type, Lineage) %>%
+    dplyr::top_n(opt$traj_top_n, wt = logFC) %>%
+    dplyr::select(type, Lineage, Gene, logFC) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(Lineage = as.character(Lineage))
+
+  mrks <- mrks %>% 
+    split(.$type)
+
+  mrks <- lapply(mrks, function(x){
+    x %>%
+      dplyr::mutate(id = row_number()) %>%
+      dplyr::select(id, Gene, Lineage) %>%
+      tidyr::spread(key=Lineage, value=Gene)
+    }) 
+
+  mrks <- lapply(mrks, function(x){
+    x <- apply(x, 2, function(x){
+      x[!is.na(x)]
+      })
+    # x <- data.frame(x)
+    x$id <- NULL
+    x <- lapply(x, function(x){
+      if (length(x) == opt$traj_top_n) return(x)
+      x <- c(x, rep("", opt$traj_top_n-length(x)))
+      })
+    x <- do.call(cbind, x)
+    })
+  }
 ```
 
 `r if (eval_mrks) { "# BridgeTrajectory" }`
 
-`r if (eval_mrks) { "## Visualizing Infered Trajectory {.tabset}" }`
+`r if (eval_mrks) { "## Visualizing Inferred Trajectory on Manifolds {.tabset}" }`
 
 `r if (eval_mrks) { "Note: Labels may have been removed if they overlap excessively." }`
 
@@ -1395,9 +1469,55 @@ make_tab <- function(x) {      # function to make the tabs
   plot(x[[1]])                 # Display plot
   cat("\n")                    # Space
 }
-for(i in 1:length(Q)){
-  make_tab(Q[i])
+for(i in 1:length(trajs_rds)){
+  make_tab(trajs_rds[i])
 }
+```
+
+`r if (eval_mrks) { "## {-}" }`
+
+`r if (eval_mrks) { "---" }`
+
+`r if (eval_mrks) { "## Visualizing Inferred Trajectory of 'pseudotime' Across Different 'lineages' and 'clusters' {.tabset}" }`
+
+`r if (eval_mrks & length(trajs) >= 1) { paste("###", names(trajs_rds)[1]) }`
+
+```{r eval=eval_mrks & length(trajs) >= 1, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(9.0, 9.0), fig.align = 'center', results='asis'}
+trajs_bx[[1]]
+```
+
+`r if (eval_mrks & length(trajs) >= 2) { paste("###", names(trajs_rds)[2]) }`
+
+```{r eval=eval_mrks & length(trajs) >= 2, warning=FALSE, message=FALSE, echo=FALSE, fig.dim=c(9.0, 9.0), fig.align = 'center', results='asis'}
+trajs_bx[[2]]
+```
+
+`r if (eval_mrks) { "## {-}" }`
+
+`r if (eval_mrks) { "---" }`
+
+`r if (eval_mrks) { "## Trajectory-based Differential Expression Analysis {.tabset}" }`
+
+`r if (eval_mrks) { paste("Top", opt$traj_top_n, "differentially expressed genes (FDR < 0.05) along each inferred lineage.") }`
+
+`r if (eval_mrks & length(trajs) >= 1) { paste("###", names(trajs_rds)[1]) }`
+
+```{r eval=eval_mrks & length(trajs) >= 1, warning=FALSE, message=FALSE, echo=FALSE}
+id <- which(grepl(tolower(strsplit(names(trajs_rds)[1], split=" ")[[1]][2]), names(mrks)))
+x <- data.frame(mrks[[id]])
+x <- cbind(data.frame(ID = 1:nrow(x)), x)
+datatable(head(x, n = nrow(x)), rownames = FALSE,
+          options = list(pageLength = 5, scrollX = T))
+```
+
+`r if (eval_mrks & length(trajs) >= 2) { paste("###", names(trajs_rds)[2]) }`
+
+```{r eval=eval_mrks & length(trajs) >= 2, warning=FALSE, message=FALSE, echo=FALSE}
+id <- which(grepl(tolower(strsplit(names(trajs_rds)[2], split=" ")[[1]][2]), names(mrks)))
+x <- data.frame(mrks[[id]])
+x <- cbind(data.frame(ID = 1:nrow(x)), x)
+datatable(head(x, n = nrow(x)), rownames = FALSE,
+          options = list(pageLength = 5, scrollX = T))
 ```
 
 `r if (eval_mrks) { "## {-}" }`

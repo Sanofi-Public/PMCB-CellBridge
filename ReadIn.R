@@ -37,8 +37,11 @@ readIn <- function(project.path, package.path, opt) {
   }
   # ===================================
   samples <- unique(meta_data$sample)
+  message(paste("*** sample(s):", paste(samples, collapse = ", "), "to be read in:"))
+  # ===================================
   obj_ls <- list()
   rna_summ <- data.frame()
+  rds_meta_data <- list()
   # ===================================
   if (!opt$adt) {
     adt_ls <- NULL  
@@ -52,10 +55,8 @@ readIn <- function(project.path, package.path, opt) {
     id <- meta_data$sample_id[meta_data$sample == smpl]
     message(paste("***", smpl, "->", id))
     filein <- list.files(file.path(project.path, smpl), recursive=FALSE, full.names=FALSE)
-    # sfx <- tools::file_ext(filein)
     nm <- tools::file_path_sans_ext(filein, compression = TRUE)
     sfx <- sapply(1:length(nm), function(x) { gsub(paste0(nm[x], "."), "", filein[x]) })
-    # sfx <- gsub(paste0(nm, "."), "", filein)
     # ===================================
     if (all(unique(sfx) %in%  c("tsv.gz", "mtx.gz")) | all(unique(sfx) %in%  c("tsv", "mtx"))) {
       # ===================================
@@ -85,11 +86,23 @@ readIn <- function(project.path, package.path, opt) {
     } else if (unique(sfx) == "rds") {
       sobj <- readRDS(file.path(project.path, smpl, filein))
       stopifnot(class(sobj) == "Seurat")
-      stopifnot("sample" %in% names(sobj@meta.data))
-      opt.res <- opt_in_sobj(sobj=sobj, opt=opt, id=id)
-      meta_data <- opt.res$meta_data
-      meta_data_ext <- opt.res$meta_data_ext
-      ind.data <- GetAssayData(sobj, assay="RNA", slot="counts")
+      message(paste("*** an object of class 'Seurat' received."))
+      if ("sample" %nin% names(sobj@meta.data)) {
+        msg <- paste("'sample' should be included within the object metadata slot (-> seuratObject@metadata$sample)")
+        stop(msg)
+      }
+      if ("sample_id" %in% names(sobj@meta.data)) {
+        msg <- paste("'sample_id' is protected. Please remove from the object metadata slot (-> seuratObject@metadata$sample_id)")
+        stop(msg)
+      }
+      sobj@meta.data$sample_id <- id
+      rds_meta_data[[length(rds_meta_data) + 1]] <- sobj@meta.data
+      if (!opt$adt) {
+        ind.data <- GetAssayData(sobj, assay="RNA", layer="counts")        
+      } else {
+        ind.data <- list(GetAssayData(sobj, assay="RNA", layer="counts"),
+                         GetAssayData(sobj, assay="ADT", layer="counts"))
+      }
       # ===================================
     } else {
       msg <- paste("unidetified input file format.")
@@ -135,6 +148,18 @@ readIn <- function(project.path, package.path, opt) {
       names(adt_ls)[length(adt_ls)] <- id
     }
     # ===================================
+  }
+  # ===================================
+  if (!is.null(rds_meta_data)) {
+    mtdta <- update_metadata(meta_data, rds_meta_data)
+    meta_data <- mtdta$meta_data
+    meta_data_ext <- mtdta$meta_data_ext
+    # check
+    cells <- unlist(lapply(seq_along(obj_ls), function(x){
+      paste(names(obj_ls)[x], colnames(obj_ls[[x]]), sep = "_")
+    }))
+    stopifnot(all(cells %in% meta_data_ext$cell))
+    stopifnot(all(meta_data_ext$cell %in% cells))
   }
   # ===================================
   # returns

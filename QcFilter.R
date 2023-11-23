@@ -76,7 +76,7 @@ qcFilter <- function(obj_ls, adt_ls, scrub_ls, opt) {
       sobj <- subset(sobj, subset = percent_mt <= opt$max_mt_percent)
       # print(paste(dim(sobj)))
       # checks
-      obj <- sobj@assays$RNA@counts
+      obj <- GetAssayData(object=sobj, assay="RNA", layer="counts")
       checks <- all(
         c(sum(rowSums(obj != 0) <  opt$min_cell) == 0,
           sum(colSums(obj != 0) < opt$min_genes_per_cell) == 0,
@@ -86,8 +86,8 @@ qcFilter <- function(obj_ls, adt_ls, scrub_ls, opt) {
       )
     }
     # double check
-    stopifnot(dim(sobj)[1] == sum(rowSums(sobj) != 0))
-    stopifnot(dim(sobj)[2] == sum(colSums(sobj) != 0))
+    stopifnot(dim(sobj)[1] == sum(rowSums(sobj@assays$RNA$counts) != 0))
+    stopifnot(dim(sobj)[2] == sum(colSums(sobj@assays$RNA$counts) != 0))
     # ===================================
     # I saw a sample with "S6T_AAACCTGAGTACCGGA-1"
     # CreateSeuratObject take "S6T" as the orig.ident, instead of smpl,
@@ -123,8 +123,8 @@ qcFilter <- function(obj_ls, adt_ls, scrub_ls, opt) {
       adt_flt_summ <- adt_flt_summ %>%
         dplyr::bind_rows(data.frame(sample_id=smpl,
                                     type="post-qc",
-                                    gene=sum(rowSums(sobj@assays$ADT@counts) != 0),
-                                    cell=sum(colSums(sobj@assays$ADT@counts) != 0)))
+                                    gene=sum(rowSums(sobj@assays$ADT$counts) != 0),
+                                    cell=sum(colSums(sobj@assays$ADT$counts) != 0)))
     } 
     # ===================================
     if (!opt$adt) {
@@ -132,8 +132,8 @@ qcFilter <- function(obj_ls, adt_ls, scrub_ls, opt) {
     } else {
       message(paste("*** RNA (non-zeros) ->", "ngene:", dim(sobj)[1], " ncell:", dim(sobj)[2]))
       message(paste("*** ADT (non-zeros) ->", 
-                    "ngene:", sum(rowSums(sobj@assays$ADT@counts) != 0), 
-                    " ncell:", sum(colSums(sobj@assays$ADT@counts) != 0)))
+                    "ngene:", sum(rowSums(sobj@assays$ADT$counts) != 0), 
+                    " ncell:", sum(colSums(sobj@assays$ADT$counts) != 0)))
     }
     # ===================================
     sobj_flt_ls[[length(sobj_flt_ls) + 1]] <- sobj

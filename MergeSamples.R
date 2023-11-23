@@ -14,13 +14,18 @@ mergeSamples <- function(sobj_ls, meta_data, meta_data_ext, opt) {
     sobj <- merge(sobj_ls[[1]], 
                   y = sobj_ls[2:length(sobj_ls)], 
                   project = opt$project)
+    sobj <- JoinLayers(sobj, assay="RNA")
+    # if (opt$adt) {
+    #   sobj <- JoinLayers(sobj, assay="ADT")
+    # }
     # ===================================
     # checks
     stopifnot(length(unique(unlist(lapply(sobj_ls, function(x) rownames(x))))) == dim(sobj)[1])
     stopifnot(length(unique(unlist(lapply(sobj_ls, function(x) colnames(x))))) == dim(sobj)[2])
     stopifnot(sum(unlist(lapply(sobj_ls, function(x) dim(x)[2]))) == dim(sobj)[2])
+    stopifnot(all(colnames(sobj@assays$RNA) == colnames(sobj@assays$ADT)))
     # ===================================
-    message(paste("***", "merged", length(sobj_ls), "objects:"))
+    message(paste("***", "merged", length(sobj_ls), "objects."))
     # ===================================
   } else if (length(sobj_ls) == 1) {
     sobj <- sobj_ls[[1]]
@@ -38,8 +43,8 @@ mergeSamples <- function(sobj_ls, meta_data, meta_data_ext, opt) {
   } else {
     message(paste("*** RNA (non-zeros) ->", "ngene:", dim(sobj)[1], " ncell:", dim(sobj)[2]))
     message(paste("*** ADT (non-zeros) ->", 
-                  "ngene:", sum(rowSums(sobj@assays$ADT@counts) != 0), 
-                  " ncell:", sum(colSums(sobj@assays$ADT@counts) != 0)))
+                  "ngene:", sum(rowSums(sobj@assays$ADT$counts) != 0), 
+                  " ncell:", sum(colSums(sobj@assays$ADT$counts) != 0)))
   }
   # ===================================
   if (is.null(meta_data_ext)) {

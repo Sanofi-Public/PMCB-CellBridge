@@ -103,19 +103,23 @@ RUN apt-get update && \
 ARG R_DEPS="c('devtools', 'optparse', 'dplyr', 'ggplot2', 'pheatmap', 'grid', \
             'gridExtra', 'cowplot', 'RColorBrewer', 'tidyr', 'versions', \
             'reticulate', 'purrr', 'kableExtra', 'RcppAnnoy', 'uwot', 'ggrepel', \
-            'Seurat', 'SignacX', 'igraph', 'gridtext', 'gplots', 'gtools', \
+            'Seurat', 'igraph', 'gridtext', 'gplots', 'gtools', \
             'BiocManager', 'hdf5r', 'readxl', 'DT', 'data.tree', 'plotly', \
             'visNetwork', 'data.table', 'R.utils')"
 RUN Rscript -e "install.packages(${R_DEPS}, clean=TRUE)"
 # RE harmony error : https://github.com/immunogenomics/harmony/issues/166
 # RUN Rscript -e "devtools::install_github('eddelbuettel/harmony', force=TRUE)"
-RUN Rscript -e "devtools::install_github('immunogenomics/harmony')"
-RUN Rscript -e "devtools::install_github('Sanofi-Public/PMCB-Sargent')"
 # ===================================
 ARG R_BIOC="c('biomaRt', 'Orthology.eg.db', 'org.Hs.eg.db', 'org.Mm.eg.db', \
-              'limma','ComplexHeatmap','Nebulosa','DelayedMatrixStats','slingshot')"
+              'limma','edgeR','ComplexHeatmap','Nebulosa','DelayedMatrixStats', \
+              'slingshot')"
 RUN Rscript -e "BiocManager::install(ask=FALSE)"
 RUN Rscript -e "BiocManager::install(${R_BIOC})"
+# ===================================
+RUN Rscript -e "devtools::install_github('immunogenomics/harmony')"
+RUN Rscript -e "devtools::install_github('immunogenomics/presto')"
+RUN Rscript -e "devtools::install_github('Sanofi-Public/PMCB-Sargent')"
+RUN Rscript -e "devtools::install_github('Sanofi-Public/PMCB-SignacX')"
 # ===================================
 RUN mkdir -p /opt/cellbridge_1.0.0
 WORKDIR /opt/cellbridge_1.0.0
