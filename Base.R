@@ -239,8 +239,8 @@ source(file.path(package.path, "CallRs.R"))
 callRs(package.path)
 # ===================================
 ### Check opts
-checkOpts(project.path=project.path, 
-          opt=opt)
+opt <- checkOpts(project.path=project.path, 
+                 opt=opt)
 # ===================================
 ### call docker
 callDocker(opt$docker)

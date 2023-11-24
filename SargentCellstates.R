@@ -20,9 +20,9 @@ sargentCellstates <- function(sobj, opt) {
   # ===================================
   if (opt$genesets == 'curated') {
     # readin genesets
-    exls <- excel_sheets(file.path(project.path, "genesets.xlsx"))
+    exls <- excel_sheets(file.path(project.path, opt$sargent))
     # positive genes
-    gpos <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
+    gpos <- read_excel(path=file.path(project.path, opt$sargent), 
                        sheet="positive", col_names=TRUE, col_types="text")
     gpos <- lapply(as.list(gpos), function(x){
       x <- x[!is.na(x)]
@@ -31,7 +31,7 @@ sargentCellstates <- function(sobj, opt) {
     names(gpos) <- toupper(names(gpos))
     # negative genes
     if ("negative" %in% exls) {
-      gneg <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
+      gneg <- read_excel(path=file.path(project.path, opt$sargent), 
                          sheet="negative", col_names=TRUE, col_types="text")
       gneg <- lapply(as.list(gneg), function(x){
         x <- x[!is.na(x)]
@@ -58,7 +58,7 @@ sargentCellstates <- function(sobj, opt) {
     )
     # relabeling by aliases
     message(paste("*** relabeling based on the aliases"))
-    aliases <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
+    aliases <- read_excel(path=file.path(project.path, opt$sargent), 
                           sheet="alias", col_names=FALSE, col_types="text")
     colnames(aliases) <- c("old_label", "new_label") 
     aliases$old_label <- toupper(aliases$old_label)

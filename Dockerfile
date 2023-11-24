@@ -127,9 +127,9 @@ COPY ./* /opt/cellbridge_1.0.0/
 RUN chmod +x Base.R
 RUN ln Base.R /usr/local/bin/cellbridge
 # ===================================
-RUN Rscript ./Mouse.R
-RUN Rscript ./MacacaFascicularis.R
-RUN Rscript ./HgncEnsembl.R
+# RUN Rscript ./Mouse.R
+# RUN Rscript ./MacacaFascicularis.R
+# RUN Rscript ./HgncEnsembl.R
 # ===================================
 # The VOLUME instruction and the -v option to docker run tell docker to store 
 # files in a directory on the host instead of in the container’s file system.

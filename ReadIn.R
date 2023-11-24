@@ -37,11 +37,11 @@ readIn <- function(project.path, package.path, opt) {
   }
   # ===================================
   samples <- unique(meta_data$sample)
-  message(paste("*** sample(s):", paste(samples, collapse = ", "), "to be read in:"))
+  message(paste("***", length(samples), "sample(s) to be read in:"))
   # ===================================
   obj_ls <- list()
   rna_summ <- data.frame()
-  rds_meta_data <- list()
+  rds_meta_data <- NULL
   # ===================================
   if (!opt$adt) {
     adt_ls <- NULL  
@@ -84,6 +84,8 @@ readIn <- function(project.path, package.path, opt) {
         tibble::column_to_rownames("V1")
       # ===================================
     } else if (unique(sfx) == "rds") {
+      if (is.null(rds_meta_data)) { rds_meta_data <- list() } # activate rds_meta_data once
+      
       sobj <- readRDS(file.path(project.path, smpl, filein))
       stopifnot(class(sobj) == "Seurat")
       message(paste("*** an object of class 'Seurat' received."))

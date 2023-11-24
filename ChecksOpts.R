@@ -60,19 +60,29 @@ checkOpts <- function(project.path, opt) {
   }
   # ===================================
   if (opt$genesets == 'curated') {
-    exls <- file.exists(file.path(project.path, "genesets.xlsx"))
-    if (!exls) {
-      msg <- paste("'genesets.xlsx' file not found.")
+    exls <- dir(file.path(project.path), pattern = "^genesets*", full.names = F)
+    exls <- exls[grepl(".xlsx$", exls)]
+    if (length(exls) > 1){
+      message("Error: found more than 1 genesets file. Please keep one.")
+      for (x in seq_along(exls)){
+        message(paste0("*** ", x, ": ", exls[x]))
+      }
+      stop()      
+    } else if (length(exls) == 0) {
+      msg <- paste("no genesets file is found.")
       stop(msg)
+    } else {
+      opt$sargent <- exls
+      message(paste("***", opt$sargent, "will be used for celltype annotation with Sargent."))
     }
     # ===================================
-    exls <- excel_sheets(file.path(project.path, "genesets.xlsx"))
+    exls <- excel_sheets(file.path(project.path, opt$sargent))
     if ("positive" %nin% exls) {
-      msg <- paste("'genesets.xlsx' must contain a sheet named 'positive'.")
+      msg <- paste("genesets must contain a sheet named 'positive'.")
       stop(msg)
     }
     # ===================================
-    gpos <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
+    gpos <- read_excel(path=file.path(project.path, opt$sargent), 
                        sheet="positive", col_names=TRUE, col_types="text")
     gpos <- lapply(as.list(gpos), function(x){
       x <- x[!is.na(x)]
@@ -89,13 +99,13 @@ checkOpts <- function(project.path, opt) {
     nodes <- data.frame(id = V(g)$name, title = V(g)$name)
     for (x in nodes$title) {
       if (length(which(names(gpos) == x)) == 0) {
-        msg <- paste0(x, ": parent/child incompatible. Please check the celltypes in 'genesets.xlsx'.")
+        msg <- paste0(x, ": parent/child incompatible. Please check the celltypes in the genesets.")
         stop(msg) 
       }
     }
     # ===================================
     if ("negative" %in% exls) {
-      gneg <- read_excel(path=file.path(project.path, "genesets.xlsx"), 
+      gneg <- read_excel(path=file.path(project.path, opt$sargent), 
                          sheet="negative", col_names=TRUE, col_types="text")
       gneg <- lapply(as.list(gneg), function(x){
         x <- x[!is.na(x)]
@@ -110,5 +120,6 @@ checkOpts <- function(project.path, opt) {
   }
   # ===================================
   message(paste0("** passed all checks"))
+  return(opt)
   # ===================================
 }
