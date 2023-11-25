@@ -1408,7 +1408,8 @@ for (i in 1:length(trajs)) {
     tidyr::gather(., key = ftrs, value = "pseudotime", -barcode, -seurat_clusters) %>%
     dplyr::group_by(ftrs) %>%
     dplyr::mutate(lineage = paste0("Lineage-", cur_group_id())) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    dplyr::mutate(lineage = factor(lineage, levels=lineage[mixedorder(lineage)], ordered=TRUE))
   # ===================================
   p <- plot_ly(data = db_plot, x = ~pseudotime, y = ~lineage, 
         type = "box", boxpoints = FALSE, showlegend = T,
@@ -1438,6 +1439,7 @@ for (i in 1:length(trajs)) {
     x %>%
       dplyr::mutate(id = row_number()) %>%
       dplyr::select(id, Gene, Lineage) %>%
+      dplyr::mutate(Lineage = factor(Lineage, levels=Lineage[mixedorder(Lineage)], ordered=TRUE)) %>%
       tidyr::spread(key=Lineage, value=Gene)
     }) 
 

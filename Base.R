@@ -172,10 +172,10 @@ option_list <- list(
                         one of the 'none', 'tsne', 'umap', 'both' 
                         (default=none)", 
                         metavar="character"),
-  optparse::make_option(c("--traj_var_gene"), type="integer", default=500, 
+  optparse::make_option(c("--traj_var_gene"), type="integer", default=1000, 
                         help="number of top variable genes to perform trajectory-based 
                         differential expression analysis. 
-                        (default=500)", 
+                        (default=1000)", 
                         metavar="integer"),
   optparse::make_option(c("--traj_top_n"), type="integer", default=50, 
                         help="return top n trajectory-based differentially expressed genes  

@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2023-10-01" />
+<meta name="date" content="2023-11-24" />
 
 <title>Flags available in CellBridge workflow</title>
 
@@ -350,7 +350,7 @@ display: none;
 
 
 <h1 class="title toc-ignore">Flags available in CellBridge workflow</h1>
-<h4 class="date">2023-10-01</h4>
+<h4 class="date">2023-11-24</h4>
 
 </div>
 
@@ -498,9 +498,18 @@ display: none;
 ##                         (default: false)
 ## 
 ##  --trajectory=CHARACTER
-##      the reduction type name to perform trajectory analysis.
+##      reduction type name to perform trajectory analysis.
 ##                         one of the &#39;none&#39;, &#39;tsne&#39;, &#39;umap&#39;, &#39;both&#39; 
 ##                         (default=none)
+## 
+##  --traj_var_gene=INTEGER
+##      number of top variable genes to perform trajectory-based 
+##                         differential expression analysis. 
+##                         (default=1000)
+## 
+##  --traj_top_n=INTEGER
+##      return top n trajectory-based differentially expressed genes  
+##                         (default: 50).
 ## 
 ##  --paper_url=CHARACTER
 ##      url link to the refernce paper 

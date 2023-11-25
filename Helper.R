@@ -277,4 +277,12 @@ qcGex <- function(gex, min_gene=0, min_cell=0) {
   return(list("gex" = gex))
 }
 # ===================================
+# ===================================
+# Function to Check Full Rank -> edgeR
+is.full.rank <- function(mtx) {
+  rank.matrix <- qr(mtx)$rank  # Compute the rank of the matrix
+  min.dim <- min(dim(mtx))
+  return(rank.matrix == min.dim)
+}
+# ===================================
 # =================================== 

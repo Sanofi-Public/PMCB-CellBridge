@@ -4,7 +4,7 @@ shh(library('biomaRt'))
 # ===================================
 message("*** Fetching ensembls...")
 # mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"), verbose = TRUE)
-human <- useMart(host = "https://jul2023.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
+human <- useMart(host = "https://dec2021.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
 # ===================================
 ensTOgn <- getBM(attributes = c("ensembl_gene_id","hgnc_symbol"), mart = human)
 # ===================================

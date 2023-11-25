@@ -10,8 +10,8 @@ message("** Building mouse genome convertor")
 `%nin%` = Negate(`%in%`)
 # ===================================
 message("*** Fetching ensembls...")
-human <- useMart(host = "https://jul2023.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
-mouse <- useMart(host = "https://jul2023.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl")
+human <- useMart(host = "https://dec2021.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
+mouse <- useMart(host = "https://dec2021.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "mmusculus_gene_ensembl")
 message("*** Ensembls fetched.")
 # ===================================
 # this will only convert gene names; it will NOT convert ENSEMBL symbols

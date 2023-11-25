@@ -11,6 +11,6 @@ params:
 ```
 
 ```{r cars, eval=TRUE, warning=FALSE, message=FALSE, echo=FALSE}
-print_help(opt_parser)
+optparse::print_help(opt_parser)
 ```
 
