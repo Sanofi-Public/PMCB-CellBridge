@@ -1362,10 +1362,6 @@ for (i in 1:length(trajs)) {
   rdc <- strsplit(name_sds, split="-")[[1]][2]
   grp <- strsplit(name_sds, split="-")[[1]][1]
   colrs <- cluster_colrs[[name_sds]]
-  # rdc <- strsplit(names(trajs)[i], split="-")[[1]][2]
-  # grp <- strsplit(names(trajs)[i], split="-")[[1]][1]
-  # colrs <- color_helper(set.names=sort(unique(fsobj@meta.data[[grp]])), 
-  #                       panel="Set1")
   # ===================================
   p <- DimPlot(fsobj, 
                reduction = rdc,
@@ -1394,6 +1390,18 @@ for (i in 1:length(trajs)) {
                          group = Lineage), 
                      linetype = "dashed", linewidth= 0.4)
   # ===================================
+  # Calculate label positions (example: using the last point of each trajectory)
+  label_positions <- curves %>%
+    dplyr::group_by(Lineage) %>%
+    dplyr::summarize(x = last(!!sym(paste0(rdc,"_1"))),
+                     y = last(!!sym(paste0(rdc,"_2"))),
+                     label = paste0("Lineage-", unique(Lineage)))
+  # Add labels to the plot
+  set.seed(123)
+  p <- p + geom_text_repel(data = label_positions, aes(x = x, y = y, label = label),
+                           # nudge_x = 1, nudge_y = 1,  # Adjust nudge_x and nudge_y to position the labels appropriately
+                           size = 3.5, fontface = "bold")
+  # ===================================
   trajs_rds[[length(trajs_rds) + 1]] <- p
   names(trajs_rds)[length(trajs_rds)] <- paste("Seurat", toupper(rdc))
   # ===================================
@@ -1409,7 +1417,9 @@ for (i in 1:length(trajs)) {
     dplyr::group_by(ftrs) %>%
     dplyr::mutate(lineage = paste0("Lineage-", cur_group_id())) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(lineage = factor(lineage, levels=lineage[mixedorder(lineage)], ordered=TRUE))
+    dplyr::mutate(lineage = factor(lineage, 
+                                   levels=unique(lineage)[mixedorder(unique(lineage), decreasing=TRUE)], 
+                                   ordered=TRUE))
   # ===================================
   p <- plot_ly(data = db_plot, x = ~pseudotime, y = ~lineage, 
         type = "box", boxpoints = FALSE, showlegend = T,
@@ -1418,7 +1428,6 @@ for (i in 1:length(trajs)) {
          yaxis = list(title = ""),
          legend = list(title = list(text = 'Seurat Clusters')),
          boxmode = "group", boxgap = 0, boxgroupgap = 0)
-
   # ===================================
   trajs_bx[[length(trajs_bx) + 1]] <- p
   names(trajs_bx)[length(trajs_bx)] <- paste("Seurat", toupper(rdc))
@@ -1439,7 +1448,9 @@ for (i in 1:length(trajs)) {
     x %>%
       dplyr::mutate(id = row_number()) %>%
       dplyr::select(id, Gene, Lineage) %>%
-      dplyr::mutate(Lineage = factor(Lineage, levels=Lineage[mixedorder(Lineage)], ordered=TRUE)) %>%
+      dplyr::mutate(Lineage = factor(Lineage, 
+                                     levels=unique(Lineage)[mixedorder(unique(Lineage), decreasing=FALSE)], 
+                                     ordered=TRUE)) %>%
       tidyr::spread(key=Lineage, value=Gene)
     }) 
 
