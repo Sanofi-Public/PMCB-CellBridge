@@ -98,6 +98,14 @@ Trajectory <- function(sobj, opt) {
         dge <- estimateDisp(dge, design)
         fit <- glmQLFit(dge, design)
         # Conduct differential expression
+        # > edgeR is primarily used for identifying genes whose expression levels 
+        # significantly differ between two or more conditions or groups. In the 
+        # context of trajectory analysis, these "conditions" can be thought of as 
+        # different points or segments along a trajectory.
+        # > In the results from edgeR, the log fold change (logFC) indicates how gene 
+        # expression changes with pseudotime. A positive logFC indicates that a gene’s 
+        # expression increases with advancing pseudotime, while a negative logFC suggests 
+        # that expression decreases.
         qlf <- glmQLFTest(fit, coef=2)
         # Extract top tags (you can adjust the number of tags based on your needs)
         top_genes <- topTags(qlf, n=Inf, p.value=0.05)$table %>%  # Use n=Inf to include all genes
