@@ -10,6 +10,7 @@ controlQC <- function(package.path, project.path, opt) {
   # ===================================
   message("** running readIn function")
   readin.res <- readIn(project.path=project.path, 
+                       package.path=package.path,
                        opt=opt)
   # ===================================
   if (!is.null(opt$scr_th)) { message("** running scrubletR function") }
