@@ -118,8 +118,8 @@ RUN Rscript -e "BiocManager::install(${R_BIOC})"
 # ===================================
 RUN Rscript -e "devtools::install_github('immunogenomics/harmony')"
 RUN Rscript -e "devtools::install_github('immunogenomics/presto')"
-RUN Rscript -e "devtools::install_github('Sanofi-Public/PMCB-Sargent')"
 RUN Rscript -e "devtools::install_github('Sanofi-Public/PMCB-SignacX')"
+RUN Rscript -e "devtools::install_github('Sanofi-Public/PMCB-Sargent')"
 # ===================================
 RUN mkdir -p /opt/cellbridge_1.0.0
 WORKDIR /opt/cellbridge_1.0.0

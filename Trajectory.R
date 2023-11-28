@@ -3,8 +3,9 @@
 # ===================================
 Trajectory <- function(sobj, opt) {
   # ===================================
-  sds_ls <- list()
+  sds_ls <- NULL
   if (opt$trajectory != "none"){
+    sds_ls <- list()
     if (opt$trajectory == "umap" | opt$trajectory == "both") {
       # slingshot
       cat(paste("*** running slingshot on umap..."), sep = "\n")
@@ -49,8 +50,6 @@ Trajectory <- function(sobj, opt) {
         # print(dim(sobj@meta.data))
       }
     }
-  } else {
-    sds_ls <- NULL
   }
   # ===================================
   if (!is.null(sds_ls)) {
@@ -117,9 +116,9 @@ Trajectory <- function(sobj, opt) {
           dplyr::bind_rows(top_genes) 
       } 
     }
+    # ===================================
+    sobj@misc$traj_genes <- traj_dges  
   }
-  # ===================================
-  sobj@misc$traj_genes <- traj_dges
   # ===================================
   # returns
   traj.res <- new("trajectoryRes",

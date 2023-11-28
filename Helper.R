@@ -158,8 +158,8 @@ converta2 <- function(gene, conv) {
 RenameGenesSeurat <- function(obj, newnames) { 
   RNA <- obj@assays$RNA
   if (nrow(RNA) == length(newnames)) {
-    RNA@counts@Dimnames[[1]] <- newnames
-    RNA@data@Dimnames[[1]] <- newnames
+    RNA$counts@Dimnames[[1]] <- newnames
+    RNA$data@Dimnames[[1]] <- newnames
     # RNA@scale.data@Dimnames[[1]] <- newnames
   } else {"Unequal gene sets: nrow(RNA) != nrow(newnames)"}
   obj@assays$RNA <- RNA
