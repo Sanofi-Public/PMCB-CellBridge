@@ -82,6 +82,9 @@ sargentCellstates <- function(sobj, opt) {
     sobj$sargent_onto <- sobj$sargent_cellstates
   }
   # ===================================
+  x <- setNames(as.data.frame(table(sobj$sargent_cellstates))[order(-as.data.frame(table(sobj$sargent_cellstates))$Freq), ], c("sargent_cellstates", "count"))
+  message(paste(utils::capture.output(print(x)), collapse = "\n"))
+  # ===================================
   # update miscellaneous
   sobj@misc$sargent_genesets_pos <- gpos
   if (!is.null(gneg)) { sobj@misc$sargent_genesets_neg <- "none" }

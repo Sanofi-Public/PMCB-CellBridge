@@ -227,6 +227,7 @@ if (!opt$docker) {
 # project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/3gz"
 # project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/COPD_PRJEB44878"
 # project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/adt_rds"
+project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/OA_knee"
 # project.path <- "/cloud-data/its-cmo-darwin-bgi-virginia/Downloads/Public_Datasets/GSE174332/pipeline_input"
 if (is.null(opt$input)) {
   project.path <- getwd()

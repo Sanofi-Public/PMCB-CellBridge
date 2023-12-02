@@ -1303,7 +1303,11 @@ if (opt$genesets != "none") {
     childs <- setdiff(names(neighborhood(g, nodes=cltype, mode="out")[[1]]), cltype)
     if (length(childs) == 0) { next }
     cells <- Cells(fsobj)[grepl(paste0("^", childs, collapse="|"), fsobj$sargent_onto)]
-    if (length(cells) == 0) { next }
+    # if (length(cells) == 0) { next }
+    if (length(cells) <= 1) { 
+      message("*** WARNING: identified an object of less than or equal to 1 cell. Skipping the DotPlot'ing...")
+      next 
+    }
     xsobj <- subset(fsobj, cells = cells)
     xsobj$temp <- xsobj$sargent_onto
     # print(table(xsobj$temp))
