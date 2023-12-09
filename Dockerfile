@@ -2,11 +2,6 @@
 FROM ubuntu:20.04
 ARG DEBIAN_FRONTEND=noninteractive
 # ===================================
-# Set maintainer
-LABEL maintainer="Nima Nouri <nima.nouri@sanofi.com>" \
-      description="PMCB SCB pipeline for processing scRNA-seq data"
-LABEL version="1.0.0"
-# ===================================
 # installing python and all required packages
 RUN apt-get update && \
         apt-get install -y \
@@ -135,5 +130,10 @@ RUN Rscript ./HgncEnsembl.R
 # files in a directory on the host instead of in the container’s file system.
 VOLUME /data
 WORKDIR /data
+# ===================================
+# Set maintainer
+LABEL maintainer="Nima Nouri <nima.nouri@sanofi.com>" \
+      description="PMCB SCB pipeline for processing scRNA-seq data"
+LABEL version="1.0.0"
 # ===================================
 # CMD ["/bin/bash"]

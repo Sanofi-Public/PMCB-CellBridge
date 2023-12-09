@@ -1,7 +1,5 @@
 #!/usr/bin/env Rscript
 # ===================================
-pipe_version <- "1.0.0"
-# ===================================
 ### Call libraries
 libs <- list("optparse","dplyr","Seurat","ggplot2","ggrepel","pheatmap", 
              "grid","gridExtra","cowplot","RColorBrewer","reticulate", 
@@ -195,6 +193,8 @@ opt_parser <- optparse::OptionParser(option_list=option_list)
 opt <- optparse::parse_args(opt_parser)
 # print_help(opt_parser)
 # ===================================
+opt$pipe_version <- "1.0.0"
+# ===================================
 if (FALSE) {
   opt$project <- "project"
   opt$species <- "hs"
@@ -254,8 +254,7 @@ start_time <- Sys.time()
 if (!opt$only_qc) {
   controlPipe(package.path=package.path, 
               project.path=project.path, 
-              opt=opt,
-              pipe_version=pipe_version)  
+              opt=opt)  
 } else {
   controlQC(package.path=package.path, 
             project.path=project.path, 

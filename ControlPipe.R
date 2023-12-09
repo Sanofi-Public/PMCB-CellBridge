@@ -1,12 +1,12 @@
 # ===================================
 # script to call pipeline functions
 # ===================================
-controlPipe <- function(package.path, project.path, opt, pipe_version) {
+controlPipe <- function(package.path, project.path, opt) {
   # ===================================
   message("** pipeline started")
   # ===================================
   ui <- paste("cellbridge", 
-              paste0("v", pipe_version), 
+              paste0("v", opt$pipe_version), 
               create_unique_ids(1, char_len = 15), 
               sep = "_")
   message(paste0("** created unique id '", ui, "'"))
