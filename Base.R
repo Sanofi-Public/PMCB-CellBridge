@@ -195,40 +195,12 @@ opt <- optparse::parse_args(opt_parser)
 # ===================================
 opt$pipe_version <- "1.0.0"
 # ===================================
-if (FALSE) {
-  opt$project <- "project"
-  opt$species <- "hs"
-  opt$tissue <- "pbmc"
-  opt$harmony <- "sample"
-  opt$tsne <- TRUE
-  opt$scr_th <- 0.25
-  opt$metadata <- "sample_based"
-  opt$docker <- FALSE
-  opt$genesets <- "curated"
-  opt$mrk_min_pct <- 0.5
-  opt$mrk_top_n <- 0
-  opt$genetype <- "hgnc_symbol"
-  opt$paper_url <- "https://www.mdpi.com/1422-0067/22/14/7646"
-  opt$data_url <- "https://www.ebi.ac.uk/ena/browser/view/PRJEB44878"
-  opt$trajectory <- "both"
-  opt$traj_var_gene <- 200
-  opt$traj_top_n <- 25
-  opt$adt <- TRUE
-}
-# ===================================
-### Rscript --vanilla read_in_samples.R /cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/RP/data_for_spring > project.out 2> project.err
-# ===================================
 if (!opt$docker) { 
   package.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge"
 } else {
   package.path <- "/opt/cellbridge_1.0.0"
 }
 # ===================================
-# project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/3gz"
-# project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/COPD_PRJEB44878"
-# project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/adt_rds"
-project.path <- "/cloud-data/its-cmo-darwin-magellan-workspaces-folders/WS_PMCB/NOURI.Nima/work/repos/cellbridge_space/cellbridge_example_proj/OA_knee"
-# project.path <- "/cloud-data/its-cmo-darwin-bgi-virginia/Downloads/Public_Datasets/GSE174332/pipeline_input"
 if (is.null(opt$input)) {
   project.path <- getwd()
 } else {
