@@ -11,13 +11,20 @@ mergeSamples <- function(sobj_ls, meta_data, meta_data_ext, opt) {
   # ===================================
   # merge all the objects in the list
   if (length(sobj_ls) > 1) {
-    sobj <- merge(sobj_ls[[1]], 
-                  y = sobj_ls[2:length(sobj_ls)], 
-                  project = opt$project)
+    # sobj <- merge(sobj_ls[[1]], 
+    #               y = sobj_ls[2:length(sobj_ls)], 
+    #               project = opt$project)
+    # sobj <- JoinLayers(sobj, assay="RNA")
+    cnt_ls <- lapply(sobj_ls, function(x){
+      GetAssayData(x, assay="RNA", layer="counts")
+    })
+    mtd_ls <- lapply(sobj_ls, function(x){
+      x[[]]
+    })
+    mtd <- Reduce(rbind, mtd_ls)
+    sobj <- CreateSeuratObject(counts=cnt_ls, meta.data=mtd, 
+                               project=opt$project)
     sobj <- JoinLayers(sobj, assay="RNA")
-    # if (opt$adt) {
-    #   sobj <- JoinLayers(sobj, assay="ADT")
-    # }
     # ===================================
     # checks
     stopifnot(length(unique(unlist(lapply(sobj_ls, function(x) rownames(x))))) == dim(sobj)[1])
